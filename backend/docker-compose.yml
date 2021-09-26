@@ -2,9 +2,9 @@ version: "3.9"
    
 services:
   db:
-    image: postgres
+    image: postgres:13.0-alpine
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=test_db
       - POSTGRES_USER=insecure
@@ -13,8 +13,10 @@ services:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/code
+      - ./app/:/usr/src/app
     ports:
       - "8000:8000"
     depends_on:
       - db
+volumes:
+  postgres_data:

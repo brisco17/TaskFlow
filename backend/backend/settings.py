@@ -79,12 +79,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ProductivityApp',
-        'USER': os.getenv('UNAME'),
-        'PASSWORD':os.getenv('PASSWD'),
-        'HOST': 'localhost',
-        'PORT': '5433',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'test_db',
+        'USER': 'insecure',
+        'PASSWORD': 'insecure',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 

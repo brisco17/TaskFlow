@@ -3,8 +3,6 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 
 export default function App() {
-  
-  //const { email, password } = this.state
   return (
     <View style={styles.container}>
       <Text style={styles.loginText}>Productivity App</Text>
@@ -72,12 +70,10 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     width: '45%',
     padding: 10,
-    //fontFamily: 'ArialBold',
   },
   buttonText: {
     color: 'rgba(168, 218, 220, 1)',
     fontWeight: 'bold'
-    //fontFamily: 'ArialBold',
   },
   loginText: {
     bottom: "10%",
@@ -87,7 +83,6 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(29, 53, 87, 1)',
     textShadowOffset: {height: 2},
     textShadowRadius: 10
-    //fontFamily: 'ArialBold',
   },
   input: {
     height: 60,
@@ -103,6 +98,5 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: 'rgba(69, 120, 144, 1)',
     color: 'white',
-    //fontFamily: 'ArialBold',
   }
 });

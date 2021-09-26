@@ -15,6 +15,7 @@ web-build/
 
 # Local environment
 venv/
+.env
 __pycache__/
 instance/
 

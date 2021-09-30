@@ -18,6 +18,7 @@ venv/
 .env
 __pycache__/
 instance/
+db.sqlite3
 
 # IDEs
 .vscode/

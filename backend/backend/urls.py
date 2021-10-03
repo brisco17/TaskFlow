@@ -19,5 +19,6 @@ from quickstart import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/login', views.login),
     path('', views.index)
 ]

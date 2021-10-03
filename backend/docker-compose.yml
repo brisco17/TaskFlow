@@ -6,9 +6,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=test_db
-      - POSTGRES_USER=insecure
-      - POSTGRES_PASSWORD=insecure
+      - POSTGRES_DB=local_db
+      - POSTGRES_USER=db_user
+      - POSTGRES_PASSWORD=password
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000

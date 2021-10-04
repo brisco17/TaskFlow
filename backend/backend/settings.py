@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+
+from django.contrib import auth
 import dj_database_url
 
 # load_dotenv()
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 ]
+AUTH_USER_MODLE='quickstart.Users'
 
 REST_FRAMEWORK =  {
     'DEFAULT_AUTHENTICATION_CLASSES' : (

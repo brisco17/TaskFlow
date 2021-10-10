@@ -1,8 +1,7 @@
 from django.db import models
-from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from rest_framework import serializers
 
 # Create your models here.
+<<<<<<< HEAD
 # class for user management
 class AccountManager(BaseUserManager):
     # method to create a user
@@ -82,3 +81,5 @@ class Task(models.Model):
 
     def __str__(self):
         return "{} - {}".format(self.title,self.due_date,self.completed)
+=======
+>>>>>>> #34-registration-endpoint

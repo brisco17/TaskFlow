@@ -18,10 +18,8 @@ from django.urls import path, include
 from quickstart.views import index
 from quickstart import views
 from rest_framework import routers
-import task.views
 
-router = routers.DefaultRouter()
-router.register(r'tasks',task.views.TaskViewSet)
+
 
 
 urlpatterns = [

@@ -16,10 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from quickstart import views
+from rest_framework import routers
+
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
     re_path(r'^auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
+    path('api/login', views.login),
+    path('api/register', views.RegisterUsers),
+    path('', include('task.urls'))
 ]

@@ -14,12 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from quickstart.views import index
 from quickstart import views
+from rest_framework import routers
+import task.views
+
+router = routers.DefaultRouter()
+router.register(r'tasks',task.views.TaskViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/login', views.login),
     path('api/register', views.RegisterUsers),
-    path('', views.index)
+    path('', views.index),
+    path('', include('task.urls'))
 ]

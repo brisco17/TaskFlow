@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 export default class App extends React.Component{
   constructor(props) {
@@ -52,7 +54,14 @@ export default class App extends React.Component{
       console.log(`Logging in with session token: ${json.token}`);
 
       // enter login logic here
-      this.setState({ login: true })
+      SecureStore.setItemAsync('session', json.token).then(() => {
+        SecureStore.setItemAsync('user', json.userID.toString()).then(() => {
+          SecureStore.setItemAsync('priv', "false").then(() => {
+            //this.props.route.params.onLoggedIn();
+            navigation.navigate('Details')
+          })
+        });
+      });
       
     })
     .catch(exception => {
@@ -65,53 +74,48 @@ export default class App extends React.Component{
 
   render() {
     const { username, password, login } = this.state
+    const {navigation} = this.props;
 
-    if (login) {
-      return (<View style={styles.container}><Text style={styles.loginText}>Logged in</Text></View>);
-    }
-    else
-    {
-      return (
-        <View style={styles.container}>
-          <Text style={styles.loginText}>Productivity App</Text>
+    return (
+      <View style={styles.container}>
+        <Text style={styles.loginText}>Productivity App</Text>
 
-          <View style={styles.inputContainer}>
-            <TextInput
-            style={styles.input}
-            onChangeText={text => this.setState({ username: text })}
-            value={username}
-            placeholder="Username"
-            placeholderTextColor="rgba(168, 218, 220, 1)"
-            textContentType="emailAddress"
-          />
+        <View style={styles.inputContainer}>
           <TextInput
-            style={styles.input}
-            onChangeText={text => this.setState({ password: text })}
-            value={password}
-            textContentType="password"
-            placeholder="Password"
-            placeholderTextColor="rgba(168, 218, 220, 1)"
-            secureTextEntry={true}
-          />
-          </View>
-          
-          <View style={styles.rowContainer}>
-            <TouchableOpacity
-            style={styles.button}
-            onPress={() => this.onSubmit()}
-          >
-            <Text style={styles.buttonText}> Log In </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            //onPress={() => 1onSubmit()}
-          >
-            <Text style={styles.buttonText}> Sign Up </Text>
-          </TouchableOpacity>
-          </View>
+          style={styles.input}
+          onChangeText={text => this.setState({ username: text })}
+          value={username}
+          placeholder="Username"
+          placeholderTextColor="rgba(168, 218, 220, 1)"
+          textContentType="emailAddress"
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={text => this.setState({ password: text })}
+          value={password}
+          textContentType="password"
+          placeholder="Password"
+          placeholderTextColor="rgba(168, 218, 220, 1)"
+          secureTextEntry={true}
+        />
         </View>
-      );
-    }
+        
+        <View style={styles.rowContainer}>
+          <TouchableOpacity
+          style={styles.button}
+          onPress={() => this.onSubmit()}
+        >
+          <Text style={styles.buttonText}> Log In </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("Register")}
+        >
+          <Text style={styles.buttonText}> Sign Up </Text>
+        </TouchableOpacity>
+        </View>
+      </View>
+    );
   }
 }
 

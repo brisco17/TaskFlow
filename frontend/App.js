@@ -1,17 +1,19 @@
 import * as React from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
 
 //Add new screens here (also place to add below)
 import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import MainScreen from './screens/Main-Screen';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export default class App extends React.Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
 
     this.state = {
       session: null
@@ -32,9 +34,36 @@ export default class App extends React.Component {
       })
     });
   }
+
+  goRegister = () => {
+
+    // See if there's a session data stored on the phone and set whatever is there to the state
+    console.log("HERE")
+    //navigation.navigate('Details')
+    this.props.navigate("Register")
+  }
   render() {
     // get our session variable from the state
     const { session } = this.state
+
+    return (
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            initialParams={
+              {
+                onLoggedIn: () => this.checkIfLoggedIn(),
+                goRegister: () => this.goRegister()
+              }
+            }
+          />
+          <Stack.Screen name="Main" component={MainScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
 
     return (
       <View style={styles.container}>
@@ -43,21 +72,23 @@ export default class App extends React.Component {
           <Stack.Navigator>
             {/* Check to see if we have a session, if so continue, if not login */}
             {session ? (
-              <Stack.Screen name="Root" />
+              <Stack.Screen name="Login"/>
             ) : (
                 <Stack.Screen
                   name="Login"
                   component={LoginScreen}
                   initialParams={
                     {
-                      onLoggedIn: () => this.checkIfLoggedIn()
+                      onLoggedIn: () => this.checkIfLoggedIn(),
+                      goRegister: () => this.goRegister()
                     }
                   }
                 />
               )
               }
-              {/* Also add Screen here */}
               <Stack.Screen name="Logon" component={LoginScreen} />
+              <Stack.Screen name="Main" component={MainScreen} />
+              <Stack.Screen name="Register" component={RegisterScreen} />
           </Stack.Navigator>
 
         </NavigationContainer>

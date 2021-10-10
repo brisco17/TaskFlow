@@ -1,6 +1,7 @@
 from django.shortcuts import render
 
 from django.http.response import JsonResponse, HttpResponse
+#from backend import task
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 
@@ -12,12 +13,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 
-# Create your views here.
+ # Create your views here.
 @api_view(['GET', 'POST'])
-def task_list(request):
-    """
-    List all code snippets, or create a new snippet.
-    """
+def task_list(request, format=None):
     if request.method == 'GET':
         tasks = Task.objects.all()
         serializer = TaskSerializer(tasks, many=True)
@@ -30,10 +28,7 @@ def task_list(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 @api_view(['GET', 'PUT', 'DELETE'])
-def task_detail(request, pk):
-    """
-    Retrieve, update or delete a code snippet.
-    """
+def task_detail(request, pk, format=None):
     try:
         snippet = Task.objects.get(pk=pk)
     except Task.DoesNotExist:

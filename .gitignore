@@ -1,5 +1,5 @@
 # dependencies
-node_modules/
+**/node_modules
 .expo/*
 npm-debug.*
 *.jks
@@ -14,11 +14,12 @@ web-build/
 .DS_Store
 
 # Local environment
-venv/
+**/venv
 .env
 __pycache__/
 instance/
 db.sqlite3
+**/migrations
 
 # IDEs
 .vscode/

@@ -3,3 +3,4 @@ psycopg2-binary>=2.8
 djangorestframework
 gunicorn
 dj_database_url
+djoser

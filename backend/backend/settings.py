@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', "insecure")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.getenv('DEBUG', 0))
+DEBUG = int(os.getenv('DEBUG', 1))
 
 ALLOWED_HOSTS = ['*']
 
@@ -40,12 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'quickstart',
-    'task',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    'user'
+    'user',
+    'quickstart',
+    'task',
 ]
 
 STATIC_URL = 'static/'

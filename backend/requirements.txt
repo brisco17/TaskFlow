@@ -5,3 +5,4 @@ gunicorn
 dj_database_url
 djoser
 whitenoise
+markdown

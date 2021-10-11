@@ -4,8 +4,8 @@ from rest_framework import serializers
 
 class Tag(models.Model):
     # allow users to define a title and description for a tag
-    title = models.CharField(unique=True)
-    description = models.CharField()
+    title = models.CharField(max_length=20, unique=True)
+    description = models.CharField(max_length=100)
 
     # associate tags with a user
     author = models.ForeignKey(

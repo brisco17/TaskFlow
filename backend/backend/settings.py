@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    'user'
+    'user',
+    'tag'
 ]
 
 AUTH_USER_MODEL = 'user.UserProfile'

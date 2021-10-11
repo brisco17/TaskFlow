@@ -3,13 +3,14 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import * as SecureStore from 'expo-secure-store';
 
 export default class App extends React.Component{
   constructor(props) {
     super(props)
     // Initialize our login state
     this.state = {
-      username: '',
+      email: SecureStore.getItemAsync("email") || '',
       password: '',
       login: false
     }
@@ -17,35 +18,18 @@ export default class App extends React.Component{
   
 
   onSubmit = () => {
-    const { username, password } = this.state;
+    const { email, password } = this.state;
     console.log("HERE")
-    console.log(username)
+    console.log(email)
     console.log(password)
 
-    // var xhr = new XMLHttpRequest();
-    // xhr.open("POST", 'localhost:8080/api/login', true);
-
-    // //Send the proper header information along with the request
-    // xhr.setRequestHeader("Content-Type", 'application/json');
-
-    // xhr.onreadystatechange = function() { // Call a function when the state changes.
-    //     if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-    //         // Request finished. Do processing here.
-    //     }
-    // }
-    // send = "username=" + username + "&password=" + password
-    // xhr.send("username={username}&password=ipsum");
-    // // xhr.send(new Int8Array());
-    // // xhr.send(document);
-
-
-    fetch("https://young-chow-productivity-app.herokuapp.com/api/login", {
+    fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/login", {
       method: "POST",
       headers: new Headers({
           'Content-Type': 'application/json'
       }),
       body: JSON.stringify({
-        username: username,
+        email: email,
         password: password
       })
     })
@@ -57,8 +41,8 @@ export default class App extends React.Component{
       SecureStore.setItemAsync('session', json.token).then(() => {
         SecureStore.setItemAsync('user', json.userID.toString()).then(() => {
           SecureStore.setItemAsync('priv', "false").then(() => {
-            //this.props.route.params.onLoggedIn();
-            navigation.navigate('Details')
+            this.props.route.params.onLoggedIn();
+            //navigation.navigate('Details')
           })
         });
       });
@@ -73,7 +57,7 @@ export default class App extends React.Component{
   
 
   render() {
-    const { username, password, login } = this.state
+    const { email, password, login } = this.state
     const {navigation} = this.props;
 
     return (
@@ -83,9 +67,9 @@ export default class App extends React.Component{
         <View style={styles.inputContainer}>
           <TextInput
           style={styles.input}
-          onChangeText={text => this.setState({ username: text })}
-          value={username}
-          placeholder="Username"
+          onChangeText={text => this.setState({ email: text })}
+          value={email}
+          placeholder="Email"
           placeholderTextColor="rgba(168, 218, 220, 1)"
           textContentType="emailAddress"
         />

@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
-export default class App extends React.Component{
+export default class RegisterScreen extends React.Component{
   constructor(props) {
     super(props)
     // Initialize our login state
@@ -20,7 +20,7 @@ export default class App extends React.Component{
     const {navigation} = this.props;
     console.log(email)
 
-    fetch("https://young-chow-productivity-app.herokuapp.com/auth/users", {
+    fetch("https://young-chow-productivity-app.herokuapp.com/auth/users/", {
       method: "POST",
       headers: new Headers({
           'Content-Type': 'application/json'
@@ -36,14 +36,20 @@ export default class App extends React.Component{
 
       // enter login logic here
       SecureStore.setItemAsync('email', json.email.toString() ).then(() => {
-        SecureStore.setItemAsync('user', json.id.toString()).then(() => {
-          SecureStore.setItemAsync('priv', "false").then(() => {
-            console.log("ayo")
-            navigation.pop()
-            Alert.alert("Account has been created. You may now login")
-            //navigation.navigate('Details')
-          })
-        });
+
+        if (json.email.toString().includes("already exists.")) {
+          Alert.alert("Error: Email is already in use.")
+        }
+        else
+        {
+          SecureStore.setItemAsync('user', json.id.toString()).then(() => {
+            SecureStore.setItemAsync('priv', "false").then(() => {
+              console.log("ayo")
+              navigation.pop()
+              Alert.alert("Account has been created. You may now login")
+            })
+          });
+        }
       });
       
     })

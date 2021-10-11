@@ -7,7 +7,12 @@ import * as SecureStore from 'expo-secure-store';
 //Add new screens here (also place to add below)
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
-import MainScreen from './screens/Main-Screen';
+import MainScreen from './screens/MainScreen';
+
+// This is a warning that occurs on new react versions. It wants me to use event listeners instead,
+// which isn't happening for the time being.
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs([ 'Non-serializable values were found in the navigation state',]);
 
 const Stack = createNativeStackNavigator();
 
@@ -20,7 +25,7 @@ export default class App extends React.Component {
     }
 
     // uncomment this if you'd like to require a login every time the app is started
-    //SecureStore.deleteItemAsync('session')
+    // SecureStore.deleteItemAsync('session')
   }
   componentDidMount() {
     // Check if there's a session when the app loads
@@ -45,21 +50,33 @@ export default class App extends React.Component {
   render() {
     // get our session variable from the state
     const { session } = this.state
+    if (session) console.log(session)
 
     return (
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            initialParams={
-              {
-                onLoggedIn: () => this.checkIfLoggedIn(),
-                goRegister: () => this.goRegister()
+          {session ? (
+              <Stack.Screen 
+                name="Main" 
+                component={MainScreen} 
+                initialParams={
+                  {
+                    onLoggedIn: () => this.checkIfLoggedIn()
+                  }
+                }
+              />
+            ) : (
+                <Stack.Screen
+                  name="Login"
+                  component={LoginScreen}
+                  initialParams={
+                    {
+                      onLoggedIn: () => this.checkIfLoggedIn()
+                    }
+                  }
+                />
+              )
               }
-            }
-          />
-          <Stack.Screen name="Main" component={MainScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
         </Stack.Navigator>
       </NavigationContainer>

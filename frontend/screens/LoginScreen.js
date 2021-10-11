@@ -5,12 +5,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
 
-export default class App extends React.Component{
+export default class LoginScreen extends React.Component{
   constructor(props) {
     super(props)
     // Initialize our login state
     this.state = {
-      email: SecureStore.getItemAsync("email") || '',
+      email: '',
       password: '',
       login: false
     }
@@ -23,7 +23,7 @@ export default class App extends React.Component{
     console.log(email)
     console.log(password)
 
-    fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/login", {
+    fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/login/", {
       method: "POST",
       headers: new Headers({
           'Content-Type': 'application/json'
@@ -35,16 +35,14 @@ export default class App extends React.Component{
     })
     .then(response => response.json())
     .then(json => {
-      console.log(`Logging in with session token: ${json.token}`);
+      console.log(`Logging in with json: ${JSON.stringify(json)}`);
 
       // enter login logic here
-      SecureStore.setItemAsync('session', json.token).then(() => {
-        SecureStore.setItemAsync('user', json.userID.toString()).then(() => {
+      SecureStore.setItemAsync('session', json.auth_token).then(() => {
           SecureStore.setItemAsync('priv', "false").then(() => {
             this.props.route.params.onLoggedIn();
             //navigation.navigate('Details')
           })
-        });
       });
       
     })
@@ -65,7 +63,7 @@ export default class App extends React.Component{
         <Text style={styles.loginText}>Productivity App</Text>
 
         <View style={styles.inputContainer}>
-          <TextInput
+        <TextInput
           style={styles.input}
           onChangeText={text => this.setState({ email: text })}
           value={email}
@@ -86,17 +84,17 @@ export default class App extends React.Component{
         
         <View style={styles.rowContainer}>
           <TouchableOpacity
-          style={styles.button}
-          onPress={() => this.onSubmit()}
-        >
-          <Text style={styles.buttonText}> Log In </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Register")}
-        >
-          <Text style={styles.buttonText}> Sign Up </Text>
-        </TouchableOpacity>
+            style={styles.button}
+            onPress={() => this.onSubmit()}
+          >
+            <Text style={styles.buttonText}> Log In </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("Register")}
+          >
+            <Text style={styles.buttonText}> Sign Up </Text>
+          </TouchableOpacity>
         </View>
       </View>
     );

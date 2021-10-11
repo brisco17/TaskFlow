@@ -22,7 +22,7 @@ from quickstart import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index),
+    path('', views.ApiRoot.as_view(), name=views.ApiRoot.name),
     re_path(r'^auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
     path('', include('task.urls'))

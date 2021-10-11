@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'user',
-    'tag'
+    'tag',
     'quickstart',
     'task',
 ]

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'tag',
     'quickstart',
     'task',
+    'settings',
 ]
 
 STATIC_URL = 'static/'

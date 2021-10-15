@@ -26,7 +26,12 @@ export default class MainScreen extends React.Component {
               <TouchableOpacity style = {styles.innerCircle}/>
             </View>
             <View style = {styles.CricleOverlay}>
-              <TouchableOpacity style = {styles.innerCircle}/>
+              <TouchableOpacity style = {styles.innerCircle}
+                onPress={() => {
+                navigation.naviagte("Setting")
+                }}
+              
+              />
             </View>
             
           </View>
@@ -38,7 +43,7 @@ export default class MainScreen extends React.Component {
               this.props.route.params.onLoggedIn();
             }}
           >
-            <Text style={styles.buttonText}> Log Out </Text>
+            <Text style={styles.buttonText}> Settings </Text>
           </TouchableOpacity>
           {/*
           <View opacity = {0.3} style = {{ 

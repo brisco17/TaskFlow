@@ -12,6 +12,7 @@ import MainScreen from './screens/MainScreen';
 // This is a warning that occurs on new react versions. It wants me to use event listeners instead,
 // which isn't happening for the time being.
 import { LogBox } from 'react-native';
+import SettingScreen from './screens/SettingScreen';
 LogBox.ignoreLogs([ 'Non-serializable values were found in the navigation state',]);
 
 const Stack = createNativeStackNavigator();
@@ -78,6 +79,7 @@ export default class App extends React.Component {
               )
               }
           <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="Setting" component ={SettingScreen}/>
         </Stack.Navigator>
       </NavigationContainer>
     );

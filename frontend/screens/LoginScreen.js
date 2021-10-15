@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-nativ
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
+import * as Google from "expo-google-app-auth";
 
 export default class LoginScreen extends React.Component{
   constructor(props) {
@@ -12,10 +13,28 @@ export default class LoginScreen extends React.Component{
     this.state = {
       email: '',
       password: '',
-      login: false
+      login: false,
+      userInfo: []
     }
   }
   
+  gLogin = async () => {
+    console.log("LoginScreen.js 6 | loggin in");
+    try {
+      const { type, user } = await Google.logInAsync({
+        iosClientId: `22428134723-pq3rqvntskvn45979el7kmkrnksmajgs.apps.googleusercontent.com`,
+        androidClientId: `22428134723-4clne824h5k1q433vh1tmgf6r443t2dp.apps.googleusercontent.com`,
+      });
+
+      if (type === "success") {
+        // Then you can use the Google REST API
+        console.log("LoginScreen.js 17 | success, navigating to profile");
+        this.props.route.params.onLoggedIn();
+      }
+    } catch (error) {
+      console.log("LoginScreen.js 19 | error with login", error);
+    }
+  }
 
   onSubmit = () => {
     const { email, password } = this.state;
@@ -52,6 +71,8 @@ export default class LoginScreen extends React.Component{
     })
 
   }
+
+
   
 
   render() {
@@ -88,6 +109,12 @@ export default class LoginScreen extends React.Component{
             onPress={() => this.onSubmit()}
           >
             <Text style={styles.buttonText}> Log In </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.gLogin()}
+          >
+            <Text style={styles.buttonText}> Google Login </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}

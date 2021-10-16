@@ -55,7 +55,7 @@ export default class LoginScreen extends React.Component{
   
 
   render() {
-    const { email, password, login } = this.state
+    const { email, password, login} = this.state
     const {navigation} = this.props;
 
     return (

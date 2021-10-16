@@ -11,6 +11,42 @@ export default class MainScreen extends React.Component {
       login: true
     }
   }
+  
+  onSubmit = () => {
+    const { email, password } = this.state;
+    console.log("HERE")
+    console.log(email)
+    console.log(password)
+
+    fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/login/", {
+      method: "POST",
+      headers: new Headers({
+          'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.log(`Logging in with json: ${JSON.stringify(json)}`);
+
+      // enter login logic here
+      SecureStore.setItemAsync('session', json.auth_token).then(() => {
+          SecureStore.setItemAsync('priv', "false").then(() => {
+            this.props.route.params.onLoggedIn();
+            //navigation.navigate('Details')
+          })
+      });
+      
+    })
+    .catch(exception => {
+        console.log("Error occured", exception);
+        // Do something when login fails
+    })
+
+  }
 
   render() {
     const {navigation} = this.props;
@@ -20,18 +56,15 @@ export default class MainScreen extends React.Component {
           <View style={{ height: '10%', width: '100%', backgroundColor: '#A8DADC' , top: '90%'}}/>
           <View style={styles.TaskBarContainer}>
             <View style = {styles.CricleOverlay}>
-              <TouchableOpacity style = {styles.innerCircle}/>
-            </View>
-            <View style = {styles.CricleOverlay}>
-              <TouchableOpacity style = {styles.innerCircle}/>
-            </View>
-            <View style = {styles.CricleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}
-                onPress={() => {
-                navigation.naviagte("Setting")
-                }}
-              
+                onPress = {() => navigation.navigate("Setting")}
               />
+            </View>
+            <View style = {styles.CricleOverlay}>
+              <TouchableOpacity style = {styles.innerCircle}/>
+            </View>
+            <View style = {styles.CricleOverlay}>
+              <TouchableOpacity style = {styles.innerCircle}/>
             </View>
             
           </View>
@@ -43,7 +76,7 @@ export default class MainScreen extends React.Component {
               this.props.route.params.onLoggedIn();
             }}
           >
-            <Text style={styles.buttonText}> Settings </Text>
+            <Text style={styles.buttonText}> Logout </Text>
           </TouchableOpacity>
           {/*
           <View opacity = {0.3} style = {{ 

@@ -1,11 +1,14 @@
 from django.db import models
 
-#from backend.quickstart.models import User
+from django.conf import settings
 
 # Create your models here.
 
 class Task(models.Model):
-    #user = models.ForeignKey(User)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        )
     title = models.CharField(max_length=30)
     description = models.CharField(max_length=100)
     creation_date = models.DateField(auto_now_add=True)

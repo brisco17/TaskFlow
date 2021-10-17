@@ -11,8 +11,8 @@ class TaskList(generics.ListCreateAPIView):
     #permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    #def perform_create(self, serializer):
+    #    serializer.save(owner=self.request.user)
 
 
 class TaskDetail(generics.RetrieveUpdateDestroyAPIView):

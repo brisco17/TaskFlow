@@ -37,21 +37,18 @@ export default class App extends React.Component {
       this.setState({
         session: sessionToken
       })
+      console.log(sessionToken)
     });
   }
 
   goRegister = () => {
 
     // See if there's a session data stored on the phone and set whatever is there to the state
-    console.log("HERE")
-    //navigation.navigate('Details')
     this.props.navigate("Register")
   }
   render() {
     // get our session variable from the state
     const { session } = this.state
-    if (session) console.log(session)
-
     return (
       <NavigationContainer>
         <Stack.Navigator>

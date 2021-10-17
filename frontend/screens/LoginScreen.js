@@ -19,7 +19,7 @@ export default class LoginScreen extends React.Component{
   }
   
   gLogin = async () => {
-    console.log("LoginScreen.js 6 | loggin in");
+    console.log("LoginScreen.js 22 | loggin in");
     try {
       const { type, user } = await Google.logInAsync({
         iosClientId: `22428134723-pq3rqvntskvn45979el7kmkrnksmajgs.apps.googleusercontent.com`,
@@ -28,19 +28,21 @@ export default class LoginScreen extends React.Component{
 
       if (type === "success") {
         // Then you can use the Google REST API
-        console.log("LoginScreen.js 17 | success, navigating to profile");
-        this.props.route.params.onLoggedIn();
+        console.log("LoginScreen.js 31 | success, navigating to profile");
+        SecureStore.setItemAsync('user', JSON.stringify(user)).then(() => {
+          SecureStore.setItemAsync('session', user.id).then(() => {
+            this.props.route.params.onLoggedIn();
+          })
+        });
+        
       }
     } catch (error) {
-      console.log("LoginScreen.js 19 | error with login", error);
+      console.log("LoginScreen.js 40 | error with login", error);
     }
   }
 
   onSubmit = () => {
     const { email, password } = this.state;
-    console.log("HERE")
-    console.log(email)
-    console.log(password)
 
     fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/login/", {
       method: "POST",
@@ -116,6 +118,9 @@ export default class LoginScreen extends React.Component{
           >
             <Text style={styles.buttonText}> Google Login </Text>
           </TouchableOpacity>
+          
+        </View>
+        <View style={styles.rowContainer}>
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate("Register")}

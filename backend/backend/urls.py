@@ -25,5 +25,6 @@ urlpatterns = [
     path('', views.ApiRoot.as_view(), name=views.ApiRoot.name),
     re_path(r'^auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
-    path('', include('task.urls'))
+    path('', include('task.urls')),
+    path('', include('tag.urls'))
 ]

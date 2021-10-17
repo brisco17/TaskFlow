@@ -66,7 +66,6 @@ export default class MainScreen extends React.Component {
             <View style = {styles.CricleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}/>
             </View>
-            
           </View>
           {/*
           <View opacity = {0.3} style = {{ 
@@ -223,3 +222,4 @@ const styles = StyleSheet.create({
   }
 
 });
+

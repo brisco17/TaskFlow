@@ -4,19 +4,11 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-nativ
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
+import RNRestart from 'react-native-restart';
 
 export default class SettingScreen extends React.Component{
-    constructor(props) {
-        super(props)
-        // Initialize our login state
-        this.state = {
-          email: SecureStore.getItemAsync("email") || '',
-          login: true
-        };
-
-    }
     onSubmit = () => {
-        const {navigation} = this.props;
+      const {navigation} = this.props;
         fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/logout/",{
             method: "POST",
             headers: new Headers({
@@ -25,23 +17,27 @@ export default class SettingScreen extends React.Component{
         })
         .then(response => response.json())
         .then(json => {
+          console.log('LogOut Button Hit')
 
-            SecureStore.deleteItemAsync('session').then(() => {
-                this.props.route.params.onLoggedIn();
-            })
+          SecureStore.deleteItemAsync('session').then(() => {
+            this.props.route.params.onLoggedIn();
+            navigation.pop();
+          })
+
         })
     }
 
 
     render() {
-        const {navigation} = this.props;
 
         return(
             <View style={styles.MainScreen}>
             <View style={{ height: '10%', width: '100%', backgroundColor: '#A8DADC' , top: '90%'}}/>
             <View style={styles.TaskBarContainer}>
               <View style = {styles.CricleOverlay}>
-                <TouchableOpacity style = {styles.innerCircle}/>
+                <TouchableOpacity style = {styles.innerCircle}
+                
+                />
               </View>
               <View style = {styles.CricleOverlay}>
                 <TouchableOpacity style = {styles.innerCircle}/>
@@ -52,7 +48,7 @@ export default class SettingScreen extends React.Component{
             </View>
             <TouchableOpacity 
             style = {styles.button}
-            onPress = {this.onSubmit()}
+            onPress = {() => this.onSubmit()}
             >
             <Text style = {styles.buttonText}>Logout</Text>
             </TouchableOpacity>

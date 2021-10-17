@@ -68,16 +68,6 @@ export default class MainScreen extends React.Component {
             </View>
             
           </View>
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              SecureStore.deleteItemAsync('session')
-              this.props.route.params.onLoggedIn();
-            }}
-          >
-            <Text style={styles.buttonText}> Logout </Text>
-          </TouchableOpacity>
           {/*
           <View opacity = {0.3} style = {{ 
             alignItems: "right",  

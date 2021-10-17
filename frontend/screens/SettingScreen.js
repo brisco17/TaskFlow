@@ -1,17 +1,41 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Touchable, TouchableNativeFeedbackComponent } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
-import { CardStyleInterpolators } from 'react-navigation-stack';
 
 export default class SettingScreen extends React.Component{
+    constructor(props) {
+        super(props)
+        // Initialize our login state
+        this.state = {
+          email: SecureStore.getItemAsync("email") || '',
+          login: true
+        };
 
+    }
     onSubmit = () => {
-        console.log('Setting Page')
+        const {navigation} = this.props;
+        fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/logout/",{
+            method: "POST",
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+        })
+        .then(response => response.json())
+        .then(json => {
+
+            SecureStore.deleteItemAsync('session').then(() => {
+                this.props.route.params.onLoggedIn();
+            })
+        })
     }
 
+
     render() {
-        //const {navigation} = this.props;
+        const {navigation} = this.props;
+
         return(
             <View style={styles.MainScreen}>
             <View style={{ height: '10%', width: '100%', backgroundColor: '#A8DADC' , top: '90%'}}/>
@@ -26,7 +50,12 @@ export default class SettingScreen extends React.Component{
                 <TouchableOpacity style = {styles.innerCircle}/>
               </View>
             </View>
-            <TouchableOpacity style = {styles.button}><Text style = {styles.buttonText}>Logout</Text></TouchableOpacity>
+            <TouchableOpacity 
+            style = {styles.button}
+            onPress = {this.onSubmit()}
+            >
+            <Text style = {styles.buttonText}>Logout</Text>
+            </TouchableOpacity>
             
             </View>
         );

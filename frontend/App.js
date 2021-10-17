@@ -79,7 +79,7 @@ export default class App extends React.Component {
                   }
                 />
               )
-                }
+              }
           <Stack.Screen name="Register" component={RegisterScreen}/>
           <Stack.Screen name="Setting" component ={SettingScreen}/>
         </Stack.Navigator>

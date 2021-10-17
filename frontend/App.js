@@ -79,9 +79,15 @@ export default class App extends React.Component {
                   }
                 />
               )
-                }
-          <Stack.Screen name="Register" component={RegisterScreen}/>
-          <Stack.Screen name="Setting" component ={SettingScreen}/>
+              }
+            <Stack.Screen name="Register" component={RegisterScreen}/>
+            <Stack.Screen name="Setting" 
+            component ={SettingScreen}
+            initialParams={
+              {
+                onLoggedIn: () => this.checkIfLoggedIn(),
+              }
+            }/>
         </Stack.Navigator>
       </NavigationContainer>
     );

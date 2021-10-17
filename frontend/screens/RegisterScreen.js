@@ -62,11 +62,12 @@ export default class RegisterScreen extends React.Component{
   
 
   render() {
-    const { email, password, login } = this.state
+    const { email, password, login } = this.state;
+    const {navigation} = this.props;
 
     return (
       <View style={styles.container}>
-        <Text style={styles.loginText}>Productivity App</Text>
+        <Text style={styles.loginText}>Register</Text>
 
         <View style={styles.inputContainer}>
         <TextInput
@@ -87,8 +88,17 @@ export default class RegisterScreen extends React.Component{
           placeholderTextColor="rgba(168, 218, 220, 1)"
           secureTextEntry={true}
         />
+        {/*
+        <TextInput
+        style={styles.input}
+        onChangeText={text => this.setState({ password: text })}
+        value={password}
+        textContentType="password"
+        placeholder="Re-Enter Password"
+        placeholderTextColor="rgba(168, 218, 220, 1)"
+        secureTextEntry={true}/>
+        */}
         </View>
-        
         <View style={styles.rowContainer}>
           <TouchableOpacity
           style={styles.button}
@@ -97,6 +107,7 @@ export default class RegisterScreen extends React.Component{
           <Text style={styles.buttonText}> Sign Up </Text>
         </TouchableOpacity>
         </View>
+        <Text>Already on Productivity App? <TouchableOpacity onPress ={() => navigation.navigate('Login')}><Text style ={{color: 'blue'}}>Sign In</Text></TouchableOpacity></Text>
       </View>
     );
   }
@@ -110,7 +121,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   inputContainer: {
-    marginTop: "20%",
+    marginTop: "10%",
     width: "100%",
     justifyContent: 'center'
   },

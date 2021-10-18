@@ -4,7 +4,6 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-nativ
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
-import RNRestart from 'react-native-restart';
 
 export default class SettingScreen extends React.Component{
     onSubmit = () => {

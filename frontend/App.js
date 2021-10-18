@@ -7,6 +7,7 @@ import * as SecureStore from 'expo-secure-store';
 //Add new screens here (also place to add below)
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import GoogleRegister from './screens/GoogleRegister';
 import MainScreen from './screens/MainScreen';
 import SettingScreen from './screens/SettingScreen'
 
@@ -46,15 +47,11 @@ export default class App extends React.Component {
   goRegister = () => {
 
     // See if there's a session data stored on the phone and set whatever is there to the state
-    console.log("HERE")
-    //navigation.navigate('Details')
     this.props.navigate("Register")
   }
   render() {
     // get our session variable from the state
     const { session } = this.state
-    if (session) console.log(session)
-
     return (
       <NavigationContainer>
         <Stack.Navigator>
@@ -82,44 +79,15 @@ export default class App extends React.Component {
               }
             <Stack.Screen name="Register" component={RegisterScreen}/>
             <Stack.Screen name="Setting" 
-            component ={SettingScreen}
-            initialParams={
+              component ={SettingScreen}
+              initialParams={
               {
                 onLoggedIn: () => this.checkIfLoggedIn(),
               }
             }/>
+          <Stack.Screen name="GoogleRegister" component={GoogleRegister} />
         </Stack.Navigator>
       </NavigationContainer>
-    );
-
-    return (
-      <View style={styles.container}>
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-        <NavigationContainer>
-          <Stack.Navigator>
-            {/* Check to see if we have a session, if so continue, if not login */}
-            {session ? (
-              <Stack.Screen name="Login"/>
-            ) : (
-                <Stack.Screen
-                  name="Login"
-                  component={LoginScreen}
-                  initialParams={
-                    {
-                      onLoggedIn: () => this.checkIfLoggedIn(),
-                      goRegister: () => this.goRegister()
-                    }
-                  }
-                />
-              )
-              }
-              <Stack.Screen name="Logon" component={LoginScreen} />
-              <Stack.Screen name="Main" component={MainScreen} />
-              <Stack.Screen name="Register" component={RegisterScreen} />
-          </Stack.Navigator>
-
-        </NavigationContainer>
-      </View>
     );
   }
 }

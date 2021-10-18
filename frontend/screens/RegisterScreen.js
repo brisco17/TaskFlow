@@ -18,7 +18,6 @@ export default class RegisterScreen extends React.Component{
   onSubmit = () => {
     const { email, password } = this.state;
     const {navigation} = this.props;
-    console.log(email)
 
     fetch("https://young-chow-productivity-app.herokuapp.com/auth/users/", {
       method: "POST",
@@ -32,26 +31,24 @@ export default class RegisterScreen extends React.Component{
     })
     .then(response => response.json())
     .then(json => {
-      console.log(`User has json: ${JSON.stringify(json)}`);
-
       // enter login logic here
-      SecureStore.setItemAsync('email', json.email.toString() ).then(() => {
-
-        if (json.email.toString().includes("already exists.")) {
-          Alert.alert("Error: Email is already in use.")
-        }
-        else
-        {
+      if(!json.email) {
+        Alert.alert("Error: ", json.password.toString())
+      }
+      else if (json.email.toString().includes("already exists.")) {
+        Alert.alert("Error: Email is already in use.")
+      }
+      else
+      {
+        SecureStore.setItemAsync('email', json.email.toString() ).then(() => {
           SecureStore.setItemAsync('user', json.id.toString()).then(() => {
             SecureStore.setItemAsync('priv', "false").then(() => {
-              console.log("ayo")
               navigation.pop()
               Alert.alert("Account has been created. You may now login")
             })
           });
-        }
-      });
-      
+        });
+      }
     })
     .catch(exception => {
         console.log("Error occured", exception);

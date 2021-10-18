@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
@@ -13,12 +13,13 @@ export default class LoginScreen extends React.Component{
     this.state = {
       email: '',
       password: '',
-      login: false,
+      login: true,
       userInfo: []
     }
   }
   
   gLogin = async () => {
+    const {navigation} = this.props;
     console.log("LoginScreen.js 22 | loggin in");
     try {
       const { type, user } = await Google.logInAsync({
@@ -30,14 +31,16 @@ export default class LoginScreen extends React.Component{
         // Then you can use the Google REST API
         console.log("LoginScreen.js 31 | success, navigating to profile");
         SecureStore.setItemAsync('user', JSON.stringify(user)).then(() => {
-          SecureStore.setItemAsync('session', user.id).then(() => {
-            this.props.route.params.onLoggedIn();
-          })
+          this.setState({login: true})
         });
         
       }
+      else {
+        this.setState({login: false})
+      }
     } catch (error) {
       console.log("LoginScreen.js 40 | error with login", error);
+      this.setState({login: false})
     }
   }
 
@@ -56,8 +59,6 @@ export default class LoginScreen extends React.Component{
     })
     .then(response => response.json())
     .then(json => {
-      console.log(`Logging in with json: ${JSON.stringify(json)}`);
-
       // enter login logic here
       SecureStore.setItemAsync('session', json.auth_token).then(() => {
           SecureStore.setItemAsync('priv', "false").then(() => {
@@ -74,11 +75,8 @@ export default class LoginScreen extends React.Component{
 
   }
 
-
-  
-
   render() {
-    const { email, password, login } = this.state
+    const { email, password} = this.state
     const {navigation} = this.props;
 
     return (
@@ -112,20 +110,23 @@ export default class LoginScreen extends React.Component{
           >
             <Text style={styles.buttonText}> Log In </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => this.gLogin()}
-          >
-            <Text style={styles.buttonText}> Google Login </Text>
-          </TouchableOpacity>
-          
         </View>
         <View style={styles.rowContainer}>
           <TouchableOpacity
-            style={styles.button}
+            style={styles.registerButton}
+            onPress={() => {
+              this.gLogin().then(() => {
+                if (this.state.login) navigation.navigate("GoogleRegister")
+              })
+            }}
+          >
+            <Text style={styles.registerText}> Google Sign Up </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.registerButton}
             onPress={() => navigation.navigate("Register")}
           >
-            <Text style={styles.buttonText}> Sign Up </Text>
+            <Text style={styles.registerText}> Sign Up </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -159,8 +160,22 @@ const styles = StyleSheet.create({
     width: '45%',
     padding: 10,
   },
+  registerButton: {
+    marginTop: 10,
+    alignItems: 'center',
+    backgroundColor: 'rgba(69, 120, 144, 0)',
+    marginHorizontal: 8,
+    color: '#fff',
+    borderRadius: 100,
+    width: '45%',
+    padding: 10,
+  },
   buttonText: {
     color: 'rgba(168, 218, 220, 1)',
+    fontWeight: 'bold'
+  },
+  registerText: {
+    color: 'rgba(69, 120, 144, 1)',
     fontWeight: 'bold'
   },
   loginText: {

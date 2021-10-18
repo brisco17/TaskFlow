@@ -7,6 +7,7 @@ import * as SecureStore from 'expo-secure-store';
 //Add new screens here (also place to add below)
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import GoogleRegister from './screens/GoogleRegister';
 import MainScreen from './screens/MainScreen';
 
 // This is a warning that occurs on new react versions. It wants me to use event listeners instead,
@@ -37,7 +38,6 @@ export default class App extends React.Component {
       this.setState({
         session: sessionToken
       })
-      console.log(sessionToken)
     });
   }
 
@@ -75,38 +75,9 @@ export default class App extends React.Component {
               )
               }
           <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="GoogleRegister" component={GoogleRegister} />
         </Stack.Navigator>
       </NavigationContainer>
-    );
-
-    return (
-      <View style={styles.container}>
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-        <NavigationContainer>
-          <Stack.Navigator>
-            {/* Check to see if we have a session, if so continue, if not login */}
-            {session ? (
-              <Stack.Screen name="Login"/>
-            ) : (
-                <Stack.Screen
-                  name="Login"
-                  component={LoginScreen}
-                  initialParams={
-                    {
-                      onLoggedIn: () => this.checkIfLoggedIn(),
-                      goRegister: () => this.goRegister()
-                    }
-                  }
-                />
-              )
-              }
-              <Stack.Screen name="Logon" component={LoginScreen} />
-              <Stack.Screen name="Main" component={MainScreen} />
-              <Stack.Screen name="Register" component={RegisterScreen} />
-          </Stack.Navigator>
-
-        </NavigationContainer>
-      </View>
     );
   }
 }

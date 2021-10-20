@@ -7,6 +7,7 @@ from django.conf import settings
 class Task(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        related_name = 'task',
         on_delete=models.CASCADE,
         default=''
         )

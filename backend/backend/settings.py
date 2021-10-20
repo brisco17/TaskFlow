@@ -53,6 +53,11 @@ INSTALLED_APPS = [
 STATIC_URL = 'static/'
 AUTH_USER_MODEL = 'user.UserProfile'
 
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'user.serializers.UserProfileSerializer',
+}
+
+
 REST_FRAMEWORK =  {
     'DEFAULT_AUTHENTICATION_CLASSES' : (
         'rest_framework.authentication.TokenAuthentication',

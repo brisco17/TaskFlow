@@ -10,10 +10,8 @@ class Setting(models.Model):
     name = models.CharField(max_length=20)
     value = models.CharField(max_length=100)
 
-    # author = models.ForeignKey(
-    #     settings.AUTH_USER_MODEL,
-    #     on_delete=models.CASCADE, # on delete all of this user's settings will be removed
-    # )
+    # on delete all of this user's settings will be removed
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name = 'setting', on_delete=models.CASCADE,) 
     
 
 

@@ -1,12 +1,12 @@
 from rest_framework import permissions
 
 
-class IsOwner(permissions.BasePermission):
+class IsAuthor(permissions.IsAuthenticated):
     """
     Custom permission to only allow owners of an object to edit it.
     """
 
     def has_object_permission(self, request, view, obj):
 
-        # Write permissions are only allowed to the owner of the snippet.
-        return obj.user == request.user
+        # Checks to see if the user is 1) Authenticated, and 2) the Author of the requested object
+        return self.has_permission(request, view) and obj.user == request.user

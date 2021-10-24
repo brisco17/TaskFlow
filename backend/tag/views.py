@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from settings.permissions import IsOwner
+from .permissions import IsOwner
 from rest_framework.parsers import JSONParser
 from .models import Tag
 from .serializers import TagSerializer

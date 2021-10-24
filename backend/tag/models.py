@@ -8,5 +8,4 @@ class Tag(models.Model):
     description = models.CharField(max_length=100)
 
     # store author of the tag, all tags should be deleted when a user is deleted
-    #TODO: needs a default value. - should default to the one who sent the request but like how 
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="tag", on_delete=models.CASCADE,)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="tag", on_delete=models.CASCADE,)

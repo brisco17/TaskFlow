@@ -4,7 +4,11 @@ from django.conf import settings
 # Create your models here.
 
 class Task(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="task", on_delete=models.CASCADE,blank=True, null=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name = 'task',
+        on_delete=models.CASCADE
+    )
     tag = models.ForeignKey(
         'tag.Tag',
         on_delete=models.SET_NULL,

@@ -61,7 +61,9 @@ export default class MainScreen extends React.Component {
               />
             </View>
             <View style = {styles.CricleOverlay}>
-              <TouchableOpacity style = {styles.innerCircle}/>
+              <TouchableOpacity style = {styles.innerCircle}
+                onPress = {() => navigation.navigate('CreateTaskScreen')}
+              />
             </View>
             <View style = {styles.CricleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}/>

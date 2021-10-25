@@ -1,16 +1,29 @@
 import { setStatusBarBackgroundColor, StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, TextInput, Touchable,Image, requireNativeComponent} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, TextInput, Touchable,Image, requireNativeComponent,Modal} from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import symbolicateStackTrace from 'react-native/Libraries/Core/Devtools/symbolicateStackTrace';
 export default class MainScreen extends React.Component {
   constructor(props) {
     super(props)
     // Initialize our login state
     this.state = {
       email: SecureStore.getItemAsync("email") || '',
-      login: true
+      login: true,
+      visible: false
+    }
+
+  }
+
+  changeState = (visible) => {
+    console.log(visible)
+    if(visible){
+      this.setState({visible: false})
+    }else{
+      this.setState({visible: true})
     }
   }
+  
   
   onSubmit = () => {
     const { email, password } = this.state;
@@ -48,6 +61,7 @@ export default class MainScreen extends React.Component {
 
   }
 
+
   render() {
     const {navigation} = this.props;
     return (
@@ -69,6 +83,41 @@ export default class MainScreen extends React.Component {
               <TouchableOpacity style = {styles.innerCircle}/>
             </View>
           </View>
+          <Modal visible = {false}>
+            <View style = {styles.filterContainer}>
+              <Text>Hello</Text>
+            </View>
+          </Modal>
+
+
+          <TouchableOpacity style = {{    
+            marginTop: 30,
+            alignItems: 'center',
+            backgroundColor: 'rgba(69, 120, 144, 1)',
+            marginHorizontal: '65%',
+            color: 'white',
+            borderRadius: 100,
+            width: '30%',
+            padding: 10,}} onPress={() => this.changeState(this.state.visible)}>
+              <Text style = {{color: 'white'}}>Filters</Text>
+          </TouchableOpacity>
+          {this.state.visible &&
+          (
+            <View style = {styles.filterContainer}>
+            <TouchableOpacity style = {styles.filterButton}>
+              <Text style = {{color: 'white'}}>Test</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style = {styles.filterButton}>
+              <Text style = {{color: 'white'}}>Homework</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style = {styles.filterButton}>
+              <Text style = {{color: 'white'}}>Events</Text>
+            </TouchableOpacity>
+            </View>
+          )
+          }
+
+
           {/*
           <View opacity = {0.3} style = {{ 
             alignItems: "right",  
@@ -125,7 +174,7 @@ export default class MainScreen extends React.Component {
           */}
       </View>
     );
-  }
+  };
 }
 
 
@@ -221,6 +270,30 @@ const styles = StyleSheet.create({
     height: 50, 
     width: '100%', 
     left: 30
+  },
+  modalBackGround:{
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterContainer:{
+    flexGrow: 0,
+    padding: 5,
+    flexDirection: 'column',
+    justifyContent: 'space-evenly',
+    backgroundColor: 'transparent',
+    marginHorizontal: '65%',
+    width: '30%'
+  },
+  filterButton:{
+    marginTop: 2,
+    alignItems: 'center',
+    backgroundColor: 'rgba(69, 120, 144, 1)',
+    color: '#fff',
+    borderRadius: 50,
+    width: '100%',
+    padding: 10,
   }
 
 });

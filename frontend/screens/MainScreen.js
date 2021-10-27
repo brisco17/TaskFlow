@@ -1,7 +1,8 @@
 import { setStatusBarBackgroundColor, StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, TextInput, Touchable,Image, requireNativeComponent,Modal} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, TextInput, Touchable,Image, requireNativeComponent, Button, } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import Modal from "react-native-modal";
 
 
 export default class MainScreen extends React.Component {
@@ -11,14 +12,14 @@ export default class MainScreen extends React.Component {
     this.state = {
       email: SecureStore.getItemAsync("email") || '',
       login: true,
-      visible: false
+      visible: false,
     }
 
   }
 
-  changeState = (visible) => {
-    console.log(visible)
-    if(visible){
+  changeState = () => {
+    console.log(this.state.visible)
+    if(this.state.visible){
       this.setState({visible: false})
     }else{
       this.setState({visible: true})
@@ -67,115 +68,50 @@ export default class MainScreen extends React.Component {
     const {navigation} = this.props;
     return (
       <View style={styles.MainScreen}>
+        
 
           <View style={{ height: '10%', width: '100%', backgroundColor: '#A8DADC' , top: '90%'}}/>
           <View style={styles.TaskBarContainer}>
+            
             <View style = {styles.CricleOverlay}>
-              
               <TouchableOpacity style = {styles.innerCircle}
                 onPress = {() => navigation.navigate("Setting")}>
               </TouchableOpacity>
             </View>
+
+
+
             <View style = {styles.CricleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}
-                onPress = {() => navigation.navigate('CreateTaskScreen')}
-              />
+                onPress = {() => navigation.navigate('CreateTaskScreen')}/>
             </View>
+
             <View style = {styles.CricleOverlay}>
-              <TouchableOpacity style = {styles.innerCircle}
-                onPress = {() => navigation.navigate('CreateTagScreen')}
-              />
+              <TouchableOpacity style={styles.innerCircle} onPress={this.changeState} />
+
+                <Modal 
+                  isVisible={this.state.visible}
+                  animationIn="fadeIn"
+                  animationOut="fadeOut"
+                  backdropTransitionOutTiming={0}
+                  onBackdropPress={this.changeState}
+                  onSwipeComplete={this.changeState}
+                  swipeDirection="down"
+                  style={styles.bottomModal}>
+
+                  <View style={styles.modalContent}>
+                    <Text>Tag Settings</Text>
+                    <Button 
+                      title = "Create new Tag"
+                      onPress = { () => {this.setState({visible: false}); navigation.navigate('CreateTagScreen');} }
+                      />
+                  </View>
+                </Modal>
+
             </View>
-          </View>
-          <Modal visible = {false}>
-            <View style = {styles.filterContainer}>
-              <Text>Hello</Text>
-            </View>
-          </Modal>
 
-
-          <TouchableOpacity style = {{    
-            marginTop: 30,
-            alignItems: 'center',
-            backgroundColor: 'rgba(69, 120, 144, 1)',
-            marginHorizontal: '65%',
-            color: 'white',
-            borderRadius: 100,
-            width: '30%',
-            padding: 10,}} onPress={() => this.changeState(this.state.visible)}>
-              <Text style = {{color: 'white'}}>Filters</Text>
-          </TouchableOpacity>
-          {this.state.visible &&
-          (
-            <View style = {styles.filterContainer}>
-            <TouchableOpacity style = {styles.filterButton}>
-              <Text style = {{color: 'white'}}>Test</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style = {styles.filterButton}>
-              <Text style = {{color: 'white'}}>Homework</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style = {styles.filterButton}>
-              <Text style = {{color: 'white'}}>Events</Text>
-            </TouchableOpacity>
-            </View>
-          )
-          }
-
-
-          {/*
-          <View opacity = {0.3} style = {{ 
-            alignItems: "right",  
-            width: '80%',
-            height: '5%',
-            frontSize: 20,
-            backgroundColor: '#457890',
-            borderColor: 'black',
-            borderWidth: 2,
-            left: '10%',
-            borderRadius: '20%',
-            shadowOpacity: 20}}
-          >
-            <TextInput sytle = {styles.input} 
-              placeholder = "Create new task"
-              placeholderTextColor = 'white'
-              top = {7}
-              width = {'100%'}
-              color = 'white'
-              frontSize = {20}
-              left = {10}
-            />
-          </View>
-          
-        
-          <Text style = {{fontSize: 40, color: '#457890', left: '10%', bottom: '13%'}}>Today</Text>
-          <View style = {styles.tagHeader}>
-            <Text style = {{fontSize: 20, position: 'relative'}}>Homework</Text>
-            <Text style = {{fontSize: 15}}>1</Text>
           </View>
 
-          <View style ={ styles.taskBox}>
-            <View style = {styles.mainTaskHeader}> 
-              <TouchableOpacity style = {styles.checkCircle}/>
-              <Text style = {{fontSize: 18 ,color:  '#457890', left: 15, top: 4}}>Math Homework</Text>
-            </View>
-            <View style = {styles.subtaskHeader}> 
-              <TouchableOpacity style = {styles.checkCircle}/>
-              <Text style = {{fontSize: 18 ,color:  '#457890',left: 15, top: 4}}>Part A</Text>
-            </View>
-            <View style = {styles.subtaskHeader}>
-              <TouchableOpacity style = {styles.checkCircle}/>
-              <Text style = {{fontSize: 18 ,color:  '#457890',left: 15, top: 4}}>Part B</Text>
-            </View>
-            <View style = {styles.subtaskHeader}>
-              <TouchableOpacity style = {styles.checkCircle}/>
-              <Text style = {{fontSize: 18 ,color:  '#457890',left: 15, top: 4}}>Part C</Text>
-            </View>
-            <View style = {styles.subtaskHeader}>
-              <TouchableOpacity style = {styles.checkCircle}/>
-              <Text style = {{fontSize: 18 ,color:  '#457890',left: 15, top: 4}}>Part E</Text>
-            </View>
-          </View>
-          */}
       </View>
     );
   };
@@ -184,6 +120,18 @@ export default class MainScreen extends React.Component {
 
 
 const styles = StyleSheet.create({
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  bottomModal: {
+    justifyContent: 'flex-end',
+    margin: 0,
+  },
   MainScreen: {
     flex: 1,
     backgroundColor: '#FAEBEF',

@@ -2,7 +2,8 @@ import { setStatusBarBackgroundColor, StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, TextInput, Touchable,Image, requireNativeComponent,Modal} from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import symbolicateStackTrace from 'react-native/Libraries/Core/Devtools/symbolicateStackTrace';
+
+
 export default class MainScreen extends React.Component {
   constructor(props) {
     super(props)
@@ -70,9 +71,10 @@ export default class MainScreen extends React.Component {
           <View style={{ height: '10%', width: '100%', backgroundColor: '#A8DADC' , top: '90%'}}/>
           <View style={styles.TaskBarContainer}>
             <View style = {styles.CricleOverlay}>
+              
               <TouchableOpacity style = {styles.innerCircle}
-                onPress = {() => navigation.navigate("Setting")}
-              />
+                onPress = {() => navigation.navigate("Setting")}>
+              </TouchableOpacity>
             </View>
             <View style = {styles.CricleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}
@@ -80,7 +82,9 @@ export default class MainScreen extends React.Component {
               />
             </View>
             <View style = {styles.CricleOverlay}>
-              <TouchableOpacity style = {styles.innerCircle}/>
+              <TouchableOpacity style = {styles.innerCircle}
+                onPress = {() => navigation.navigate('CreateTagScreen')}
+              />
             </View>
           </View>
           <Modal visible = {false}>

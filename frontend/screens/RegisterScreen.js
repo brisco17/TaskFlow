@@ -104,7 +104,7 @@ export default class RegisterScreen extends React.Component{
           <Text style={styles.buttonText}> Sign Up </Text>
         </TouchableOpacity>
         </View>
-        <Text>Already on Productivity App? <TouchableOpacity onPress ={() => navigation.navigate('Login')}><Text style ={{color: 'blue'}}>Sign In</Text></TouchableOpacity></Text>
+        <Text>Already on Task Flow? <TouchableOpacity onPress ={() => navigation.navigate('Login')}><Text style ={{color: 'blue'}}>Sign In</Text></TouchableOpacity></Text>
       </View>
     );
   }

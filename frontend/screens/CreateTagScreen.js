@@ -1,6 +1,10 @@
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Dimensions, Keyboard } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import colors from '../styles/colors.js';
+import components from '../styles/components.js';
+import containers from '../styles/containers.js';
+import typography from '../styles/typography.js';
 
 export default class CreateTagScreen extends React.Component{
   constructor(props) {
@@ -56,23 +60,26 @@ export default class CreateTagScreen extends React.Component{
 
   render() {
     const {navigation} = this.props;
-    // const open = false
 
     return (
       <View style={styles.container}>
+
         <View style={styles.inputContainer}>
           <TextInput
+            onSubmitEditing={Keyboard.dismiss}
             style={styles.input}
             onChangeText={text => this.setState({ title: text })}
             value={this.state.title}
             placeholder="Tag Title"
             placeholderTextColor="rgba(168, 218, 220, 1)"
             textContentType="none"
+            multiline={false}
           />
         </View>
 
         <View style={styles.inputContainer}>
           <TextInput
+            onSubmitEditing={Keyboard.dismiss}
             style={styles.largeInput}
             onChangeText={text => this.setState({ description: text })}
             value={this.state.description}
@@ -98,80 +105,33 @@ export default class CreateTagScreen extends React.Component{
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    ...containers.main,
+    ...colors.background,
   },
   inputContainer: {
-    width: "100%",
-    justifyContent: 'center'
+    ...containers.inputContainer
   },
   rowContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  calContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 30,
-    maxHeight: '30%',
-    width: Dimensions.get('window').width
-    
+    ...containers.rowContainer,
   },
   button: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    marginHorizontal: 8,
-    color: '#fff',
-    borderRadius: 100,
-    width: '45%',
-    padding: 10,
+    ...components.button,
   },
   buttonText: {
-    color: 'rgba(168, 218, 220, 1)',
-    fontWeight: 'bold'
-  },
-  loginText: {
-    bottom: "10%",
-    fontSize: 50,
-    textAlign: "center",
-    color: 'rgba(29, 53, 87, 1)',
-    textShadowColor: 'rgba(29, 53, 87, 1)',
-    textShadowOffset: {height: 2},
-    textShadowRadius: 10
+    ...typography.buttonText,
   },
   input: {
-    height: 60,
-    width: '90%',
-    left: '5%',
-    fontSize: 16,
-    paddingStart: 40,
-    paddingEnd: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 20,
-    textAlign: 'left',
-    borderRadius: 100,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    color: 'white',
+    ...components.textInput,
+    ...colors.textField,
+    ...typography.text,
   },
   largeInput: {
-    height: '40%',
-    width: '90%',
-    left: '5%',
-    fontSize: 16,
-    paddingStart: 40,
-    paddingEnd: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 20,
-    textAlign: 'left',
-    paddingTop: '5%',
-    marginBottom: '5%',
-    borderRadius: 100,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    color: 'white',
+    ...components.multiTextInput,
+    ...colors.textField,
+    ...typography.text,
   },
+
+
   
 });
+

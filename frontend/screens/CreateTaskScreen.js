@@ -124,7 +124,7 @@ export default class CreateTaskScreen extends React.Component{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FAEBEF',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -141,7 +141,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 30,
     maxHeight: '30%',
-    width: Dimensions.get('window').width
+    width: Dimensions.get('window').width,
+    backgroundColor: "white"
     
   },
   button: {

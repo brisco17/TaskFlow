@@ -59,7 +59,7 @@ export default class App extends React.Component {
         <Stack.Navigator>
           {session ? (
               <Stack.Screen 
-                name="Main" 
+                name="Home" 
                 component={MainScreen} 
                 initialParams={
                   {
@@ -80,7 +80,7 @@ export default class App extends React.Component {
               )
               }
             <Stack.Screen name="Register" component={RegisterScreen}/>
-            <Stack.Screen name="Setting" 
+            <Stack.Screen name="Settings" 
               component ={SettingScreen}
               initialParams={
               {
@@ -88,8 +88,8 @@ export default class App extends React.Component {
               }
             }/>
           <Stack.Screen name="GoogleRegister" component={GoogleRegister} />
-          <Stack.Screen name="CreateTaskScreen" component={CreateTaskScreen} />
-          <Stack.Screen name="CreateTagScreen" component={CreateTagScreen} />
+          <Stack.Screen name="Create Task" component={CreateTaskScreen} />
+          <Stack.Screen name="Create Tag" component={CreateTagScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );

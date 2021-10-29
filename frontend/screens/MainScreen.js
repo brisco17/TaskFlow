@@ -1,16 +1,31 @@
 import { setStatusBarBackgroundColor, StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, TextInput, Touchable,Image, requireNativeComponent} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, TextInput, Touchable,Image, requireNativeComponent, Button, } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import Modal from "react-native-modal";
+
+
 export default class MainScreen extends React.Component {
   constructor(props) {
     super(props)
     // Initialize our login state
     this.state = {
       email: SecureStore.getItemAsync("email") || '',
-      login: true
+      login: true,
+      visible: false,
+    }
+
+  }
+
+  changeState = () => {
+    console.log(this.state.visible)
+    if(this.state.visible){
+      this.setState({visible: false})
+    }else{
+      this.setState({visible: true})
     }
   }
+  
   
   onSubmit = () => {
     const { email, password } = this.state;
@@ -48,87 +63,75 @@ export default class MainScreen extends React.Component {
 
   }
 
+
   render() {
     const {navigation} = this.props;
     return (
       <View style={styles.MainScreen}>
+        
 
           <View style={{ height: '10%', width: '100%', backgroundColor: '#A8DADC' , top: '90%'}}/>
           <View style={styles.TaskBarContainer}>
+            
             <View style = {styles.CricleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}
-                onPress = {() => navigation.navigate("Setting")}
-              />
+                onPress = {() => navigation.navigate("Setting")}>
+              </TouchableOpacity>
             </View>
+
+
+
             <View style = {styles.CricleOverlay}>
-              <TouchableOpacity style = {styles.innerCircle}/>
+              <TouchableOpacity style = {styles.innerCircle}
+                onPress = {() => navigation.navigate('CreateTaskScreen')}/>
             </View>
+
             <View style = {styles.CricleOverlay}>
-              <TouchableOpacity style = {styles.innerCircle}/>
+              <TouchableOpacity style={styles.innerCircle} onPress={this.changeState} />
+
+                <Modal 
+                  isVisible={this.state.visible}
+                  animationIn="fadeIn"
+                  animationOut="fadeOut"
+                  backdropTransitionOutTiming={0}
+                  onBackdropPress={this.changeState}
+                  onSwipeComplete={this.changeState}
+                  swipeDirection="down"
+                  style={styles.bottomModal}>
+
+                  <View style={styles.modalContent}>
+                    <Text>Tag Settings</Text>
+                    <Button 
+                      title = "Create new Tag"
+                      onPress = { () => {this.setState({visible: false}); navigation.navigate('CreateTagScreen');} }
+                      />
+                  </View>
+                </Modal>
+
             </View>
-          </View>
-          {/*
-          <View opacity = {0.3} style = {{ 
-            alignItems: "right",  
-            width: '80%',
-            height: '5%',
-            frontSize: 20,
-            backgroundColor: '#457890',
-            borderColor: 'black',
-            borderWidth: 2,
-            left: '10%',
-            borderRadius: '20%',
-            shadowOpacity: 20}}
-          >
-            <TextInput sytle = {styles.input} 
-              placeholder = "Create new task"
-              placeholderTextColor = 'white'
-              top = {7}
-              width = {'100%'}
-              color = 'white'
-              frontSize = {20}
-              left = {10}
-            />
-          </View>
-          
-        
-          <Text style = {{fontSize: 40, color: '#457890', left: '10%', bottom: '13%'}}>Today</Text>
-          <View style = {styles.tagHeader}>
-            <Text style = {{fontSize: 20, position: 'relative'}}>Homework</Text>
-            <Text style = {{fontSize: 15}}>1</Text>
+
           </View>
 
-          <View style ={ styles.taskBox}>
-            <View style = {styles.mainTaskHeader}> 
-              <TouchableOpacity style = {styles.checkCircle}/>
-              <Text style = {{fontSize: 18 ,color:  '#457890', left: 15, top: 4}}>Math Homework</Text>
-            </View>
-            <View style = {styles.subtaskHeader}> 
-              <TouchableOpacity style = {styles.checkCircle}/>
-              <Text style = {{fontSize: 18 ,color:  '#457890',left: 15, top: 4}}>Part A</Text>
-            </View>
-            <View style = {styles.subtaskHeader}>
-              <TouchableOpacity style = {styles.checkCircle}/>
-              <Text style = {{fontSize: 18 ,color:  '#457890',left: 15, top: 4}}>Part B</Text>
-            </View>
-            <View style = {styles.subtaskHeader}>
-              <TouchableOpacity style = {styles.checkCircle}/>
-              <Text style = {{fontSize: 18 ,color:  '#457890',left: 15, top: 4}}>Part C</Text>
-            </View>
-            <View style = {styles.subtaskHeader}>
-              <TouchableOpacity style = {styles.checkCircle}/>
-              <Text style = {{fontSize: 18 ,color:  '#457890',left: 15, top: 4}}>Part E</Text>
-            </View>
-          </View>
-          */}
       </View>
     );
-  }
+  };
 }
 
 
 
 const styles = StyleSheet.create({
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  bottomModal: {
+    justifyContent: 'flex-end',
+    margin: 0,
+  },
   MainScreen: {
     flex: 1,
     backgroundColor: '#FAEBEF',
@@ -219,6 +222,30 @@ const styles = StyleSheet.create({
     height: 50, 
     width: '100%', 
     left: 30
+  },
+  modalBackGround:{
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterContainer:{
+    flexGrow: 0,
+    padding: 5,
+    flexDirection: 'column',
+    justifyContent: 'space-evenly',
+    backgroundColor: 'transparent',
+    marginHorizontal: '65%',
+    width: '30%'
+  },
+  filterButton:{
+    marginTop: 2,
+    alignItems: 'center',
+    backgroundColor: 'rgba(69, 120, 144, 1)',
+    color: '#fff',
+    borderRadius: 50,
+    width: '100%',
+    padding: 10,
   }
 
 });

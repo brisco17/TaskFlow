@@ -66,7 +66,7 @@ export default class RegisterScreen extends React.Component{
 
     return (
       <View style={styles.container}>
-        <Text style={styles.loginText}>Productivity App</Text>
+        <Text style={styles.loginText}>Task Flow</Text>
 
         <View style={styles.inputContainer}>
         <TextInput

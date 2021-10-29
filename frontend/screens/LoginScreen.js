@@ -60,12 +60,22 @@ export default class LoginScreen extends React.Component{
     .then(response => response.json())
     .then(json => {
       // enter login logic here
-      SecureStore.setItemAsync('session', json.auth_token).then(() => {
-          SecureStore.setItemAsync('priv', "false").then(() => {
-            this.props.route.params.onLoggedIn();
-            //navigation.navigate('Details')
-          })
-      });
+      console.log(json)
+      if(json.non_field_errors) {
+        Alert.alert("Error: ", json.non_field_errors.toString())
+      }
+      else if(!json.auth_token) {
+        Alert.alert("Error: ", json.password.toString())
+      }
+      else
+      {
+        SecureStore.setItemAsync('session', json.auth_token).then(() => {
+            SecureStore.setItemAsync('priv', "false").then(() => {
+              this.props.route.params.onLoggedIn();
+              //navigation.navigate('Details')
+            })
+        });
+      }
       
     })
     .catch(exception => {
@@ -81,7 +91,7 @@ export default class LoginScreen extends React.Component{
 
     return (
       <View style={styles.container}>
-        <Text style={styles.loginText}>Productivity App</Text>
+        <Text style={styles.loginText}>Task Flow</Text>
 
         <View style={styles.inputContainer}>
         <TextInput

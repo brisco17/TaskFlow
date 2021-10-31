@@ -1,6 +1,6 @@
 import { setStatusBarBackgroundColor, StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, TextInput, Touchable,Image, requireNativeComponent, Button, } from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, TextInput, Touchable,Image, requireNativeComponent, Button, ScrollView, Dimensions } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Modal from "react-native-modal";
 
@@ -8,60 +8,71 @@ import Modal from "react-native-modal";
 export default class MainScreen extends React.Component {
   constructor(props) {
     super(props)
-    // Initialize our login state
+    
     this.state = {
       email: SecureStore.getItemAsync("email") || '',
-      login: true,
-      visible: false,
+      sessionToken: "",
+      isVisible: false,
+      tags: [],
+      scrollOffset: null,
     }
-
   }
+
+  async componentDidMount() {
+    let token = await SecureStore.getItemAsync('session')
+    
+    if (token) {
+      console.log('Token ' + token)
+      this.setState({sessionToken: token})
+      this.getTags();
+      this._unsubscribe = this.props.navigation.addListener('focus', () => {
+        this.getTags();
+        console.log('refresh succeeded')
+        }
+      );
+
+    }
+  }
+
+  getTags() {
+    fetch("https://young-chow-productivity-app.herokuapp.com/tags/", {
+      method: "GET",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+        }),
+      })
+    .then((response => response.json()))
+    .then(json => {
+      console.log(json)
+      
+      this.setState({tags: json})
+     }
+    )
+  }
+
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+
 
   changeState = () => {
-    console.log(this.state.visible)
-    if(this.state.visible){
-      this.setState({visible: false})
+    if(this.state.isVisible){
+      this.setState({isVisible: false})
     }else{
-      this.setState({visible: true})
+      this.setState({isVisible: true})
     }
   }
-  
-  
-  onSubmit = () => {
-    const { email, password } = this.state;
-    console.log("HERE")
-    console.log(email)
-    console.log(password)
 
-    fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/login/", {
-      method: "POST",
-      headers: new Headers({
-          'Content-Type': 'application/json'
-      }),
-      body: JSON.stringify({
-        email: email,
-        password: password
-      })
-    })
-    .then(response => response.json())
-    .then(json => {
-      console.log(`Logging in with json: ${JSON.stringify(json)}`);
 
-      // enter login logic here
-      SecureStore.setItemAsync('session', json.auth_token).then(() => {
-          SecureStore.setItemAsync('priv', "false").then(() => {
-            this.props.route.params.onLoggedIn();
-            //navigation.navigate('Details')
-          })
+  handleOnScroll = event => {
+    this.setState({
+      scrollOffset: event.nativeEvent.contentOffset.y,
       });
-      
-    })
-    .catch(exception => {
-        console.log("Error occured", exception);
-        // Do something when login fails
-    })
+    };
 
-  }
+
+  
 
 
   render() {
@@ -75,7 +86,7 @@ export default class MainScreen extends React.Component {
             
             <View style = {styles.CricleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}
-                onPress = {() => navigation.navigate("Setting")}>
+                onPress = {() => navigation.navigate("Settings")}>
               </TouchableOpacity>
             </View>
 
@@ -83,29 +94,62 @@ export default class MainScreen extends React.Component {
 
             <View style = {styles.CricleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}
-                onPress = {() => navigation.navigate('CreateTaskScreen')}/>
+                onPress = {() => navigation.navigate('Create Task')}/>
             </View>
 
             <View style = {styles.CricleOverlay}>
               <TouchableOpacity style={styles.innerCircle} onPress={this.changeState} />
 
                 <Modal 
-                  isVisible={this.state.visible}
+                  isVisible={this.state.isVisible}
+                  propagateSwipe={true}
                   animationIn="fadeIn"
                   animationOut="fadeOut"
                   backdropTransitionOutTiming={0}
                   onBackdropPress={this.changeState}
                   onSwipeComplete={this.changeState}
-                  swipeDirection="down"
+                  swipeDirection={['down']}
+                  propagateSwipe
+                  scrollOffset={this.state.scrollOffset}
                   style={styles.bottomModal}>
+                    
 
-                  <View style={styles.modalContent}>
-                    <Text>Tag Settings</Text>
-                    <Button 
-                      title = "Create new Tag"
-                      onPress = { () => {this.setState({visible: false}); navigation.navigate('CreateTagScreen');} }
-                      />
-                  </View>
+   
+                    <View style={styles.modalView}>
+                      
+                      <ScrollView
+                        onScroll={this.handleOnScroll}
+                        scrollEventThrottle={16}>
+
+                        <Text style={styles.modalHeader}>
+                          Filter by:
+                        </Text>
+                        <Button title={"Due Date"}></Button>
+                        <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+                        <Button title={"Created"}></Button>
+                        <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+                        <Text style={styles.modalHeader}>
+                          Apply Tag:
+                        </Text>
+                        {this.state.tags.map(tag => (
+                          <>
+                          <Button title={tag.title} key={'tag' + tag.id}></Button>
+                          <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+                          </>
+                        ))}
+                        <Text style={styles.modalHeader}>
+                          Manage Tags:
+                        </Text>                        
+                          <Button 
+                          title = "Create new Tag"
+                          onPress = { () => {this.setState({isVisible: false}); navigation.navigate('Create Tag');} }
+                          />
+                          <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+                          <Button title={"Delete Tag"}></Button>
+
+                      </ScrollView>
+                    </View>
+
                 </Modal>
 
             </View>
@@ -118,16 +162,24 @@ export default class MainScreen extends React.Component {
 }
 
 
-
+const screen = Dimensions.get("screen");
 const styles = StyleSheet.create({
-  modalContent: {
+  modalView: {
     backgroundColor: 'white',
-    padding: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 4,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
+    flexDirection: "column",
+    alignItems: "flex-start",
+    justifyContent: 'flex-start',
+    height: screen.height / 2,
+    width: screen.width,
+    flex:0,
+
   },
+  modalHeader: {
+    fontSize: 20,
+    marginLeft:10,
+    paddingTop:50,
+  },
+
   bottomModal: {
     justifyContent: 'flex-end',
     margin: 0,

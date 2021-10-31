@@ -1,12 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Alert, TextInput, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
+import Dialog from 'react-native-dialog';
+
 
 export default class SettingScreen extends React.Component{
-    onSubmit = () => {
+
+  constructor(props) {
+    super(props)
+    
+    this.state = {
+      password: '',
+      alertVisible: false,
+      sessionToken:'',
+    }
+    
+  }
+  async componentDidMount() {
+    let token = await SecureStore.getItemAsync('session')
+    if (token) {
+      console.log('Token ' + token)
+      this.setState({sessionToken: token})
+    }
+  }
+    onLogout = () => {
       const {navigation} = this.props;
         fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/logout/",{
             method: "POST",
@@ -25,8 +45,41 @@ export default class SettingScreen extends React.Component{
 
         })
     }
+    onDelete = () => {
 
+      const {navigation} = this.props;
+          fetch("https://young-chow-productivity-app.herokuapp.com/auth/users/me/",{
+            method: "DELETE",
+            headers: new Headers({
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + this.state.sessionToken
+            }),
+            body: JSON.stringify({
+              current_password: this.state.password,
+            })
+        })
+        .then(response => response.json())
+        .then(json => {
+          console.log('Account Deleted')
+          console.log(json)
+          SecureStore.deleteItemAsync('session').then(() => {
+            this.props.route.params.onLoggedIn();
+            navigation.pop();
 
+            Alert.alert("Account Succesfully Deleted")
+          })
+        })
+      }
+    
+
+      changeAlertState = () => {
+        if(this.state.alertVisible){
+          this.setState({alertVisible: false})
+        }else{
+          this.setState({alertVisible: true})
+        }
+      }
+    
     render() {
 
         return(
@@ -45,13 +98,30 @@ export default class SettingScreen extends React.Component{
                 <TouchableOpacity style = {styles.innerCircle}/>
               </View>
             </View>
+            
             <TouchableOpacity 
             style = {styles.button}
-            onPress = {() => this.onSubmit()}
-            >
-            <Text style = {styles.buttonText}>Logout</Text>
+            onPress = {this.changeAlertState}>
+            <Text style = {styles.buttonText}>Delete Account</Text>
             </TouchableOpacity>
             
+            <TouchableOpacity 
+            style = {styles.button}
+            onPress = {() => this.onLogout()}>
+            <Text style = {styles.buttonText}>Logout</Text>
+            </TouchableOpacity>
+            {/* Account Deletion */}
+            <Dialog.Container visible={this.state.alertVisible}>
+              <Dialog.Title>Account Deletion</Dialog.Title>
+              <Dialog.Description>Are you sure you wish to delete this account?</Dialog.Description>
+              <Dialog.Input 
+              onChangeText={password => this.setState({password})}
+              value={this.state.password}
+              placeholder={'Enter Current Password'}
+              ></Dialog.Input>
+              <Dialog.Button label="Cancel" onPress={this.changeAlertState}/>
+              <Dialog.Button label="Confirm" onPress={this.onDelete} />
+            </Dialog.Container>
             </View>
         );
     }

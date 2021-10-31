@@ -131,12 +131,12 @@ export default class MainScreen extends React.Component {
                         <Text style={styles.modalHeader}>
                           Apply Tag:
                         </Text>
-                        {this.state.tags.map(tag => (
+                         {this.state.tags.map(tag => (
                           <>
                           <Button title={tag.title} key={'tag' + tag.id}></Button>
                           <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
                           </>
-                        ))}
+                        ))} 
                         <Text style={styles.modalHeader}>
                           Manage Tags:
                         </Text>                        

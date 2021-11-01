@@ -30,24 +30,29 @@ export default class SettingScreen extends React.Component{
   }
 
     onChagnePassword = () => {
+      const {navigation} = this.props
       fetch("https://young-chow-productivity-app.herokuapp.com/auth/users/set_password/",{
         method: "POST",
-        heades: new Headers({
+        headers: new Headers({
             'Content-Type': 'application/json',
             'Authorization': 'Token ' + this.state.sessionToken
         }),
         body: JSON.stringify({
-          new_password: this.newPassword,
-          re_new_password: this.newPassword,
-          current_password: this.password
+          new_password: this.state.newPassword,
+          re_new_password: this.state.newPassword,
+          current_password: this.state.password,
         })
       })
       .then(response => response.json())
       .then(json => {
-        console.log(json)
+        if(json.new_password){
+          Alert.alert("Successful change password")
+        }
+        
 
       })
     }
+
     onLogout = () => {
       const {navigation} = this.props;
         fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/logout/",{

@@ -14,7 +14,9 @@ export default class SettingScreen extends React.Component{
     
     this.state = {
       password: '',
+      newPassword: '',
       alertVisible: false,
+      newPasswordAlert: false,
       sessionToken:'',
     }
     
@@ -26,6 +28,26 @@ export default class SettingScreen extends React.Component{
       this.setState({sessionToken: token})
     }
   }
+
+    onChagnePassword = () => {
+      fetch("https://young-chow-productivity-app.herokuapp.com/auth/users/set_password/",{
+        method: "POST",
+        heades: new Headers({
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + this.state.sessionToken
+        }),
+        body: JSON.stringify({
+          new_password: this.newPassword,
+          re_new_password: this.newPassword,
+          current_password: this.password
+        })
+      })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json)
+
+      })
+    }
     onLogout = () => {
       const {navigation} = this.props;
         fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/logout/",{
@@ -79,6 +101,19 @@ export default class SettingScreen extends React.Component{
           this.setState({alertVisible: true})
         }
       }
+
+      toggleBothAlerts = () => {
+        this.newPasswordAlertState()
+        this.onChagnePassword()
+      }
+      newPasswordAlertState = () => {
+        if(this.state.newPasswordAlert){
+          this.setState({newPasswordAlert: false})
+        }else{
+          this.setState({newPasswordAlert: true})
+        }
+      }
+
     
     render() {
 
@@ -104,6 +139,30 @@ export default class SettingScreen extends React.Component{
             onPress = {this.changeAlertState}>
             <Text style = {styles.buttonText}>Delete Account</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity 
+            style = {styles.button}
+            onPress = {() => this.newPasswordAlertState()}>
+            <Text style = {styles.buttonText}>Change Password</Text>
+            </TouchableOpacity>
+            {/* Current Password Overlay */}
+            <Dialog.Container visible={this.state.newPasswordAlert}>
+              <Dialog.Title>Change Password</Dialog.Title>
+              <Dialog.Input 
+              onChangeText={password => this.setState({password})}
+              value={this.state.password}
+              placeholder={'Enter Current Password'}
+              secureTextEntry={true}
+              ></Dialog.Input>
+              <Dialog.Input
+              onChangeText={newPassword => this.setState({newPassword})}
+              value={this.state.newPassword}
+              placeholder={'Enter New Password'}
+              secureTextEntry={true}
+              ></Dialog.Input>
+              <Dialog.Button label="Cancel" onPress={this.newPasswordAlertState}/>
+              <Dialog.Button label="Confirm" onPress={this.toggleBothAlerts}/>
+            </Dialog.Container>
             
             <TouchableOpacity 
             style = {styles.button}

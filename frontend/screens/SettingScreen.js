@@ -29,7 +29,7 @@ export default class SettingScreen extends React.Component{
     }
   }
 
-    onChagnePassword = () => {
+    onChangePassword = () => {
       const {navigation} = this.props
       fetch("https://young-chow-productivity-app.herokuapp.com/auth/users/set_password/",{
         method: "POST",
@@ -109,7 +109,7 @@ export default class SettingScreen extends React.Component{
 
       toggleBothAlerts = () => {
         this.newPasswordAlertState()
-        this.onChagnePassword()
+        this.onChangePassword()
       }
       newPasswordAlertState = () => {
         if(this.state.newPasswordAlert){

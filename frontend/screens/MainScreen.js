@@ -71,12 +71,29 @@ export default class MainScreen extends React.Component {
       });
     };
 
+    showTags() {
+      if (this.state.tags.length > 0) {
+        return this.state.tags.map((tag) => {
+          return (
+          <>
+          <Button title={tag.title} key={'tag' + tag.id}></Button>
+          <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+          </>
+          )
+        })
+      }
+      else {
+        return (<Text style={styles.modalText}> No tags exist </Text>)
+      }
+    }
+
 
   
 
 
   render() {
     const {navigation} = this.props;
+
     return (
       <View style={styles.MainScreen}>
         
@@ -131,12 +148,7 @@ export default class MainScreen extends React.Component {
                         <Text style={styles.modalHeader}>
                           Apply Tag:
                         </Text>
-                         {this.state.tags.map(tag => (
-                          <>
-                          <Button title={tag.title} key={'tag' + tag.id}></Button>
-                          <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-                          </>
-                        ))} 
+                        { this.showTags() }
                         <Text style={styles.modalHeader}>
                           Manage Tags:
                         </Text>                        
@@ -176,6 +188,11 @@ const styles = StyleSheet.create({
   },
   modalHeader: {
     fontSize: 20,
+    marginLeft:10,
+    paddingTop:50,
+  },
+  modalText: {
+    fontSize: 16,
     marginLeft:10,
     paddingTop:50,
   },

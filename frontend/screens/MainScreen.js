@@ -15,7 +15,9 @@ export default class MainScreen extends React.Component {
       isVisible: false,
       tags: [],
       scrollOffset: null,
-      tasks: [],
+      taskSet: [],
+      displayTasks: [],
+      appliedTag: '',
     }
   }
 
@@ -29,6 +31,7 @@ export default class MainScreen extends React.Component {
       this.getTasks();
       this._unsubscribe = this.props.navigation.addListener('focus', () => {
         this.getTags();
+        this.getTasks();
         console.log('refresh succeeded')
         }
       );
@@ -61,25 +64,73 @@ export default class MainScreen extends React.Component {
       })
     .then((response => response.json()))
     .then(json => { 
-      this.setState({tasks: json})
+      this.setState({taskSet: json, displayTasks: json})
+      console.log('retrived user tasks')
+      console.log(this.state.displayTasks)
      }
-    ).then((console.log(this.state.tasks)))
+    )
   }
 
   makeTasks() {
-    console.log("YEET")
-    return this.state.tasks.map((task) => {
-      console.log("HERE")
-      return (
-      <>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.titleText}> {task.title} </Text>
-        <Text style={styles.buttonText}> {task.description} </Text>
-        <Text style={styles.buttonText}> {"Due on " + task.due_date} </Text>
-      </TouchableOpacity>
-      </>
+    if (this.state.displayTasks.length > 0) {
+      console.log('displaying tasks')
+      console.log(this.state.displayTasks)
+      return this.state.displayTasks.map((task) => {
+          return (
+          <>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.titleText}> {task.title} </Text>
+            <Text style={styles.buttonText}> {task.description} </Text>
+            <Text style={styles.buttonText}> {"Due on " + task.due_date} </Text>
+            <Text style={styles.buttonText}> {"Created on " + task.creation_date} </Text>
+          </TouchableOpacity>
+          </>
+          )
+        })
+      }
+    else {
+      return (<Text style={styles.modalText}> No tasks to display </Text>)
+    }
+  }
+
+  showTasksByTag(tag) {
+    console.log("Applied Tag = " + tag)
+
+    var tasks = []
+
+    if (tag == this.state.appliedTag) {
+      console.log('removing applied tag')
+      this.setState({displayTasks: this.state.taskSet, appliedTag: ''})
+    }
+    else if (tag == 'due_date') {
+      console.log('sorting by due date')
+      var dateSortedArray = this.state.displayTasks.slice()
+      dateSortedArray.sort(
+        function(a, b) {
+          return new Date(a.due_date) - new Date(b.due_date)
+        }
       )
-    })
+      this.setState({displayTasks: dateSortedArray, appliedTag: tag})
+    }
+    else if (tag == 'creation_date') {
+      console.log('sorting by due date')
+      var dateSortedArray = this.state.displayTasks.slice()
+      dateSortedArray.sort(
+        function(a, b) {
+          return new Date(b.creation_date) - new Date(a.creation_date)
+        }
+      )
+      this.setState({displayTasks: dateSortedArray, appliedTag: tag})
+    }
+    else {
+      if (this.state.taskSet.length > 0) {
+        tasks = this.state.taskSet.filter(
+          (item) => item.tag == tag)
+        console.log(tasks)
+      }
+      console.log(tasks)
+      this.setState({displayTasks: tasks, appliedTag: tag})
+    }
   }
 
   componentWillUnmount() {
@@ -107,7 +158,7 @@ export default class MainScreen extends React.Component {
         return this.state.tags.map((tag) => {
           return (
           <>
-          <Button title={tag.title} key={'tag' + tag.id}></Button>
+          <Button title={tag.title} key={'tag' + tag.id} onPress={() => this.showTasksByTag(tag.title)} ></Button>
           <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
           </>
           )
@@ -117,7 +168,6 @@ export default class MainScreen extends React.Component {
         return (<Text style={styles.modalText}> No tags exist </Text>)
       }
     }
-
 
   
 
@@ -176,9 +226,9 @@ export default class MainScreen extends React.Component {
                     <Text style={styles.modalHeader}>
                       Filter by:
                     </Text>
-                    <Button title={"Due Date"}></Button>
+                    <Button title={"Due Date"} onPress={() => this.showTasksByTag('due_date')}></Button>
                     <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-                    <Button title={"Created"}></Button>
+                    <Button title={"Created"} onPress={() => this.showTasksByTag('creation_date')}></Button>
                     <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
                     <Text style={styles.modalHeader}>
                       Apply Tag:

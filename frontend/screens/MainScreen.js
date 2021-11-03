@@ -15,6 +15,7 @@ export default class MainScreen extends React.Component {
       isVisible: false,
       tags: [],
       scrollOffset: null,
+      tasks: [],
     }
   }
 
@@ -25,6 +26,7 @@ export default class MainScreen extends React.Component {
       console.log('Token ' + token)
       this.setState({sessionToken: token})
       this.getTags();
+      this.getTasks();
       this._unsubscribe = this.props.navigation.addListener('focus', () => {
         this.getTags();
         console.log('refresh succeeded')
@@ -44,11 +46,40 @@ export default class MainScreen extends React.Component {
       })
     .then((response => response.json()))
     .then(json => {
-      console.log(json)
-      
       this.setState({tags: json})
      }
     )
+  }
+
+  getTasks() {
+    fetch("https://young-chow-productivity-app.herokuapp.com/tasks/", {
+      method: "GET",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+        }),
+      })
+    .then((response => response.json()))
+    .then(json => { 
+      this.setState({tasks: json})
+     }
+    ).then((console.log(this.state.tasks)))
+  }
+
+  makeTasks() {
+    console.log("YEET")
+    return this.state.tasks.map((task) => {
+      console.log("HERE")
+      return (
+      <>
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.titleText}> {task.title} </Text>
+        <Text style={styles.buttonText}> {task.description} </Text>
+        <Text style={styles.buttonText}> {"Due on " + task.due_date} </Text>
+      </TouchableOpacity>
+      </>
+      )
+    })
   }
 
   componentWillUnmount() {
@@ -96,16 +127,20 @@ export default class MainScreen extends React.Component {
 
     return (
       <View style={styles.MainScreen}>
-        
 
-          <View style={{ height: '10%', width: '100%', backgroundColor: '#A8DADC' , top: '90%'}}/>
-          <View style={styles.TaskBarContainer}>
-            
+        <ScrollView contentContainerStyle={styles.contentContainer}>
+          { this.makeTasks() }
+        </ScrollView>
+          
+          <View style={{ height: '10%', width: '100%', position: 'absolute', backgroundColor: '#A8DADC' , top: '90%'}}/>
+          <View style={styles.TaskBarContainer}>   
+          
             <View style = {styles.CricleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}
                 onPress = {() => navigation.navigate("Settings")}>
               </TouchableOpacity>
             </View>
+        
 
 
 
@@ -117,57 +152,56 @@ export default class MainScreen extends React.Component {
             <View style = {styles.CricleOverlay}>
               <TouchableOpacity style={styles.innerCircle} onPress={this.changeState} />
 
-                <Modal 
-                  isVisible={this.state.isVisible}
-                  propagateSwipe={true}
-                  animationIn="fadeIn"
-                  animationOut="fadeOut"
-                  backdropTransitionOutTiming={0}
-                  onBackdropPress={this.changeState}
-                  onSwipeComplete={this.changeState}
-                  swipeDirection={['down']}
-                  propagateSwipe
-                  scrollOffset={this.state.scrollOffset}
-                  style={styles.bottomModal}>
-                    
+              <Modal 
+                isVisible={this.state.isVisible}
+                propagateSwipe={true}
+                animationIn="fadeIn"
+                animationOut="fadeOut"
+                backdropTransitionOutTiming={0}
+                onBackdropPress={this.changeState}
+                onSwipeComplete={this.changeState}
+                swipeDirection={['down']}
+                propagateSwipe
+                scrollOffset={this.state.scrollOffset}
+                style={styles.bottomModal}>
+                  
 
-   
-                    <View style={styles.modalView}>
-                      
-                      <ScrollView
-                        onScroll={this.handleOnScroll}
-                        scrollEventThrottle={16}>
 
-                        <Text style={styles.modalHeader}>
-                          Filter by:
-                        </Text>
-                        <Button title={"Due Date"}></Button>
-                        <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-                        <Button title={"Created"}></Button>
-                        <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-                        <Text style={styles.modalHeader}>
-                          Apply Tag:
-                        </Text>
-                        { this.showTags() }
-                        <Text style={styles.modalHeader}>
-                          Manage Tags:
-                        </Text>                        
-                          <Button 
-                          title = "Create new Tag"
-                          onPress = { () => {this.setState({isVisible: false}); navigation.navigate('Create Tag');} }
-                          />
-                          <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-                          <Button title={"Delete Tag"}></Button>
+                <View style={styles.modalView}>
+                  
+                  <ScrollView
+                    onScroll={this.handleOnScroll}
+                    scrollEventThrottle={16}>
 
-                      </ScrollView>
-                    </View>
+                    <Text style={styles.modalHeader}>
+                      Filter by:
+                    </Text>
+                    <Button title={"Due Date"}></Button>
+                    <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+                    <Button title={"Created"}></Button>
+                    <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+                    <Text style={styles.modalHeader}>
+                      Apply Tag:
+                    </Text>
+                    { this.showTags() }
+                    <Text style={styles.modalHeader}>
+                      Manage Tags:
+                    </Text>                        
+                      <Button 
+                      title = "Create new Tag"
+                      onPress = { () => {this.setState({isVisible: false}); navigation.navigate('Create Tag');} }
+                      />
+                      <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+                      <Button title={"Delete Tag"}></Button>
 
-                </Modal>
+                  </ScrollView>
+                </View>
+
+              </Modal>
 
             </View>
 
           </View>
-
       </View>
     );
   };
@@ -186,6 +220,9 @@ const styles = StyleSheet.create({
     flex:0,
 
   },
+  contentContainer: {
+    width: screen.width,
+  },
   modalHeader: {
     fontSize: 20,
     marginLeft:10,
@@ -196,7 +233,6 @@ const styles = StyleSheet.create({
     marginLeft:10,
     paddingTop:50,
   },
-
   bottomModal: {
     justifyContent: 'flex-end',
     margin: 0,
@@ -205,22 +241,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FAEBEF',
     alignItems: 'baseline',
-    width: '100%',
     height: '100%'
   },
   button: {
-    marginTop: 50,
-    alignItems: 'center',
+    marginTop: 30,
+    marginBottom: 10,
+    alignItems: 'flex-start',
     backgroundColor: 'rgba(69, 120, 144, 1)',
-    marginHorizontal: 8,
     color: '#fff',
-    borderRadius: 100,
-    width: '45%',
     padding: 10,
+    marginLeft: 5,
+    marginRight: 5,
+    borderRadius: 5,
   },
   buttonText: {
     color: 'rgba(168, 218, 220, 1)',
-    fontWeight: 'bold'
+    marginBottom: 25,
+  },
+  titleText: {
+    fontSize: 28,
+    color: 'rgba(168, 218, 220, 1)',
+    fontWeight: 'bold',
+    left: '30%',
+    marginBottom: 25,
   },
   TaskBarContainer:{
     flexDirection: 'row',
@@ -229,7 +272,7 @@ const styles = StyleSheet.create({
     height: '10%',
     justifyContent: 'space-evenly',
     position: 'absolute',
-    bottom: 30
+    bottom: -4
   },
   CricleOverlay:{
     width: '20%',

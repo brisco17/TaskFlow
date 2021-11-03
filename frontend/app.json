@@ -20,7 +20,7 @@
       "supportsTablet": true,
       "config": {
         "googleSignIn": {
-          "reservedClientId":"com.googleusercontent.apps.22428134723-pq3rqvntskvn45979el7kmkrnksmajgs"
+          "reservedClientId": "com.googleusercontent.apps.22428134723-pq3rqvntskvn45979el7kmkrnksmajgs"
         }
       }
     },
@@ -28,7 +28,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.cpalladi.frontend"
     },
     "web": {
       "favicon": "./assets/favicon.png"

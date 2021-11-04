@@ -1,21 +1,59 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Dimensions, ScrollView } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import CalendarPicker from 'react-native-calendar-picker';
-import moment from 'moment'
+import moment from 'moment';
+import SelectDropdown from 'react-native-select-dropdown';
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export default class CreateTaskScreen extends React.Component{
   constructor(props) {
     super(props)
     // Initialize our login state
     this.state = {
+      sessionToken: '',
       title: '',
       description: '',
       due_date: '',
+      tags: [],
+      taskTag: '',
+      countries: ["Egypt", "Canada", "Australia", "Ireland"]
     }
     this.onDateChange = this.onDateChange.bind(this);
   }
+
+
+  async componentDidMount() {
+    let token = await SecureStore.getItemAsync('session')
+    
+    if (token) {
+      console.log('Token ' + token)
+      this.setState({sessionToken: token})
+      this.getTags();
+    }
+  }
+
+  getTags() {
+    fetch("https://young-chow-productivity-app.herokuapp.com/tags/", {
+      method: "GET",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+        }),
+      })
+    .then((response => response.json()))
+    .then(json => {
+      var tagArray = []
+      for (var tag in json) {
+        tagArray.push(json[tag].title)
+      }
+      console.log(tagArray)
+      this.setState({tags: tagArray})
+     }
+    )
+  }
+
 
   onDateChange(date) {
     console.log(Dimensions.get('window').width)
@@ -24,8 +62,10 @@ export default class CreateTaskScreen extends React.Component{
     });
   }
 
+
+
   onSubmit = () => {
-    const { title, description, due_date } = this.state;
+    const { title, description, due_date, taskTag } = this.state;
     const {navigation} = this.props;
     
 
@@ -44,7 +84,9 @@ export default class CreateTaskScreen extends React.Component{
         body: JSON.stringify({
           title: title,
           description: description,
-          due_date: formatted
+          due_date: formatted,
+          tag: taskTag,
+
         })
       })
       .then(response => response.json())
@@ -71,13 +113,13 @@ export default class CreateTaskScreen extends React.Component{
 
   }
   
-
+  
   render() {
     const {navigation} = this.props;
     // const open = false
 
     return (
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
@@ -109,6 +151,36 @@ export default class CreateTaskScreen extends React.Component{
           />
         </View>
 
+        <SelectDropdown
+          data={this.state.tags}
+          defaultButtonText={"Select Tag"}
+          onSelect={(selectedItem, index) => {
+            console.log(selectedItem, index)
+          }}
+          buttonTextAfterSelection={(selectedItem, index) => {
+            // text represented after item is selected
+            // if data array is an array of objects then return selectedItem.property to render after item is selected
+            return selectedItem
+          }}
+          rowTextForSelection={(item, index) => {
+            // text represented for each item in dropdown
+            // if data array is an array of objects then return item.property to represent item in dropdown
+            return item
+          }}
+          buttonStyle={styles.dropdown1BtnStyle}
+          buttonTextStyle={styles.dropdown1BtnTxtStyle}
+          renderDropdownIcon={() => {
+            return (
+              <FontAwesome name="chevron-down" color={"#444"} size={18} />
+            );
+          }}
+          dropdownIconPosition={"right"}
+          dropdownStyle={styles.dropdown1DropdownStyle}
+          rowStyle={styles.dropdown1RowStyle}
+          rowTextStyle={styles.dropdown1RowTxtStyle}
+        />
+
+
         <TouchableOpacity
           style={styles.button}
           onPress={() => this.onSubmit()}
@@ -116,12 +188,27 @@ export default class CreateTaskScreen extends React.Component{
           <Text style={styles.buttonText}> Submit </Text>
         </TouchableOpacity>
 
-      </View>
+      </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  dropdown1BtnStyle: {
+    width: "60%",
+    height: 50,
+    backgroundColor: 'rgba(69, 120, 144, 1)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#444",
+  },
+  dropdown1BtnTxtStyle: { color: 'rgba(168, 218, 220, 1)', textAlign: "left" },
+  dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },
+  dropdown1RowStyle: {
+    backgroundColor: "#EFEFEF",
+    borderBottomColor: "#C5C5C5",
+  },
+  dropdown1RowTxtStyle: { color: "#444", textAlign: "left" },
   container: {
     flex: 1,
     backgroundColor: '#FAEBEF',

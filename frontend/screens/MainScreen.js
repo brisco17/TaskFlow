@@ -125,7 +125,7 @@ export default class MainScreen extends React.Component {
     else {
       if (this.state.taskSet.length > 0) {
         tasks = this.state.taskSet.filter(
-          (item) => item.tag == tag)
+          (item) => item.tag == tag.pk)
         console.log(tasks)
       }
       console.log(tasks)
@@ -158,7 +158,7 @@ export default class MainScreen extends React.Component {
         return this.state.tags.map((tag) => {
           return (
           <>
-          <Button title={tag.title} key={'tag' + tag.id} onPress={() => this.showTasksByTag(tag.title)} ></Button>
+          <Button title={tag.title} key={'tag' + tag.id} onPress={() => this.showTasksByTag(tag)} ></Button>
           <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
           </>
           )

@@ -73,8 +73,7 @@ export default class CreateTaskScreen extends React.Component{
     var stringDate = due_date.toString().slice(due_date.toString().indexOf(" ")+1, due_date.toString().indexOf("2021 ")+4)
     const formatted = moment(new Date(stringDate)).format('YYYY-MM-DD')
     console.log(formatted)
-    console.log(this.state.taskTag.id)
-    console.log('https://young-chow-productivity-app.herokuapp.com/tags/' + taskTag.id + '/')
+    console.log(this.state.taskTag.pk)
 
     SecureStore.getItemAsync('session').then(sessionToken => {
       fetch("https://young-chow-productivity-app.herokuapp.com/tasks/", {
@@ -87,7 +86,7 @@ export default class CreateTaskScreen extends React.Component{
           title: title,
           description: description,
           due_date: formatted,
-          tag: 'https://young-chow-productivity-app.herokuapp.com/tags/' + taskTag.id + '/',
+          tag: parseInt(taskTag.pk)
 
         })
       })

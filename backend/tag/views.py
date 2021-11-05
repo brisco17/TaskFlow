@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from .permissions import IsOwner
+from .permissions import IsAuthor
 from rest_framework.parsers import JSONParser
 from .models import Tag
 from .serializers import TagSerializer
@@ -10,7 +10,7 @@ from rest_framework import generics, permissions
 class TagList(generics.ListCreateAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwner] 
+    permission_classes = [IsAuthor] 
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -21,4 +21,4 @@ class TagList(generics.ListCreateAPIView):
 class TagDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwner] 
+    permission_classes = [IsAuthor] 

@@ -17,7 +17,7 @@ export default class CreateTaskScreen extends React.Component{
       description: '',
       due_date: '',
       tags: [],
-      taskTag: '',
+      taskTag: {},
       countries: ["Egypt", "Canada", "Australia", "Ireland"]
     }
     this.onDateChange = this.onDateChange.bind(this);
@@ -48,8 +48,8 @@ export default class CreateTaskScreen extends React.Component{
       for (var tag in json) {
         tagArray.push(json[tag].title)
       }
-      console.log(tagArray)
-      this.setState({tags: tagArray})
+      this.setState({tags: json})
+      console.log(this.state.tags)
      }
     )
   }
@@ -73,6 +73,8 @@ export default class CreateTaskScreen extends React.Component{
     var stringDate = due_date.toString().slice(due_date.toString().indexOf(" ")+1, due_date.toString().indexOf("2021 ")+4)
     const formatted = moment(new Date(stringDate)).format('YYYY-MM-DD')
     console.log(formatted)
+    console.log(this.state.taskTag.id)
+    console.log('https://young-chow-productivity-app.herokuapp.com/tags/' + taskTag.id + '/')
 
     SecureStore.getItemAsync('session').then(sessionToken => {
       fetch("https://young-chow-productivity-app.herokuapp.com/tasks/", {
@@ -85,7 +87,7 @@ export default class CreateTaskScreen extends React.Component{
           title: title,
           description: description,
           due_date: formatted,
-          tag: taskTag,
+          tag: 'https://young-chow-productivity-app.herokuapp.com/tags/' + taskTag.id + '/',
 
         })
       })
@@ -155,17 +157,19 @@ export default class CreateTaskScreen extends React.Component{
           data={this.state.tags}
           defaultButtonText={"Select Tag"}
           onSelect={(selectedItem, index) => {
-            console.log(selectedItem, index)
+            this.setState({taskTag: selectedItem})
+            console.log("new tag selected")
+            console.log(this.state.taskTag.title)
           }}
           buttonTextAfterSelection={(selectedItem, index) => {
             // text represented after item is selected
             // if data array is an array of objects then return selectedItem.property to render after item is selected
-            return selectedItem
+            return selectedItem.title
           }}
           rowTextForSelection={(item, index) => {
             // text represented for each item in dropdown
             // if data array is an array of objects then return item.property to represent item in dropdown
-            return item
+            return item.title
           }}
           buttonStyle={styles.dropdown1BtnStyle}
           buttonTextStyle={styles.dropdown1BtnTxtStyle}

@@ -1,7 +1,7 @@
 from .models import Task
 from rest_framework import serializers
 
-class TaskSerializer(serializers.HyperlinkedModelSerializer):
+class TaskSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.email')
     class Meta:
         model = Task

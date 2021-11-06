@@ -1,6 +1,6 @@
 import { setStatusBarBackgroundColor, StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, TextInput, Touchable,Image, requireNativeComponent, Button, ScrollView, Dimensions } from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Button, ScrollView, Dimensions, Pressable } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Modal from "react-native-modal";
 
@@ -25,14 +25,14 @@ export default class MainScreen extends React.Component {
     let token = await SecureStore.getItemAsync('session')
     
     if (token) {
-      console.log('Token ' + token)
+      console.log('User Token: ' + token)
       this.setState({sessionToken: token})
       this.getTags();
       this.getTasks();
       this._unsubscribe = this.props.navigation.addListener('focus', () => {
         this.getTags();
         this.getTasks();
-        console.log('refresh succeeded')
+        console.log('task & tag refresh occured')
         }
       );
 
@@ -65,16 +65,14 @@ export default class MainScreen extends React.Component {
     .then((response => response.json()))
     .then(json => { 
       this.setState({taskSet: json, displayTasks: json})
-      console.log('retrived user tasks')
-      console.log(this.state.displayTasks)
+      console.log('Retrived user tasks')
+      console.log(this.state.taskSet)
      }
     )
   }
 
   makeTasks() {
     if (this.state.displayTasks.length > 0) {
-      console.log('displaying tasks')
-      console.log(this.state.displayTasks)
       return this.state.displayTasks.map((task) => {
           return (
           <>
@@ -94,13 +92,19 @@ export default class MainScreen extends React.Component {
   }
 
   showTasksByTag(tag) {
-    console.log("Applied Tag = " + tag)
+    /*
+    Note: tags are ordinary tag objects as sent by the API
+          However, the premade Due Date and Creation tags are
+          sent into this function as just strings to make them
+          special cases.
+    */
+    console.log("Applied Tag: " + tag.title)
 
     var tasks = []
 
     if (tag == this.state.appliedTag) {
-      console.log('removing applied tag')
       this.setState({displayTasks: this.state.taskSet, appliedTag: ''})
+      console.log('Removed applied tag')
     }
     else if (tag == 'due_date') {
       console.log('sorting by due date')
@@ -113,7 +117,7 @@ export default class MainScreen extends React.Component {
       this.setState({displayTasks: dateSortedArray, appliedTag: tag})
     }
     else if (tag == 'creation_date') {
-      console.log('sorting by due date')
+      console.log('sorting by task creation date')
       var dateSortedArray = this.state.displayTasks.slice()
       dateSortedArray.sort(
         function(a, b) {
@@ -123,6 +127,7 @@ export default class MainScreen extends React.Component {
       this.setState({displayTasks: dateSortedArray, appliedTag: tag})
     }
     else {
+      console.log("Sorting by user defined tag")
       if (this.state.taskSet.length > 0) {
         tasks = this.state.taskSet.filter(
           (item) => item.tag == tag.pk)
@@ -158,7 +163,9 @@ export default class MainScreen extends React.Component {
         return this.state.tags.map((tag) => {
           return (
           <>
-          <Button title={tag.title} key={'tag' + tag.id} onPress={() => this.showTasksByTag(tag)} ></Button>
+          <TouchableOpacity key={'tag' + tag.id} onPress={() => this.showTasksByTag(tag)}>
+            <Text style={styles.button}>{tag.title}</Text>
+          </TouchableOpacity>
           <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
           </>
           )
@@ -226,9 +233,13 @@ export default class MainScreen extends React.Component {
                     <Text style={styles.modalHeader}>
                       Filter by:
                     </Text>
-                    <Button title={"Due Date"} onPress={() => this.showTasksByTag('due_date')}></Button>
+                    <TouchableOpacity onPress={() => this.showTasksByTag('due_date')}>
+                      <Text style={styles.button}> Due Date</Text>
+                    </TouchableOpacity>
                     <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-                    <Button title={"Created"} onPress={() => this.showTasksByTag('creation_date')}></Button>
+                    <TouchableOpacity title={"Created"} onPress={() => this.showTasksByTag('creation_date')}>
+                      <Text style={styles.button}>Created</Text>
+                    </TouchableOpacity>
                     <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
                     <Text style={styles.modalHeader}>
                       Apply Tag:
@@ -237,12 +248,13 @@ export default class MainScreen extends React.Component {
                     <Text style={styles.modalHeader}>
                       Manage Tags:
                     </Text>                        
-                      <Button 
-                      title = "Create new Tag"
+                      <TouchableOpacity
                       onPress = { () => {this.setState({isVisible: false}); navigation.navigate('Create Tag');} }
-                      />
+                      >
+                      <Text style={styles.button}>Create new tag</Text>
+                      </TouchableOpacity>
                       <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-                      <Button title={"Delete Tag"}></Button>
+
 
                   </ScrollView>
                 </View>
@@ -261,7 +273,7 @@ export default class MainScreen extends React.Component {
 const screen = Dimensions.get("screen");
 const styles = StyleSheet.create({
   modalView: {
-    backgroundColor: 'white',
+    backgroundColor: '#A8DADC',
     flexDirection: "column",
     alignItems: "flex-start",
     justifyContent: 'flex-start',

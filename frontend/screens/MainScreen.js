@@ -39,6 +39,13 @@ export default class MainScreen extends React.Component {
     }
   }
 
+  goToDetails(task) {
+    const {navigation} = this.props;
+    SecureStore.setItemAsync('currentTask', task).then(() => {
+      navigation.navigate("TaskDetailScreen")
+    })
+  }
+
   getTags() {
     fetch("https://young-chow-productivity-app.herokuapp.com/tags/", {
       method: "GET",
@@ -76,7 +83,7 @@ export default class MainScreen extends React.Component {
       return this.state.displayTasks.map((task) => {
           return (
           <>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => this.goToDetails(task)}>
             <Text style={styles.titleText}> {task.title} </Text>
             <Text style={styles.buttonText}> {task.description} </Text>
             <Text style={styles.buttonText}> {"Due on " + task.due_date} </Text>

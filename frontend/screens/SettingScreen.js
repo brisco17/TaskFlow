@@ -51,8 +51,6 @@ export default class SettingScreen extends React.Component{
         if(json.new_password){
           Alert.alert("Successful change password")
         }
-        
-
       })
     }
 
@@ -110,7 +108,7 @@ export default class SettingScreen extends React.Component{
             iosClientId: `22428134723-pq3rqvntskvn45979el7kmkrnksmajgs.apps.googleusercontent.com`,
             androidClientId: `22428134723-4clne824h5k1q433vh1tmgf6r443t2dp.apps.googleusercontent.com`,
           });
-    
+
           if (type === "success") {
             // Then you can use the Google REST API
             console.log("SettingScreen.js 115 | success, adding to settings");
@@ -126,13 +124,13 @@ export default class SettingScreen extends React.Component{
                     }),
                     body: JSON.stringify({
                       name: "Google Log In",
-                      value: String(user)
+                      value: JSON.stringify(user)
                     })
                   })
                 //})
               .then(response => response.json())
               .then(json => {
-                
+                this.setState({google: true})
                 console.log(json)
                 if(!json.id) {
                   if (json.name) Alert.alert("Error: ", json.name.toString())
@@ -141,14 +139,14 @@ export default class SettingScreen extends React.Component{
                 }
                 else
                 {
-                  Alert.alert("Setting has been successfully created.")
+                  this.setState({google: true})
+                  Alert.alert("Google Sign Setting has been successfully created.")
                 }
               })
               .catch(exception => {
                   console.log("Error occured", exception);
                   // Do something when login fails
               });
-
             }
           else {
             this.setState({google: false})

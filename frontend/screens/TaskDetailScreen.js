@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Dimensions, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, SafeAreaView, TouchableOpacity, Alert, Dimensions, ScrollView, KeyboardAvoidingView } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import CalendarPicker from 'react-native-calendar-picker';
 import moment from 'moment';
@@ -29,7 +29,7 @@ export default class CreateTaskScreen extends React.Component{
     this.onDateChange = this.onDateChange.bind(this);
   }
 
-  getTags() {
+  async getTags() {
     fetch("https://young-chow-productivity-app.herokuapp.com/tags/", {
       method: "GET",
       headers: new Headers({
@@ -39,9 +39,14 @@ export default class CreateTaskScreen extends React.Component{
       })
     .then((response => response.json()))
     .then(json => {
-      for (var tag in json) {
-      }
-      this.setState({tags: json})
+      this.setState({tags: json}, () => {
+        if(this.state.tagPk) {
+          for (var tag in json) {
+            if(json[tag].pk == this.state.tagPk) this.setState({taskTag: json[tag]})
+          }
+        }
+        return {}
+      })
      }
     )
   }
@@ -57,16 +62,19 @@ export default class CreateTaskScreen extends React.Component{
       //All my homies hate asynchronous functions
       //I promise this either gets the subtasks or sets the varibable to an empty dictionary
       var subtasks = curTask.subtasks ? curTask.subtasks : {}
-      console.log("Subtasks: " + subtasks.toString())
+      console.log("TagPk: " + curTask.tag)
       this.setState({
         sessionToken: token,
         task: curTask,
         title: curTask.title,
         due_date: moment(new Date(curTask.due_date)),
         description: curTask.description,
-        subTasks: subtasks
+        subTasks: subtasks,
+        tagPk: curTask.tag
       }, () => {
-        this.getTags()
+        this.getTags().then(() => {
+          console.log("Now tag: " + this.state.taskTag)
+        })
       });
       
       
@@ -104,8 +112,8 @@ export default class CreateTaskScreen extends React.Component{
           title: title,
           description: description,
           due_date: formatted,
-          subtasks: subtasks
-
+          subtasks: subtasks,
+          tag: this.state.taskTag.pk
         })
       })
       .then(response => response.json())
@@ -120,7 +128,7 @@ export default class CreateTaskScreen extends React.Component{
         }
         else
         {
-          Alert.alert("Task has been successfully created.")
+          Alert.alert("Task has been successfully updated.")
           navigation.pop()
         }
       })
@@ -132,19 +140,29 @@ export default class CreateTaskScreen extends React.Component{
 
   }
 
+  changeCompletion(task) {
+    var subs = this.state.subTasks
+    subs[task] = !subs[task]
+
+    this.setState({subTasks: subs})
+  }
+
   makeSubTasks() {
     if (Object.keys(this.state.subTasks).length > 0) {
       return Object.keys(this.state.subTasks).map((task) => {
+        const completed = this.state.subTasks[task]
+        const color = completed ? "#457890" : "#904b45"
           return (
-          <>
-            <TextInput
-              style={styles.subStyle}
-              editable={false}
-              value={task}
-              placeholderTextColor="rgba(168, 218, 220, 1)"
-              textContentType="none"
-            />
-          </>
+          <View style={styles.rowContainer}>
+            <TouchableOpacity
+              style={[ styles.subStyle, { backgroundColor: color } ]}   
+              onPress={() => this.changeCompletion(task)}
+            >
+              <Text style={styles.subText}> {task} </Text>
+            </TouchableOpacity>
+            
+
+          </View>
           )
         })
       }
@@ -157,6 +175,7 @@ export default class CreateTaskScreen extends React.Component{
 
     this.setState({
       subCreate: false,
+      subTitleTemp: "",
       subTasks: tempSubs}, () => {
         this.render()
       });
@@ -175,8 +194,9 @@ export default class CreateTaskScreen extends React.Component{
     // const open = false
 
     return (
-      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+      <View style={styles.container}>
         <View style={styles.inputContainer}>
+          <Text style={styles.titleText}>Edit Title & Description</Text>
           <TextInput
             style={styles.input}
             onChangeText={text => this.setState({ title: text })}
@@ -185,16 +205,14 @@ export default class CreateTaskScreen extends React.Component{
             placeholderTextColor="rgba(168, 218, 220, 1)"
             textContentType="none"
           />
-        </View>
 
-        <View style={styles.calContainer}>
-          <CalendarPicker
-            scaleFactor={Dimensions.get('window').width}
-            onDateChange={this.onDateChange}
-          />
-        </View>
+          {/* <View style={styles.calContainer}>
+            <CalendarPicker
+              scaleFactor={Dimensions.get('window').width}
+              onDateChange={this.onDateChange}
+            />
+          </View> */}
         
-        <View style={styles.inputContainer}>
           <TextInput
             style={styles.largeInput}
             onChangeText={text => this.setState({ description: text })}
@@ -207,6 +225,9 @@ export default class CreateTaskScreen extends React.Component{
           />
         </View>
 
+        
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <SafeAreaView>
         <View>
           {this.makeSubTasks()}
           <TouchableOpacity
@@ -257,7 +278,7 @@ export default class CreateTaskScreen extends React.Component{
           rowStyle={styles.dropdown1RowStyle}
           rowTextStyle={styles.dropdown1RowTxtStyle}
         />
-
+        
 
         <TouchableOpacity
           style={styles.button}
@@ -265,9 +286,10 @@ export default class CreateTaskScreen extends React.Component{
         >
           <Text style={styles.buttonText}> Submit </Text>
         </TouchableOpacity>
-
-      
-      </KeyboardAvoidingView>
+         </SafeAreaView>
+      </ScrollView>
+     
+      </View>
       
     );
   }
@@ -296,9 +318,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  scrollContainer: {
+    marginTop: "25%",
+    minHeight: "35%",
+    backgroundColor: '#FAEBEF',
+    justifyContent: 'center',
+    left: "5%",
+    flexGrow: 1
+  },
   inputContainer: {
     width: "100%",
-    justifyContent: 'center'
+    justifyContent: 'center',
+    top: "10%"
   },
   rowContainer: {
     flexDirection: 'row',
@@ -307,7 +338,7 @@ const styles = StyleSheet.create({
   calContainer: {
     maxHeight: '30%',
     width: Dimensions.get('window').width,
-    bottom: 70
+    marginBottom: '40%' 
     
   },
   button: {
@@ -320,7 +351,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   subStyle: {
-
+    width: "80%",
     height: 50,
     backgroundColor: 'rgba(69, 120, 144, 1)',
     borderRadius: 8,
@@ -349,6 +380,18 @@ const styles = StyleSheet.create({
     color: 'rgba(168, 218, 220, 1)',
     fontWeight: 'bold'
   },
+  subText: {
+    color: 'rgba(255, 255, 255, 1)',
+    marginTop: 14
+  },
+  titleText: {
+    textAlign: 'center',
+    fontSize: 28,
+    color: 'rgba(69, 120, 144, 1)',
+    fontWeight: 'bold',
+    marginBottom: 25,
+    bottom: "20%"
+  },
   loginText: {
     bottom: "10%",
     fontSize: 50,
@@ -369,17 +412,15 @@ const styles = StyleSheet.create({
     paddingEnd: 40,
     borderColor: 'gray',
     borderWidth: 1,
-
     textAlign: 'left',
     borderRadius: 100,
     backgroundColor: 'rgba(69, 120, 144, 1)',
     color: 'white',
   },
   largeInput: {
-    marginTop: "-5%",
-    marginBottom: '20%',
-    height: 75,
+    height: 125,
     width: '90%',
+    bottom: 80,
     left: '5%',
     fontSize: 16,
     paddingStart: 40,
@@ -391,8 +432,9 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: 'rgba(69, 120, 144, 1)',
     color: 'white',
+    marginBottom: '5%'
   },
-
-
-  
+  checkbox: {
+    alignSelf: "flex-end",
+  },
 });

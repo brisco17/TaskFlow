@@ -159,7 +159,7 @@ export default class CreateTaskScreen extends React.Component{
           onSelect={(selectedItem, index) => {
             this.setState({taskTag: selectedItem})
             console.log("new tag selected")
-            console.log(this.state.taskTag.title)
+            console.log(selectedItem)
           }}
           buttonTextAfterSelection={(selectedItem, index) => {
             // text represented after item is selected
@@ -205,6 +205,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#444",
+    bottom: 50
   },
   dropdown1BtnTxtStyle: { color: 'rgba(168, 218, 220, 1)', textAlign: "left" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },

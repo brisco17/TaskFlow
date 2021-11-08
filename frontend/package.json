@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@expo/ngrok": "^2.5.0",
+    "@react-native-community/checkbox": "^0.5.9",
     "@react-native-community/masked-view": "0.1.10",
     "@react-native-google-signin/google-signin": "^7.0.1",
     "@react-navigation/native": "^6.0.5",

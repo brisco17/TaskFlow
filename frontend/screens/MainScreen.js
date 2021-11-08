@@ -319,7 +319,6 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 30,
     marginBottom: 10,
-    alignItems: 'flex-start',
     backgroundColor: 'rgba(69, 120, 144, 1)',
     color: '#fff',
     padding: 10,
@@ -332,10 +331,10 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   titleText: {
+    textAlign: 'center',
     fontSize: 28,
     color: 'rgba(168, 218, 220, 1)',
     fontWeight: 'bold',
-    left: '30%',
     marginBottom: 25,
   },
   TaskBarContainer:{

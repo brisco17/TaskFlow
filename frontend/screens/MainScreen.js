@@ -39,6 +39,13 @@ export default class MainScreen extends React.Component {
     }
   }
 
+  goToDetails(task) {
+    const {navigation} = this.props;
+    SecureStore.setItemAsync('currentTask', JSON.stringify(task)).then(() => {
+      navigation.navigate("TaskDetailScreen")
+    })
+  }
+
   getTags() {
     fetch("https://young-chow-productivity-app.herokuapp.com/tags/", {
       method: "GET",
@@ -76,7 +83,7 @@ export default class MainScreen extends React.Component {
       return this.state.displayTasks.map((task) => {
           return (
           <>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => this.goToDetails(task)}>
             <Text style={styles.titleText}> {task.title} </Text>
             <Text style={styles.buttonText}> {task.description} </Text>
             <Text style={styles.buttonText}> {"Due on " + task.due_date} </Text>
@@ -187,6 +194,7 @@ export default class MainScreen extends React.Component {
 
         <ScrollView contentContainerStyle={styles.contentContainer}>
           { this.makeTasks() }
+          <View style={styles.bottomPad} />
         </ScrollView>
           <View style = {styles.navBarContainer}>
           <View style={{ height: '100%', width: '100%', position: 'absolute', backgroundColor: '#A8DADC', top: '30%'}}/>
@@ -290,6 +298,9 @@ const styles = StyleSheet.create({
     marginLeft:10,
     paddingTop:50,
   },
+  bottomPad: {
+    marginBottom: 150
+  },
   modalText: {
     fontSize: 16,
     marginLeft:10,
@@ -308,7 +319,6 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 30,
     marginBottom: 10,
-    alignItems: 'flex-start',
     backgroundColor: 'rgba(69, 120, 144, 1)',
     color: '#fff',
     padding: 10,
@@ -321,10 +331,10 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   titleText: {
+    textAlign: 'center',
     fontSize: 28,
     color: 'rgba(168, 218, 220, 1)',
     fontWeight: 'bold',
-    left: '30%',
     marginBottom: 25,
   },
   TaskBarContainer:{

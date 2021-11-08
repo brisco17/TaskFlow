@@ -71,10 +71,11 @@ export default class CreateTaskScreen extends React.Component{
     
 
     // I don't want to talk about it
+    console.log("Original: " + due_date.toString)
     var stringDate = due_date.toString().slice(due_date.toString().indexOf(" ")+1, due_date.toString().indexOf("2021 ")+4)
+    console.log("String Date: " + stringDate)
     const formatted = moment(new Date(stringDate)).format('YYYY-MM-DD')
-    console.log(formatted)
-    console.log(this.state.taskTag.pk)
+    console.log("Formatted: " + formatted)
 
     SecureStore.getItemAsync('session').then(sessionToken => {
       fetch("https://young-chow-productivity-app.herokuapp.com/tasks/", {
@@ -160,7 +161,7 @@ export default class CreateTaskScreen extends React.Component{
           onSelect={(selectedItem, index) => {
             this.setState({taskTag: selectedItem})
             console.log("new tag selected")
-            console.log(this.state.taskTag.title)
+            console.log(selectedItem)
           }}
           buttonTextAfterSelection={(selectedItem, index) => {
             // text represented after item is selected
@@ -207,6 +208,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#444",
+    bottom: 50
   },
   dropdown1BtnTxtStyle: { color: 'rgba(69, 120, 144, 1)', textAlign: "center" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },

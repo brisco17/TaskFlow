@@ -38,7 +38,7 @@ export default class CreateTagScreen extends React.Component{
       .then(json => {
         // enter tag creation logic here
         console.log(json)
-        if(!json.id) {
+        if(!json.pk) {
           if (json.title) Alert.alert("Error: ", json.title.toString())
           else if (json.description) Alert.alert("Error: ", json.description.toString())
           else Alert.alert("Fatal Error, contact dev because something is wrong")

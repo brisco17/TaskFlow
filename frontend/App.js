@@ -12,6 +12,7 @@ import MainScreen from './screens/MainScreen';
 import SettingScreen from './screens/SettingScreen';
 import CreateTaskScreen from './screens/CreateTaskScreen';
 import CreateTagScreen from './screens/CreateTagScreen';
+import TaskDetailScreen from './screens/TaskDetailScreen';
 
 // This is a warning that occurs on new react versions. It wants me to use event listeners instead,
 // which isn't happening for the time being.
@@ -90,6 +91,7 @@ export default class App extends React.Component {
           <Stack.Screen name="GoogleRegister" component={GoogleRegister} />
           <Stack.Screen name="Create Task" component={CreateTaskScreen} />
           <Stack.Screen name="Create Tag" component={CreateTagScreen} />
+          <Stack.Screen name="TaskDetailScreen" component={TaskDetailScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );

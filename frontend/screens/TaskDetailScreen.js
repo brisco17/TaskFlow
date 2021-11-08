@@ -1,11 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Dimensions, ScrollView, KeyboardAvoidingView } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import CalendarPicker from 'react-native-calendar-picker';
 import moment from 'moment';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Dialog from 'react-native-dialog';
 
 export default class CreateTaskScreen extends React.Component{
   constructor(props) {
@@ -16,25 +17,16 @@ export default class CreateTaskScreen extends React.Component{
       title: '',
       description: '',
       due_date: '',
+      taskTag: {},
+      tagPk: null,
       task: [],
       tags: [],
-      taskTag: {},
+      subTasks: {},
+      subCreate: false,
+      subTitleTemp: '',
       countries: ["Egypt", "Canada", "Australia", "Ireland"]
     }
     this.onDateChange = this.onDateChange.bind(this);
-  }
-
-
-  async componentDidMount() {
-    let token = await SecureStore.getItemAsync('current task')
-
-    this.setState({task: token})
-    
-    if (token) {
-      console.log('Token ' + token)
-      this.setState({sessionToken: token})
-      this.getTags();
-    }
   }
 
   getTags() {
@@ -47,19 +39,42 @@ export default class CreateTaskScreen extends React.Component{
       })
     .then((response => response.json()))
     .then(json => {
-      var tagArray = []
       for (var tag in json) {
-        tagArray.push(json[tag].title)
       }
       this.setState({tags: json})
-      console.log(this.state.tags)
      }
     )
   }
 
 
+  async componentDidMount() {
+    let taskToken = await SecureStore.getItemAsync('currentTask')
+    let token = await SecureStore.getItemAsync('session')
+    const curTask = JSON.parse(taskToken)
+
+    if (token && taskToken) {
+      console.log('Session: ' + token)
+      //All my homies hate asynchronous functions
+      //I promise this either gets the subtasks or sets the varibable to an empty dictionary
+      var subtasks = curTask.subtasks ? curTask.subtasks : {}
+      console.log("Subtasks: " + subtasks.toString())
+      this.setState({
+        sessionToken: token,
+        task: curTask,
+        title: curTask.title,
+        due_date: moment(new Date(curTask.due_date)),
+        description: curTask.description,
+        subTasks: subtasks
+      }, () => {
+        this.getTags()
+      });
+      
+      
+    }
+  }
+
+
   onDateChange(date) {
-    console.log(Dimensions.get('window').width)
     this.setState({
       due_date: date,
     });
@@ -75,12 +90,12 @@ export default class CreateTaskScreen extends React.Component{
     // I don't want to talk about it
     var stringDate = due_date.toString().slice(due_date.toString().indexOf(" ")+1, due_date.toString().indexOf("2021 ")+4)
     const formatted = moment(new Date(stringDate)).format('YYYY-MM-DD')
-    console.log(formatted)
-    console.log(this.state.taskTag.pk)
+    //Checks if subTasks is emtpy. If it is, send null. Otherwise send value.
+    const subtasks = Object.keys(this.state.subTasks).length ? this.state.subTasks : null
 
     SecureStore.getItemAsync('session').then(sessionToken => {
-      fetch("https://young-chow-productivity-app.herokuapp.com/tasks/", {
-        method: "POST",
+      fetch("https://young-chow-productivity-app.herokuapp.com/tasks/" + this.state.task.id, {
+        method: "PUT",
         headers: new Headers({
             'Content-Type': 'application/json',
             'Authorization': 'Token ' + sessionToken
@@ -89,14 +104,14 @@ export default class CreateTaskScreen extends React.Component{
           title: title,
           description: description,
           due_date: formatted,
-          tag: parseInt(taskTag.pk)
+          subtasks: subtasks
 
         })
       })
       .then(response => response.json())
       .then(json => {
         // enter login logic here
-        console.log(json)
+        console.log("We here now bois")
         if(!json.id) {
           if (json.title) Alert.alert("Error: ", json.title.toString())
           else if (json.description) Alert.alert("Error: ", json.description.toString())
@@ -116,6 +131,43 @@ export default class CreateTaskScreen extends React.Component{
     })
 
   }
+
+  makeSubTasks() {
+    if (Object.keys(this.state.subTasks).length > 0) {
+      return Object.keys(this.state.subTasks).map((task) => {
+          return (
+          <>
+            <TextInput
+              style={styles.subStyle}
+              editable={false}
+              value={task}
+              placeholderTextColor="rgba(168, 218, 220, 1)"
+              textContentType="none"
+            />
+          </>
+          )
+        })
+      }
+  }
+
+  createSubTask = () => {
+    var tempSubs = this.state.subTasks
+    tempSubs[this.state.subTitleTemp] = false
+
+
+    this.setState({
+      subCreate: false,
+      subTasks: tempSubs}, () => {
+        this.render()
+      });
+  }
+
+  updateSubModal = () => {
+    const toSet = this.state.subCreate ? false : true
+    this.setState({
+      subCreate: toSet
+    })
+  }
   
   
   render() {
@@ -123,7 +175,7 @@ export default class CreateTaskScreen extends React.Component{
     // const open = false
 
     return (
-      <ScrollView contentContainerStyle={styles.container}>
+      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
@@ -141,7 +193,7 @@ export default class CreateTaskScreen extends React.Component{
             onDateChange={this.onDateChange}
           />
         </View>
-
+        
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.largeInput}
@@ -153,6 +205,26 @@ export default class CreateTaskScreen extends React.Component{
             textAlignVertical="top"
             multiline={true}
           />
+        </View>
+
+        <View>
+          {this.makeSubTasks()}
+          <TouchableOpacity
+                style={styles.makeSub}
+                onPress={this.updateSubModal}
+          >
+            <Text style={styles.buttonText}> Create New Subtask </Text>
+          </TouchableOpacity>
+          <Dialog.Container visible={this.state.subCreate}>
+              <Dialog.Title>Create Subtask</Dialog.Title>
+              <Dialog.Input 
+              onChangeText={title => this.setState({subTitleTemp: title})}
+              value={this.state.subTitleTemp}
+              placeholder={'Subtask Title'}
+              ></Dialog.Input>
+              <Dialog.Button label="Cancel" onPress={this.updateSubModal}/>
+              <Dialog.Button label="Confirm" onPress={this.createSubTask}/>
+            </Dialog.Container>
         </View>
 
         <SelectDropdown
@@ -194,7 +266,9 @@ export default class CreateTaskScreen extends React.Component{
           <Text style={styles.buttonText}> Submit </Text>
         </TouchableOpacity>
 
-      </ScrollView>
+      
+      </KeyboardAvoidingView>
+      
     );
   }
 }
@@ -207,6 +281,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#444",
+    marginBottom: 30
   },
   dropdown1BtnTxtStyle: { color: 'rgba(168, 218, 220, 1)', textAlign: "left" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },
@@ -230,12 +305,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   calContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 30,
     maxHeight: '30%',
     width: Dimensions.get('window').width,
-    backgroundColor: "white"
+    bottom: 70
     
   },
   button: {
@@ -246,6 +318,32 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     width: '45%',
     padding: 10,
+  },
+  subStyle: {
+
+    height: 50,
+    backgroundColor: 'rgba(69, 120, 144, 1)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#444",
+    marginBottom: 10,
+    fontSize: 16,
+    color: 'white',
+    paddingStart: 20,
+    paddingEnd: 20,
+  },
+  makeSub: {
+    width: "80%",
+    height: 50,
+    backgroundColor: 'rgba(69, 120, 144, 1)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#444",
+    marginBottom: 10,
+    color: 'white',
+    paddingTop: 13,
+    paddingStart: 20,
+    paddingEnd: 20,
   },
   buttonText: {
     color: 'rgba(168, 218, 220, 1)',
@@ -261,7 +359,9 @@ const styles = StyleSheet.create({
     textShadowRadius: 10
   },
   input: {
+    marginTop: "10%",
     height: 60,
+    bottom: 100,
     width: '90%',
     left: '5%',
     fontSize: 16,
@@ -269,14 +369,16 @@ const styles = StyleSheet.create({
     paddingEnd: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 20,
+
     textAlign: 'left',
     borderRadius: 100,
     backgroundColor: 'rgba(69, 120, 144, 1)',
     color: 'white',
   },
   largeInput: {
-    height: '40%',
+    marginTop: "-5%",
+    marginBottom: '20%',
+    height: 75,
     width: '90%',
     left: '5%',
     fontSize: 16,
@@ -284,10 +386,8 @@ const styles = StyleSheet.create({
     paddingEnd: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 20,
     textAlign: 'left',
-    paddingTop: '5%',
-    marginBottom: '5%',
+    paddingTop: '3%',
     borderRadius: 100,
     backgroundColor: 'rgba(69, 120, 144, 1)',
     color: 'white',

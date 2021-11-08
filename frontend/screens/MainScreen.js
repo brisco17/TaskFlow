@@ -41,7 +41,7 @@ export default class MainScreen extends React.Component {
 
   goToDetails(task) {
     const {navigation} = this.props;
-    SecureStore.setItemAsync('currentTask', task).then(() => {
+    SecureStore.setItemAsync('currentTask', JSON.stringify(task)).then(() => {
       navigation.navigate("TaskDetailScreen")
     })
   }
@@ -194,6 +194,7 @@ export default class MainScreen extends React.Component {
 
         <ScrollView contentContainerStyle={styles.contentContainer}>
           { this.makeTasks() }
+          <View style={styles.bottomPad} />
         </ScrollView>
           
           <View style={{ height: '10%', width: '100%', position: 'absolute', backgroundColor: '#A8DADC' , top: '90%'}}/>
@@ -296,6 +297,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginLeft:10,
     paddingTop:50,
+  },
+  bottomPad: {
+    marginBottom: 150
   },
   modalText: {
     fontSize: 16,

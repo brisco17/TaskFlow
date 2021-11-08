@@ -16,7 +16,6 @@ export default class RegisterScreen extends React.Component{
       this.setState({email: JSON.parse(userToken).email})
     })
   }
-  
 
   onSubmit = () => {
     const { email, password } = this.state;

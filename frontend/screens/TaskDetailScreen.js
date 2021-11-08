@@ -7,6 +7,8 @@ import moment from 'moment';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Dialog from 'react-native-dialog';
+import {FontAwesome5} from '@expo/vector-icons';
+
 
 export default class CreateTaskScreen extends React.Component{
   constructor(props) {
@@ -195,6 +197,7 @@ export default class CreateTaskScreen extends React.Component{
 
     return (
       <View style={styles.container}>
+        <FontAwesome5 style = {{postion: 'absolute', right: "37%", top: "19%"}} name="tasks" size={24} color="black"/>
         <View style={styles.inputContainer}>
           <Text style={styles.titleText}>Edit Title & Description</Text>
           <TextInput
@@ -299,13 +302,13 @@ const styles = StyleSheet.create({
   dropdown1BtnStyle: {
     width: "60%",
     height: 50,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
+    backgroundColor: 'rgba(256, 256, 256, 1)',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#444",
     marginBottom: 30
   },
-  dropdown1BtnTxtStyle: { color: 'rgba(168, 218, 220, 1)', textAlign: "left" },
+  dropdown1BtnTxtStyle: { color: 'rgba(69, 120, 144, 1)', textAlign: "center" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },
   dropdown1RowStyle: {
     backgroundColor: "#EFEFEF",
@@ -314,16 +317,15 @@ const styles = StyleSheet.create({
   dropdown1RowTxtStyle: { color: "#444", textAlign: "left" },
   container: {
     flex: 1,
-    backgroundColor: '#FAEBEF',
+    backgroundColor: 'rgba(244,245,250,1)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   scrollContainer: {
-    marginTop: "25%",
-    minHeight: "35%",
-    backgroundColor: '#FAEBEF',
-    justifyContent: 'center',
-    left: "5%",
+    backgroundColor: 'rgba(244,245,250,1)',
+    justifyContent: 'space-evenly',
+    left: "10%",
+
     flexGrow: 1
   },
   inputContainer: {
@@ -337,18 +339,24 @@ const styles = StyleSheet.create({
   },
   calContainer: {
     maxHeight: '30%',
+    position: 'relative',
     width: Dimensions.get('window').width,
     marginBottom: '40%' 
     
   },
   button: {
+    height: 45,
+    bottom: '10%',
+    width: '65%',
     alignItems: 'center',
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    marginHorizontal: 8,
-    color: '#fff',
-    borderRadius: 100,
-    width: '45%',
+    position: 'relative',
+    backgroundColor: 'rgba(256, 256, 256, 1)',
+    borderRadius: 10,
     padding: 10,
+    shadowRadius: 3,
+    shadowColor: 'black',
+    shadowOffset: {width: 1, height: 1},
+    shadowOpacity: .5,
   },
   subStyle: {
     width: "80%",
@@ -364,20 +372,22 @@ const styles = StyleSheet.create({
     paddingEnd: 20,
   },
   makeSub: {
-    width: "80%",
-    height: 50,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#444",
-    marginBottom: 10,
-    color: 'white',
-    paddingTop: 13,
-    paddingStart: 20,
-    paddingEnd: 20,
+    height: 45,
+    bottom: '10%',
+    width: '65%',
+    alignItems: 'center',
+    backgroundColor: 'rgba(256, 256, 256, 1)',
+    borderRadius: 10,
+    padding: 10,
+    shadowRadius: 3,
+    shadowColor: 'black',
+    shadowOffset: {width: 1, height: 1},
+    shadowOpacity: .5,
   },
   buttonText: {
-    color: 'rgba(168, 218, 220, 1)',
+    height: 25,
+    top: 3,
+    color: 'rgba(69, 120, 144, 1)',
     fontWeight: 'bold'
   },
   subText: {
@@ -402,37 +412,34 @@ const styles = StyleSheet.create({
     textShadowRadius: 10
   },
   input: {
-    marginTop: "10%",
     height: 60,
-    bottom: 100,
     width: '90%',
     left: '5%',
+    bottom: 100,
     fontSize: 16,
-    paddingStart: 40,
-    paddingEnd: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
+    paddingStart: 50,
+    marginBottom: 20,
     textAlign: 'left',
-    borderRadius: 100,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    color: 'white',
+    borderRadius: 20,
+    borderBottomColor: "#000",
+    borderBottomWidth: 1,
+    backgroundColor: 'rgba(0,0,20,0)',
+    color: 'rgba(69, 120, 144, 1)',
   },
   largeInput: {
-    height: 125,
+    height: '40%',
     width: '90%',
-    bottom: 80,
     left: '5%',
+    bottom: 100,
     fontSize: 16,
-    paddingStart: 40,
-    paddingEnd: 40,
-    borderColor: 'gray',
+    paddingStart: 20,
     borderWidth: 1,
     textAlign: 'left',
-    paddingTop: '3%',
-    borderRadius: 100,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    color: 'white',
-    marginBottom: '5%'
+    paddingTop: '5%',
+    borderRadius: 20,
+    borderWidth: 2,
+    backgroundColor: 'rgba(244,245,250,1)',
+    color: 'rgba(69, 120, 144, 1)',
   },
   checkbox: {
     alignSelf: "flex-end",

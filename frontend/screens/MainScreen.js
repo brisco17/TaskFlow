@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Button, ScrollView, Dimensions, Pressable } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Modal from "react-native-modal";
-import {SimpleLineIcons, Foundation} from '@expo/vector-icons';
+import {Ionicons,SimpleLineIcons, Foundation} from '@expo/vector-icons';
 
 export default class MainScreen extends React.Component {
   constructor(props) {
@@ -202,7 +202,7 @@ export default class MainScreen extends React.Component {
             <View style = {styles.CricleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}
                 onPress = {() => navigation.navigate("Settings")}>
-                  <SimpleLineIcons style = {{padding: 12, left: 4}}name="settings" size={40} color="rgba(69, 120, 144, 1)"/>
+                  <Ionicons style = {{padding: 12, left: 5}} name="settings-sharp" size={40} color="rgba(69, 120, 144, 1)" />
               </TouchableOpacity>
             </View>
             <View style = {styles.CricleOverlayMain}>

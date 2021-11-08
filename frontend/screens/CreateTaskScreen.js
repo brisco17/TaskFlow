@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#444",
-    bottom: 50
+    bottom: 100
   },
   dropdown1BtnTxtStyle: { color: 'rgba(69, 120, 144, 1)', textAlign: "center" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },

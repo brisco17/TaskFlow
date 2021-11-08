@@ -21,25 +21,27 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    re_path(r'^auth/', include('djoser.urls')),
+    re_path(r'^auth/', include('djoser.urls.authtoken')),
+    path('settings/', include('settings.urls')),
+    path('tasks/', include('task.urls')),
+    path('tags/', include('tag.urls')),
+]
 # this is what shows on the API homepage
 schema_view = get_schema_view(
     openapi.Info(
-        title="Productivity API",
+        title="Taskflow API",
         default_version='v1',
-        description="Welcome to the Young Chow Enjoyer Productivity App docs",
+        description="Welcome to the  App docs",
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
+    patterns=urlpatterns,
 )
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    #path('', views.ApiRoot.as_view(), name=views.ApiRoot.name),
-    re_path(r'^auth/', include('djoser.urls')),
-    re_path(r'^auth/', include('djoser.urls.authtoken')),
-    path('', include('settings.urls')),
-    path('', include('task.urls')),
-    path('', include('tag.urls')),
+urlpatterns += [
     re_path(r'^doc(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('', schema_view.with_ui('swagger', cache_timeout=0),

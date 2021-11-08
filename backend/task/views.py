@@ -6,6 +6,7 @@ from .permissions import IsAuthor
 
 
 class TaskList(generics.ListCreateAPIView):
+    "Use this endpoint to obtain all of a users tasks"
     serializer_class = TaskSerializer
     permission_classes = [IsAuthor]
     def get_queryset(self):
@@ -16,6 +17,7 @@ class TaskList(generics.ListCreateAPIView):
 
 
 class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
+    "Use this endpoint to obtain a users individual tasks"
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthor]

@@ -8,6 +8,7 @@ from rest_framework import generics, permissions
 
 
 class TagList(generics.ListCreateAPIView):
+    "Use this endpoint to obtain all of a users tags."
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [IsAuthor] 
@@ -19,6 +20,7 @@ class TagList(generics.ListCreateAPIView):
         return self.queryset.filter(user=self.request.user)
 
 class TagDetail(generics.RetrieveUpdateDestroyAPIView):
+    "Use this endpoint to obtain a users individual tags."
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [IsAuthor] 

@@ -6,6 +6,7 @@ from .serializers import SettingSerializer
 
 
 class SettingList(generics.ListCreateAPIView):
+    "Use this endpoint to obtain all of a users settings."
     queryset = Setting.objects.all()
     serializer_class = SettingSerializer
     permission_classes = [IsAuthor]
@@ -18,7 +19,7 @@ class SettingList(generics.ListCreateAPIView):
 
 
 class SettingDetail(generics.RetrieveUpdateDestroyAPIView):
+    "Use this endpoint to obtain a users individual settings."
     queryset = Setting.objects.all()
     serializer_class = SettingSerializer
     permission_classes = [IsAuthor]
-

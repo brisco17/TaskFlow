@@ -25,9 +25,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
-    path('/settings/', include('settings.urls')),
+    path('settings/', include('settings.urls')),
     path('tasks/', include('task.urls')),
-    path('/tags/', include('tag.urls')),
+    path('tags/', include('tag.urls')),
 ]
 # this is what shows on the API homepage
 schema_view = get_schema_view(

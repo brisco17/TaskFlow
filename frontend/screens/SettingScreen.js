@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
 import Dialog from 'react-native-dialog';
+import * as Google from "expo-google-app-auth";
 
 
 export default class SettingScreen extends React.Component{
@@ -17,6 +18,8 @@ export default class SettingScreen extends React.Component{
       newPassword: '',
       alertVisible: false,
       newPasswordAlert: false,
+      newGoogleAlert: false,
+      google: false,
       sessionToken:'',
     }
     
@@ -29,7 +32,7 @@ export default class SettingScreen extends React.Component{
     }
   }
 
-    onChagnePassword = () => {
+    onChangePassword = () => {
       const {navigation} = this.props
       fetch("https://young-chow-productivity-app.herokuapp.com/auth/users/set_password/",{
         method: "POST",
@@ -97,7 +100,64 @@ export default class SettingScreen extends React.Component{
           })
         })
       }
+
+      async gLogin  () {
+
+        const {navigation} = this.props;
+        console.log("SettingScreen.js 106 | logging in");
+        try {
+          const { type, user } = await Google.logInAsync({
+            iosClientId: `22428134723-pq3rqvntskvn45979el7kmkrnksmajgs.apps.googleusercontent.com`,
+            androidClientId: `22428134723-4clne824h5k1q433vh1tmgf6r443t2dp.apps.googleusercontent.com`,
+          });
     
+          if (type === "success") {
+            // Then you can use the Google REST API
+            console.log("SettingScreen.js 115 | success, adding to settings");
+            //SecureStore.setItemAsync('google_details', JSON.stringify(user)).then(() => {
+                  //const google_details = SecureStore.getItemAsync('google_details')
+                  console.log('Right before fetch call');
+                  console.log(user)
+                  fetch("https://young-chow-productivity-app.herokuapp.com/settings/", {
+                    method: "POST",
+                    headers: new Headers({
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + this.state.sessionToken
+                    }),
+                    body: JSON.stringify({
+                      name: "Google Log In",
+                      value: String(user)
+                    })
+                  })
+                //})
+              .then(response => response.json())
+              .then(json => {
+                
+                console.log(json)
+                if(!json.id) {
+                  if (json.name) Alert.alert("Error: ", json.name.toString())
+                  else if (json.value) Alert.alert("Error: ", json.value.toString())
+                  else Alert.alert("Fatal Error, contact dev because something is wrong")
+                }
+                else
+                {
+                  Alert.alert("Setting has been successfully created.")
+                }
+              })
+              .catch(exception => {
+                  console.log("Error occured", exception);
+                  // Do something when login fails
+              });
+
+            }
+          else {
+            this.setState({google: false})
+          }
+        } catch (error) {
+          console.log("SettingScreen.js 125 | error with login", error);
+          this.setState({google: false})
+        }
+}
 
       changeAlertState = () => {
         if(this.state.alertVisible){
@@ -109,8 +169,9 @@ export default class SettingScreen extends React.Component{
 
       toggleBothAlerts = () => {
         this.newPasswordAlertState()
-        this.onChagnePassword()
+        this.onChangePassword()
       }
+
       newPasswordAlertState = () => {
         if(this.state.newPasswordAlert){
           this.setState({newPasswordAlert: false})
@@ -119,7 +180,14 @@ export default class SettingScreen extends React.Component{
         }
       }
 
-    
+      newGoogleAlertState = () => {
+        if(this.state.newGoogleAlert){
+          this.setState({newGoogleAlert: false})
+        }else{
+          this.setState({newGoogleAlert: true})
+        }
+      }
+
     render() {
 
         return(
@@ -150,6 +218,13 @@ export default class SettingScreen extends React.Component{
             onPress = {() => this.newPasswordAlertState()}>
             <Text style = {styles.buttonText}>Change Password</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+            style={styles.button}
+            onPress = {() => this.gLogin()}>
+            <Text style = {styles.buttonText}>Google Log In:         Status: {String(this.state.google)}</Text>
+            </TouchableOpacity>
+
             {/* Current Password Overlay */}
             <Dialog.Container visible={this.state.newPasswordAlert}>
               <Dialog.Title>Change Password</Dialog.Title>
@@ -174,6 +249,7 @@ export default class SettingScreen extends React.Component{
             onPress = {() => this.onLogout()}>
             <Text style = {styles.buttonText}>Logout</Text>
             </TouchableOpacity>
+
             {/* Account Deletion */}
             <Dialog.Container visible={this.state.alertVisible}>
               <Dialog.Title>Account Deletion</Dialog.Title>
@@ -186,6 +262,7 @@ export default class SettingScreen extends React.Component{
               <Dialog.Button label="Cancel" onPress={this.changeAlertState}/>
               <Dialog.Button label="Confirm" onPress={this.onDelete} />
             </Dialog.Container>
+
             </View>
         );
     }

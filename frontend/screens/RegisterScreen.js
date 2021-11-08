@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import { Fontisto, Entypo} from '@expo/vector-icons';
 
 export default class RegisterScreen extends React.Component{
   constructor(props) {
@@ -67,22 +68,23 @@ export default class RegisterScreen extends React.Component{
         <Text style={styles.loginText}>Register</Text>
 
         <View style={styles.inputContainer}>
+        <Fontisto style={{paddingStart:40,top:42}} name="email" size={24} color="black"/>
         <TextInput
           style={styles.input}
           onChangeText={text => this.setState({ email: text })}
           value={email}
           placeholder="Email"
-          placeholderTextColor="rgba(168, 218, 220, 1)"
+          placeholderTextColor="rgba(69, 120, 144, 1)"
           textContentType="emailAddress"
         />
-
+        <Entypo style={{paddingStart:40,top:42}} name="lock" size={20} color="black"/>
         <TextInput
           style={styles.input}
           onChangeText={text => this.setState({ password: text })}
           value={password}
           textContentType="password"
           placeholder="Password"
-          placeholderTextColor="rgba(168, 218, 220, 1)"
+          placeholderTextColor="rgba(69, 120, 144, 1)"
           secureTextEntry={true}
         />
         {/*
@@ -104,7 +106,7 @@ export default class RegisterScreen extends React.Component{
           <Text style={styles.buttonText}> Sign Up </Text>
         </TouchableOpacity>
         </View>
-        <Text>Already on Task Flow? <TouchableOpacity onPress ={() => navigation.navigate('Login')}><Text style ={{color: 'blue'}}>Sign In</Text></TouchableOpacity></Text>
+        <Text style = {{position: 'relative', top: 20}}>Already on Task Flow? <TouchableOpacity onPress ={() => navigation.navigate('Login')}><Text style ={{color: 'blue', paddingStart: 5}}>Sign In</Text></TouchableOpacity></Text>
       </View>
     );
   }
@@ -112,8 +114,9 @@ export default class RegisterScreen extends React.Component{
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#FAEBEF',
+    flex:1,
+    marginBottom: "10%",
+    backgroundColor: 'rgba(244,245,250,1)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -127,42 +130,42 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   button: {
-    marginTop: 50,
+    height: 45,
+    width: '65%',
     alignItems: 'center',
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    marginHorizontal: 8,
-    color: '#fff',
-    borderRadius: 100,
-    width: '45%',
+    backgroundColor: 'rgba(256, 256, 256, 1)',
+    borderRadius: 10,
     padding: 10,
+    shadowRadius: 3,
+    shadowColor: 'black',
+    shadowOffset: {width: 1, height: 1},
+    shadowOpacity: .5,
   },
   buttonText: {
-    color: 'rgba(168, 218, 220, 1)',
+    height: 25,
+    top: 3,
+    color: 'rgba(69, 120, 144, 1)',
     fontWeight: 'bold'
   },
   loginText: {
-    bottom: "10%",
-    fontSize: 50,
+    fontSize: 40,
     textAlign: "center",
     color: 'rgba(29, 53, 87, 1)',
     textShadowColor: 'rgba(29, 53, 87, 1)',
-    textShadowOffset: {height: 2},
-    textShadowRadius: 10
   },
   input: {
     height: 60,
     width: '90%',
     left: '5%',
     fontSize: 16,
-    paddingStart: 40,
-    paddingEnd: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
+    paddingStart: 50,
     marginBottom: 20,
     textAlign: 'left',
-    borderRadius: 100,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    color: 'white',
+    borderRadius: 20,
+    borderBottomColor: "#000",
+    borderBottomWidth: 1,
+    backgroundColor: 'rgba(0,0,20,0)',
+    color: 'rgba(69, 120, 144, 1)',
   },
 
 

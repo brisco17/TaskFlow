@@ -5,6 +5,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
 import * as Google from "expo-google-app-auth";
+import Dialog from 'react-native-dialog';
+import { Fontisto, Entypo} from '@expo/vector-icons';
 
 export default class LoginScreen extends React.Component{
   constructor(props) {
@@ -14,7 +16,8 @@ export default class LoginScreen extends React.Component{
       email: '',
       password: '',
       login: true,
-      userInfo: []
+      userInfo: [],
+      ForgotPasswordAlert: false,
     }
   }
   
@@ -82,9 +85,33 @@ export default class LoginScreen extends React.Component{
         console.log("Error occured", exception);
         // Do something when login fails
     })
-
   }
 
+  onForgotPassword = () => {
+    fetch('https://young-chow-productivity-app.herokuapp.com/auth/users/reset_password/',{
+        method: 'POST',
+        headers: new Headers({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify({
+          email: this.state.email,
+        })
+      })
+        .then(response => response.json())
+        .then(json => {
+          console.log(json)
+          console.log(this.state.email)
+          console.log(this.state.userInfo)
+    })
+  }
+
+  onForgotPasswordAlert = () => {
+    if(this.state.ForgotPasswordAlert){
+      this.setState({ForgotPasswordAlert: false})
+    }else{
+      this.setState({ForgotPasswordAlert: true})
+    }
+  }
   render() {
     const { email, password} = this.state
     const {navigation} = this.props;
@@ -94,44 +121,66 @@ export default class LoginScreen extends React.Component{
         <Text style={styles.loginText}>Task Flow</Text>
 
         <View style={styles.inputContainer}>
+        <Fontisto style={{paddingStart:40,top:42}} name="email" size={24} color="black"/>
         <TextInput
           style={styles.input}
           onChangeText={text => this.setState({ email: text })}
           value={email}
           placeholder="Email"
-          placeholderTextColor="rgba(168, 218, 220, 1)"
+          placeholderTextColor="rgba(69, 120, 144, 1)"
           textContentType="emailAddress"
         />
+        <Entypo style={{paddingStart:40,top:42}} name="lock" size={20} color="black"/>
         <TextInput
           style={styles.input}
           onChangeText={text => this.setState({ password: text })}
           value={password}
           textContentType="password"
           placeholder="Password"
-          placeholderTextColor="rgba(168, 218, 220, 1)"
+          placeholderTextColor="rgba(69, 120, 144, 1)"
           secureTextEntry={true}
         />
         </View>
-        
-        <View style={styles.rowContainer}>
+        {/*
+        <TouchableOpacity
+          onPress = {() => this.onForgotPasswordAlert()}
+        >
+          <Text style = {{marginRight: '50%', color: 'blue'}}>Forgot Password?</Text>
+        </TouchableOpacity>
+        <Dialog.Container visible={this.state.ForgotPasswordAlert}>
+              <Dialog.Title>Forgot Password</Dialog.Title>
+              <Dialog.Description>Input recover email</Dialog.Description>
+              <Dialog.Input 
+              onChangeText={email => this.setState({email})}
+              value={this.state.email}
+              placeholder={'Enter Email'}
+              ></Dialog.Input>
+              <Dialog.Button label="Cancel" onPress={this.onForgotPasswordAlert}/>
+              <Dialog.Button label="Confirm" onPress={this.onForgotPassword}/>
+            </Dialog.Container>
+        */}
+        <View style={styles.columnContainer}>
           <TouchableOpacity
             style={styles.button}
             onPress={() => this.onSubmit()}
           >
             <Text style={styles.buttonText}> Log In </Text>
           </TouchableOpacity>
-        </View>
-        <View style={styles.rowContainer}>
           <TouchableOpacity
-            style={styles.registerButton}
+            style= {styles.Gbutton}
             onPress={() => {
               this.gLogin().then(() => {
                 if (this.state.login) navigation.navigate("GoogleRegister")
               })
             }}
           >
-            <Text style={styles.registerText}> Google Sign Up </Text>
+            <View style = {styles.Gtext}>
+              <Fontisto style={{paddingEnd: 10}}name="google" size={24} color="black"/>
+              <Text style={{top: 3}}>Sign up with Google</Text>
+            </View>
           </TouchableOpacity>
+        </View>
+          <View style={styles.columnContainer}>
           <TouchableOpacity
             style={styles.registerButton}
             onPress={() => navigation.navigate("Register")}
@@ -147,7 +196,7 @@ export default class LoginScreen extends React.Component{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAEBEF',
+    backgroundColor: 'rgba(244,245,250,1)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -156,61 +205,84 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: 'center'
   },
-  rowContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  columnContainer: {
+    position: 'relative',
+    width: "100%",
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'space-around'
   },
   button: {
-    marginTop: 50,
+    height: 45,
+    width: '65%',
     alignItems: 'center',
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    marginHorizontal: 8,
-    color: '#fff',
-    borderRadius: 100,
-    width: '45%',
+    backgroundColor: 'rgba(256, 256, 256, 1)',
+    borderRadius: 10,
     padding: 10,
+    shadowRadius: 3,
+    shadowColor: 'black',
+    shadowOffset: {width: 1, height: 1},
+    shadowOpacity: .5,
   },
   registerButton: {
-    marginTop: 10,
+    position: 'relative',
+    top: 50,
     alignItems: 'center',
     backgroundColor: 'rgba(69, 120, 144, 0)',
     marginHorizontal: 8,
     color: '#fff',
-    borderRadius: 100,
     width: '45%',
-    padding: 10,
   },
   buttonText: {
-    color: 'rgba(168, 218, 220, 1)',
+    height: 25,
+    top: 3,
+    color: 'rgba(69, 120, 144, 1)',
     fontWeight: 'bold'
   },
   registerText: {
+    position: 'relative',
     color: 'rgba(69, 120, 144, 1)',
     fontWeight: 'bold'
   },
   loginText: {
-    bottom: "10%",
-    fontSize: 50,
+    fontSize: 40,
     textAlign: "center",
     color: 'rgba(29, 53, 87, 1)',
     textShadowColor: 'rgba(29, 53, 87, 1)',
-    textShadowOffset: {height: 2},
-    textShadowRadius: 10
   },
   input: {
     height: 60,
     width: '90%',
     left: '5%',
     fontSize: 16,
-    paddingStart: 40,
-    paddingEnd: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
+    paddingStart: 50,
     marginBottom: 20,
     textAlign: 'left',
-    borderRadius: 100,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    color: 'white',
+    borderRadius: 20,
+    borderBottomColor: "#000",
+    borderBottomWidth: 1,
+    backgroundColor: 'rgba(0,0,20,0)',
+    color: 'rgba(69, 120, 144, 1)',
+  },
+  Gtext:{
+    height: 25,
+    flexDirection: 'row',
+    color: 'rgba(69, 120, 144, 1)',
+    fontWeight: 'bold'
+  },
+  Gbutton: {
+    position: 'relative',
+    top: 30,
+    height: 45,
+    width: '65%',
+    alignItems: 'center',
+    shadowRadius: 3,
+    shadowColor: 'black',
+    shadowOffset: {width: 1, height: 1},
+    shadowOpacity: .5,
+    backgroundColor: 'rgba(256, 256, 256, 1)',
+    borderRadius: 10,
+    paddingTop: 10,
   },
 
 

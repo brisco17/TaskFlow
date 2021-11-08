@@ -15,6 +15,7 @@ export default class SettingScreen extends React.Component{
     this.state = {
       password: '',
       newPassword: '',
+      reenterPassword: '',
       alertVisible: false,
       newPasswordAlert: false,
       sessionToken:'',
@@ -30,7 +31,6 @@ export default class SettingScreen extends React.Component{
   }
 
     onChangePassword = () => {
-      const {navigation} = this.props
       fetch("https://young-chow-productivity-app.herokuapp.com/auth/users/set_password/",{
         method: "POST",
         headers: new Headers({
@@ -38,17 +38,23 @@ export default class SettingScreen extends React.Component{
             'Authorization': 'Token ' + this.state.sessionToken
         }),
         body: JSON.stringify({
-          new_password: this.state.newPassword,
+          new_password: this.state.reenterPassword,
           re_new_password: this.state.newPassword,
           current_password: this.state.password,
         })
       })
       .then(response => response.json())
       .then(json => {
-        if(json.new_password){
-          Alert.alert("Successful change password")
+        console.log(json.current_password.toString())
+        if(this.state.reenterPassword != this.state.newPassword){
+          Alert.alert("New Passwords did not match")
         }
-        
+        else if(json.current_password.toString() == ""){
+          Alert.alert("Inputed Wrong password")
+        }
+        else{
+          Alert.alert("Password Changed")
+        }
 
       })
     }
@@ -92,7 +98,6 @@ export default class SettingScreen extends React.Component{
           SecureStore.deleteItemAsync('session').then(() => {
             this.props.route.params.onLoggedIn();
             navigation.pop();
-
             Alert.alert("Account Succesfully Deleted")
           })
         })
@@ -124,32 +129,23 @@ export default class SettingScreen extends React.Component{
 
         return(
             <View style={styles.MainScreen}>
-            <View style={{ height: '10%', width: '100%', backgroundColor: '#A8DADC' , top: '90%'}}/>
-            <View style={styles.TaskBarContainer}>
-              <View style = {styles.CricleOverlay}>
-                <TouchableOpacity style = {styles.innerCircle}
-                
-                />
-              </View>
-              <View style = {styles.CricleOverlay}>
-                <TouchableOpacity style = {styles.innerCircle}/>
-              </View>
-              <View style = {styles.CricleOverlay}>
-                <TouchableOpacity style = {styles.innerCircle}/>
-              </View>
-            </View>
-            
+            <View style = {{flexDirection: 'column', justifyContent: 'space-evenly', width: '100%', height: '80%'}}>
             <TouchableOpacity 
             style = {styles.button}
             onPress = {this.changeAlertState}>
             <Text style = {styles.buttonText}>Delete Account</Text>
             </TouchableOpacity>
-
             <TouchableOpacity 
             style = {styles.button}
             onPress = {() => this.newPasswordAlertState()}>
             <Text style = {styles.buttonText}>Change Password</Text>
             </TouchableOpacity>
+            <TouchableOpacity 
+            style = {styles.button}
+            onPress = {() => this.onLogout()}>
+            <Text style = {styles.buttonText}>Logout</Text>
+            </TouchableOpacity>
+            </View>
             {/* Current Password Overlay */}
             <Dialog.Container visible={this.state.newPasswordAlert}>
               <Dialog.Title>Change Password</Dialog.Title>
@@ -159,21 +155,21 @@ export default class SettingScreen extends React.Component{
               placeholder={'Enter Current Password'}
               secureTextEntry={true}
               ></Dialog.Input>
-              <Dialog.Input
+              <Dialog.Input 
               onChangeText={newPassword => this.setState({newPassword})}
               value={this.state.newPassword}
               placeholder={'Enter New Password'}
               secureTextEntry={true}
               ></Dialog.Input>
+              <Dialog.Input
+              onChangeText={reenterPassword => this.setState({reenterPassword})}
+              value={this.state.reenterPassword}
+              placeholder={'Re-Enter New Password'}
+              secureTextEntry={true}
+              ></Dialog.Input>
               <Dialog.Button label="Cancel" onPress={this.newPasswordAlertState}/>
               <Dialog.Button label="Confirm" onPress={this.toggleBothAlerts}/>
             </Dialog.Container>
-            
-            <TouchableOpacity 
-            style = {styles.button}
-            onPress = {() => this.onLogout()}>
-            <Text style = {styles.buttonText}>Logout</Text>
-            </TouchableOpacity>
             {/* Account Deletion */}
             <Dialog.Container visible={this.state.alertVisible}>
               <Dialog.Title>Account Deletion</Dialog.Title>
@@ -194,47 +190,28 @@ export default class SettingScreen extends React.Component{
 const styles = StyleSheet.create({
   MainScreen: {
     flex: 1,
-    backgroundColor: '#FAEBEF',
+    backgroundColor: 'rgba(244,245,250,1)',
     alignItems: 'baseline',
     width: '100%',
     height: '100%'
   },
-  TaskBarContainer:{
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    width: '100%',
-    height: '10%',
-    justifyContent: 'space-evenly',
-    position: 'absolute',
-    bottom: 30
-  },
-  CricleOverlay:{
-    width: '20%',
-    height: '90%',
-    borderRadius: 500000/2,
-    backgroundColor: '#FAEBEF',
+  button: {
+    position: 'relative',
+    height: 45,
+    width: '65%',
     alignItems: 'center',
-  },
-  innerCircle:{
-    top: '10%',
-    width: '80%',
-    height: '80%',
-    borderRadius: 500000/2,
-    backgroundColor: '#457890',
+    backgroundColor: 'rgba(256, 256, 256, 1)',
+    borderRadius: 10,
+    padding: 10,
+    shadowRadius: 3,
+    shadowColor: 'black',
+    shadowOffset: {width: 1, height: 1},
     shadowOpacity: .5,
   },
-  button: {
-    marginTop: 50,
-    alignItems: 'center',
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    marginHorizontal: 8,
-    color: '#fff',
-    borderRadius: 100,
-    width: '45%',
-    padding: 10,
-  },
   buttonText: {
-    color: 'rgba(168, 218, 220, 1)',
+    height: 25,
+    top: 3,
+    color: 'rgba(69, 120, 144, 1)',
     fontWeight: 'bold'
   },
 

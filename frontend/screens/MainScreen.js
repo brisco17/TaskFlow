@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Button, ScrollView, Dimensions, Pressable } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Modal from "react-native-modal";
-
+import {SimpleLineIcons, Foundation} from '@expo/vector-icons';
 
 export default class MainScreen extends React.Component {
   constructor(props) {
@@ -188,26 +188,25 @@ export default class MainScreen extends React.Component {
         <ScrollView contentContainerStyle={styles.contentContainer}>
           { this.makeTasks() }
         </ScrollView>
-          
-          <View style={{ height: '10%', width: '100%', position: 'absolute', backgroundColor: '#A8DADC' , top: '90%'}}/>
+          <View style = {styles.navBarContainer}>
+          <View style={{ height: '100%', width: '100%', position: 'absolute', backgroundColor: '#A8DADC', top: '30%'}}/>
           <View style={styles.TaskBarContainer}>   
-          
             <View style = {styles.CricleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}
                 onPress = {() => navigation.navigate("Settings")}>
+                  <SimpleLineIcons style = {{padding: 12, left: 4}}name="settings" size={40} color="rgba(69, 120, 144, 1)"/>
               </TouchableOpacity>
             </View>
-        
-
-
-
-            <View style = {styles.CricleOverlay}>
-              <TouchableOpacity style = {styles.innerCircle}
-                onPress = {() => navigation.navigate('Create Task')}/>
+            <View style = {styles.CricleOverlayMain}>
+              <TouchableOpacity style = {styles.innerCircleMain}
+                onPress = {() => navigation.navigate('Create Task')}>
+                  <Foundation style = {{padding: 18, left: 15}} name="plus" size={50} color="rgba(69, 120, 144, 1)"/>
+                </TouchableOpacity>
             </View>
-
             <View style = {styles.CricleOverlay}>
-              <TouchableOpacity style={styles.innerCircle} onPress={this.changeState} />
+              <TouchableOpacity style={styles.innerCircle} onPress={this.changeState}>
+              <Foundation style = {{padding: 15, left: 5}} name="filter" size={40} color="rgba(69, 120, 144, 1)"/>
+              </TouchableOpacity>
 
               <Modal 
                 isVisible={this.state.isVisible}
@@ -264,6 +263,7 @@ export default class MainScreen extends React.Component {
             </View>
 
           </View>
+          </View>
       </View>
     );
   };
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
   },
   MainScreen: {
     flex: 1,
-    backgroundColor: '#FAEBEF',
+    backgroundColor: 'rgba(244,245,250,1)',
     alignItems: 'baseline',
     height: '100%'
   },
@@ -331,16 +331,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'transparent',
     width: '100%',
-    height: '10%',
+    height: '100%',
+    top: 20,
     justifyContent: 'space-evenly',
     position: 'absolute',
-    bottom: -4
   },
   CricleOverlay:{
-    width: '20%',
-    height: '90%',
+    width: '25%',
+    height: '50%',
     borderRadius: 500000/2,
-    backgroundColor: '#FAEBEF',
+    backgroundColor: 'rgba(244,245,250,1)',
     alignItems: 'center',
   },
   innerCircle:{
@@ -348,7 +348,11 @@ const styles = StyleSheet.create({
     width: '80%',
     height: '80%',
     borderRadius: 500000/2,
-    backgroundColor: '#457890',
+    borderWidth: 1,
+    borderColor: 'rgba(69, 120, 144, 1)',
+    backgroundColor: 'rgba(244,245,250,1)',
+    shadowOffset: {width: 1, height: 1},
+    shadowRadius: 5,
     shadowOpacity: .5,
   },
   input: {
@@ -420,7 +424,33 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width: '100%',
     padding: 10,
+  },
+  navBarContainer:{
+    height: '25%',
+    width: '100%',
+    position: 'relative',
+    top: 50,
+    backgroundColor: 'transparent',
+  },
+  CricleOverlayMain:{
+    width: '35%',
+    height: '65%',
+    bottom: 40,
+    borderRadius: 500000/2,
+    backgroundColor: 'rgba(244,245,250,1)',
+    alignItems: 'center',
+  },
+  innerCircleMain:{
+    top: '10%',
+    width: '80%',
+    height: '80%',
+    borderRadius: 1080/2,
+    borderWidth: 1,
+    borderColor: 'rgba(69, 120, 144, 1)',
+    backgroundColor: 'rgba(244,245,250,1)',
+    shadowOffset: {width: 1, height: 1},
+    shadowRadius: 5,
+    shadowOpacity: .5,
   }
-
 });
 

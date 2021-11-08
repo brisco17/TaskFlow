@@ -6,6 +6,7 @@ import CalendarPicker from 'react-native-calendar-picker';
 import moment from 'moment';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import {FontAwesome5} from '@expo/vector-icons';
 
 export default class CreateTaskScreen extends React.Component{
   constructor(props) {
@@ -121,13 +122,14 @@ export default class CreateTaskScreen extends React.Component{
 
     return (
       <ScrollView contentContainerStyle={styles.container}>
+        <FontAwesome5 style = {{postion: 'absolute', right: "37%", top: "6%"}} name="tasks" size={24} color="black"/>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
             onChangeText={text => this.setState({ title: text })}
             value={this.state.title}
             placeholder="Title for Reminder"
-            placeholderTextColor="rgba(168, 218, 220, 1)"
+            placeholderTextColor="rgba(69, 120, 144, 1)"
             textContentType="none"
           />
         </View>
@@ -145,7 +147,7 @@ export default class CreateTaskScreen extends React.Component{
             onChangeText={text => this.setState({ description: text })}
             value={this.state.description}
             placeholder="Description"
-            placeholderTextColor="rgba(168, 218, 220, 1)"
+            placeholderTextColor="rgba(69, 120, 144, 1)"
             textContentType="none"
             textAlignVertical="top"
             multiline={true}
@@ -200,12 +202,13 @@ const styles = StyleSheet.create({
   dropdown1BtnStyle: {
     width: "60%",
     height: 50,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
+    bottom: "25%",
+    backgroundColor: 'rgba(256, 256, 256, 1)',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#444",
   },
-  dropdown1BtnTxtStyle: { color: 'rgba(168, 218, 220, 1)', textAlign: "left" },
+  dropdown1BtnTxtStyle: { color: 'rgba(69, 120, 144, 1)', textAlign: "center" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },
   dropdown1RowStyle: {
     backgroundColor: "#EFEFEF",
@@ -214,7 +217,7 @@ const styles = StyleSheet.create({
   dropdown1RowTxtStyle: { color: "#444", textAlign: "left" },
   container: {
     flex: 1,
-    backgroundColor: '#FAEBEF',
+    backgroundColor: 'rgba(244,245,250,1)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -228,24 +231,31 @@ const styles = StyleSheet.create({
   },
   calContainer: {
     flexDirection: 'row',
+    position: 'relative',
     justifyContent: 'space-between',
-    marginTop: 30,
+    marginTop: 10,
     maxHeight: '30%',
     width: Dimensions.get('window').width,
-    backgroundColor: "white"
+    backgroundColor: "rgba(244,245,250,1)"
     
   },
   button: {
+    height: 45,
+    bottom: '10%',
+    width: '65%',
     alignItems: 'center',
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    marginHorizontal: 8,
-    color: '#fff',
-    borderRadius: 100,
-    width: '45%',
+    backgroundColor: 'rgba(256, 256, 256, 1)',
+    borderRadius: 10,
     padding: 10,
+    shadowRadius: 3,
+    shadowColor: 'black',
+    shadowOffset: {width: 1, height: 1},
+    shadowOpacity: .5,
   },
   buttonText: {
-    color: 'rgba(168, 218, 220, 1)',
+    height: 25,
+    top: 3,
+    color: 'rgba(69, 120, 144, 1)',
     fontWeight: 'bold'
   },
   loginText: {
@@ -262,32 +272,29 @@ const styles = StyleSheet.create({
     width: '90%',
     left: '5%',
     fontSize: 16,
-    paddingStart: 40,
-    paddingEnd: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
+    paddingStart: 50,
     marginBottom: 20,
     textAlign: 'left',
-    borderRadius: 100,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    color: 'white',
+    borderRadius: 20,
+    borderBottomColor: "#000",
+    borderBottomWidth: 1,
+    backgroundColor: 'rgba(0,0,20,0)',
+    color: 'rgba(69, 120, 144, 1)',
   },
   largeInput: {
     height: '40%',
     width: '90%',
     left: '5%',
     fontSize: 16,
-    paddingStart: 40,
-    paddingEnd: 40,
-    borderColor: 'gray',
+    paddingStart: 20,
     borderWidth: 1,
     marginBottom: 20,
     textAlign: 'left',
     paddingTop: '5%',
-    marginBottom: '5%',
-    borderRadius: 100,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    color: 'white',
+    borderRadius: 20,
+    borderWidth: 2,
+    backgroundColor: 'rgba(244,245,250,1)',
+    color: 'rgba(69, 120, 144, 1)',
   },
 
 

@@ -203,7 +203,7 @@ export default class MainScreen extends React.Component {
       <View style={styles.MainScreen}>
 
           
-        <View >
+        <View style={styles.contentContainer}>
         <ScrollingButtonMenu 
           items={this.state.menus}
           onPress={

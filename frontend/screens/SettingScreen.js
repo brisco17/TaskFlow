@@ -1,8 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, Alert, TextInput, TouchableOpacity } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
 import Dialog from 'react-native-dialog';
 import * as Google from "expo-google-app-auth";
@@ -193,6 +190,7 @@ export default class SettingScreen extends React.Component{
       }
 
     render() {
+      const {navigation} = this.props;
 
         return(
             <View style={styles.MainScreen}>
@@ -238,6 +236,12 @@ export default class SettingScreen extends React.Component{
               <Dialog.Button label="Cancel" onPress={this.newPasswordAlertState}/>
               <Dialog.Button label="Confirm" onPress={this.toggleBothAlerts}/>
             </Dialog.Container>
+
+            <TouchableOpacity 
+            style = {styles.button}
+            onPress = {() => navigation.navigate("NotificationScreen")}>
+            <Text style = {styles.buttonText}>Notifications</Text>
+            </TouchableOpacity>
             
             <TouchableOpacity 
             style = {styles.button}

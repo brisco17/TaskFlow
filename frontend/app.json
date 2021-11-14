@@ -22,7 +22,8 @@
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.22428134723-pq3rqvntskvn45979el7kmkrnksmajgs"
         }
-      }
+      },
+      "bundleIdentifier": "com.young-chow.taskflow"
     },
     "android": {
       "adaptiveIcon": {

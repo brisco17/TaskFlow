@@ -1,8 +1,10 @@
 import React from 'react';
 import { Text, View, Button } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 
-// This refers to the function defined earlier in this guide, in Push Notifications Set Up
+// This screen is a proof of concept of requesting cross platform device notifications
+// and triggering push notifications with the press of a button. 
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -23,6 +25,7 @@ export default class NotificationScreen extends React.Component {
 
   async componentDidMount() {
     this.registerForPushNotificationsAsync();
+    
 
     Notifications.addNotificationReceivedListener(this._handleNotification);
     
@@ -69,9 +72,8 @@ export default class NotificationScreen extends React.Component {
     async schedulePushNotification() {
         await Notifications.scheduleNotificationAsync({
           content: {
-            title: "You've got mail! 📬",
-            body: 'Here is the notification body',
-            data: { data: 'goes here' },
+            title: "Notifications proof of concept ❗",
+            body: 'Task descriptions will go here!',
           },
           trigger: { seconds: 2 },
         });

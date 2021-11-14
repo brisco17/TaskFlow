@@ -4,6 +4,7 @@ import {StyleSheet, Text, View, TouchableOpacity, Button, ScrollView, Dimensions
 import * as SecureStore from 'expo-secure-store';
 import Modal from "react-native-modal";
 import {Ionicons,SimpleLineIcons, Foundation} from '@expo/vector-icons';
+import ScrollingButtonMenu from 'react-native-scroll-menu';
 
 export default class MainScreen extends React.Component {
   constructor(props) {
@@ -18,6 +19,7 @@ export default class MainScreen extends React.Component {
       taskSet: [],
       displayTasks: [],
       appliedTag: '',
+      menus: [],
     }
   }
 
@@ -57,6 +59,13 @@ export default class MainScreen extends React.Component {
     .then((response => response.json()))
     .then(json => {
       this.setState({tags: json})
+      let arr = this.state.tags;
+      console.log(this.state.tags)
+      let arr2 = arr.map(tag =>
+      ({name: tag.title,id: tag.pk})
+      );
+      this.setState({menus:arr2})
+      console.log(arr2)
      }
     )
   }
@@ -190,12 +199,27 @@ export default class MainScreen extends React.Component {
     const {navigation} = this.props;
 
     return (
+      
       <View style={styles.MainScreen}>
+
+          
+        <View >
+        <ScrollingButtonMenu 
+          items={this.state.menus}
+          onPress={
+            (e) => this.showTasksByTag(this.state.tags.find(tag => tag.pk === e.id))
+          }
+          
+          />
+        </View>
+
+
 
         <ScrollView contentContainerStyle={styles.contentContainer}>
           { this.makeTasks() }
           <View style={styles.bottomPad} />
         </ScrollView>
+        
           <View style = {styles.navBarContainer}>
           <View style={{ height: '100%', width: '100%', position: 'absolute', backgroundColor: '#A8DADC', top: '30%'}}/>
           <View style={styles.TaskBarContainer}>   

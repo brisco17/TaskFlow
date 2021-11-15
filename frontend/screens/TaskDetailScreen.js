@@ -26,7 +26,9 @@ export default class CreateTaskScreen extends React.Component{
       subTasks: {},
       subCreate: false,
       subTitleTemp: '',
-      countries: ["Egypt", "Canada", "Australia", "Ireland"]
+      countries: ["Egypt", "Canada", "Australia", "Ireland"],
+      drive: [],
+      driveChoice: ""
     }
     this.onDateChange = this.onDateChange.bind(this);
   }
@@ -57,6 +59,7 @@ export default class CreateTaskScreen extends React.Component{
   async componentDidMount() {
     let taskToken = await SecureStore.getItemAsync('currentTask')
     let token = await SecureStore.getItemAsync('session')
+    let driveData = await SecureStore.getItemAsync('DriveData')
     const curTask = JSON.parse(taskToken)
 
     if (token && taskToken) {
@@ -80,6 +83,17 @@ export default class CreateTaskScreen extends React.Component{
       });
       
       
+    }
+    if (driveData) {
+      var temp = []
+
+      for (var data in JSON.parse(driveData)) {
+        temp.push(JSON.parse(driveData)[data].name)
+      }
+      
+      this.setState({
+        drive: temp
+      })
     }
   }
 
@@ -227,6 +241,37 @@ export default class CreateTaskScreen extends React.Component{
             multiline={true}
           />
         </View>
+
+        <SelectDropdown
+          data={this.state.drive}
+          defaultButtonText={"Select Drive File"}
+          onSelect={(selectedItem, index) => {
+            this.setState({driveChoice: selectedItem})
+            console.log(selectedItem)
+            console.log("new item selected")
+          }}
+          buttonTextAfterSelection={(selectedItem, index) => {
+            // text represented after item is selected
+            // if data array is an array of objects then return selectedItem.property to render after item is selected
+            return selectedItem
+          }}
+          rowTextForSelection={(item, index) => {
+            // text represented for each item in dropdown
+            // if data array is an array of objects then return item.property to represent item in dropdown
+            return item
+          }}
+          buttonStyle={styles.dropdown1BtnStyle}
+          buttonTextStyle={styles.dropdown1BtnTxtStyle}
+          renderDropdownIcon={() => {
+            return (
+              <FontAwesome name="chevron-down" color={"#444"} size={18} />
+            );
+          }}
+          dropdownIconPosition={"right"}
+          dropdownStyle={styles.dropdown1DropdownStyle}
+          rowStyle={styles.dropdown1RowStyle}
+          rowTextStyle={styles.dropdown1RowTxtStyle}
+        />
 
         
         <ScrollView contentContainerStyle={styles.scrollContainer}>

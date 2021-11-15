@@ -19,6 +19,7 @@ export default class MainScreen extends React.Component {
       taskSet: [],
       displayTasks: [],
       appliedTag: '',
+      appliedTagID: 1,
       menus: [],
     }
   }
@@ -61,11 +62,16 @@ export default class MainScreen extends React.Component {
       this.setState({tags: json})
       let arr = this.state.tags;
       console.log(this.state.tags)
-      let arr2 = arr.map(tag =>
+      let arr2 =  arr.map(tag =>
       ({name: tag.title,id: tag.pk})
       );
-      this.setState({menus:arr2})
-      console.log(arr2)
+      let arr3 = [
+        {"id": 1,
+        "name": "All"}]
+      
+      this.setState({menus:arr3.concat(arr2)})
+      this.setState({appliedTagID : 1})
+      console.log(menus)
      }
     )
   }
@@ -118,8 +124,8 @@ export default class MainScreen extends React.Component {
 
     var tasks = []
 
-    if (tag == this.state.appliedTag) {
-      this.setState({displayTasks: this.state.taskSet, appliedTag: ''})
+    if (tag == this.state.appliedTag || tag == 'All') {
+      this.setState({displayTasks: this.state.taskSet, appliedTag: '', appliedTagID: 1})
       console.log('Removed applied tag')
     }
     else if (tag == 'due_date') {
@@ -150,7 +156,7 @@ export default class MainScreen extends React.Component {
         console.log(tasks)
       }
       console.log(tasks)
-      this.setState({displayTasks: tasks, appliedTag: tag})
+      this.setState({displayTasks: tasks, appliedTag: tag, appliedTagID: tag.pk})
     }
   }
 
@@ -207,9 +213,16 @@ export default class MainScreen extends React.Component {
         <ScrollingButtonMenu 
           items={this.state.menus}
           onPress={
-            (e) => this.showTasksByTag(this.state.tags.find(tag => tag.pk === e.id))
+            (e) => {
+              if(e.name === "All") {
+                this.showTasksByTag(e.name)
+              }
+              else{
+                this.showTasksByTag(this.state.tags.find(tag => tag.pk === e.id))}
+              }
+            
           }
-          
+          selected={this.state.appliedTagID}
           />
         </View>
 
@@ -272,10 +285,7 @@ export default class MainScreen extends React.Component {
                       <Text style={styles.button}>Created</Text>
                     </TouchableOpacity>
                     <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-                    <Text style={styles.modalHeader}>
-                      Apply Tag:
-                    </Text>
-                    { this.showTags() }
+                    
                     <Text style={styles.modalHeader}>
                       Manage Tags:
                     </Text>                        

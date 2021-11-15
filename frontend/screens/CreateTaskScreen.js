@@ -7,6 +7,9 @@ import moment from 'moment';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {FontAwesome5} from '@expo/vector-icons';
+import ModernHeader from "react-native-modern-header";
+
+
 
 export default class CreateTaskScreen extends React.Component{
   constructor(props) {
@@ -61,6 +64,12 @@ export default class CreateTaskScreen extends React.Component{
     this.setState({
       due_date: date,
     });
+  }
+
+  onBack = () => {
+    const {navigation} = this.props;
+    navigation.pop()
+
   }
 
 
@@ -122,7 +131,10 @@ export default class CreateTaskScreen extends React.Component{
     // const open = false
 
     return (
+      <View style={styles.MainScreen}>
+      <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightComponentDisable={true} onLeftPress={() => this.onBack()}/>
       <ScrollView contentContainerStyle={styles.container}>
+        
         <FontAwesome5 style = {{postion: 'absolute', right: "37%", top: "6%"}} name="tasks" size={24} color="black"/>
         <View style={styles.inputContainer}>
           <TextInput
@@ -195,6 +207,7 @@ export default class CreateTaskScreen extends React.Component{
         </TouchableOpacity>
 
       </ScrollView>
+      </View>
     );
   }
 }
@@ -298,7 +311,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(244,245,250,1)',
     color: 'rgba(69, 120, 144, 1)',
   },
-
+  MainScreen: {
+    flex: 1,
+    backgroundColor: 'rgba(244,245,250,1)',
+    height: '100%'
+  },
 
   
 });

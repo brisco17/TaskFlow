@@ -7,8 +7,6 @@ export default StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        width: screen.width,
-        height: screen.height,
     },
     inputContainer: {
         width: "100%",
@@ -20,10 +18,10 @@ export default StyleSheet.create({
       },
       calContainer: {
         flexDirection: 'row',
+        position: 'relative',
         justifyContent: 'space-between',
-        marginTop: 30,
-        maxHeight: '30%',
-        width: screen.width, 
+        width: Dimensions.get('window').width,
+        backgroundColor: "rgba(244,245,250,1)"
       },
     
   });

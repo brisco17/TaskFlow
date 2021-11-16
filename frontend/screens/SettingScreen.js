@@ -22,14 +22,21 @@ export default class SettingScreen extends React.Component{
       newGoogleAlert: false,
       google: false,
       sessionToken:'',
+      accessToken: ""
     }
     
   }
   async componentDidMount() {
     let token = await SecureStore.getItemAsync('session')
+    let accessToken = await SecureStore.getItemAsync('GoogleToken')
     if (token) {
       console.log('Token ' + token)
       this.setState({sessionToken: token})
+    }
+    if (accessToken) {
+      this.setState({
+        accessToken: accessToken,
+        google: true})
     }
   }
 

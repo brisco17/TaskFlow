@@ -218,8 +218,9 @@ export default class MainScreen extends React.Component {
                 this.showTasksByTag(e.name)
               }
               else{
-                this.showTasksByTag(this.state.tags.find(tag => tag.pk === e.id))}
+                this.showTasksByTag(this.state.tags.find(tag => tag.pk === e.id))
               }
+            }
             
           }
           selected={this.state.appliedTagID}
@@ -236,19 +237,19 @@ export default class MainScreen extends React.Component {
           <View style = {styles.navBarContainer}>
           <View style={{ height: '100%', width: '100%', position: 'absolute', backgroundColor: '#A8DADC', top: '30%'}}/>
           <View style={styles.TaskBarContainer}>   
-            <View style = {styles.CricleOverlay}>
+            <View style = {styles.CircleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}
                 onPress = {() => navigation.navigate("Settings")}>
                   <Ionicons style = {{padding: 12, left: 5}} name="settings-sharp" size={40} color="rgba(69, 120, 144, 1)" />
               </TouchableOpacity>
             </View>
-            <View style = {styles.CricleOverlayMain}>
+            <View style = {styles.CircleOverlayMain}>
               <TouchableOpacity style = {styles.innerCircleMain}
                 onPress = {() => navigation.navigate('Create Task')}>
                   <Foundation style = {{padding: 18, left: 15}} name="plus" size={50} color="rgba(69, 120, 144, 1)"/>
                 </TouchableOpacity>
             </View>
-            <View style = {styles.CricleOverlay}>
+            <View style = {styles.CircleOverlay}>
               <TouchableOpacity style={styles.innerCircle} onPress={this.changeState}>
               <Foundation style = {{padding: 15, left: 5}} name="filter" size={40} color="rgba(69, 120, 144, 1)"/>
               </TouchableOpacity>
@@ -380,7 +381,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     position: 'absolute',
   },
-  CricleOverlay:{
+  CircleOverlay:{
     width: '25%',
     height: '50%',
     borderRadius: 500000/2,
@@ -476,7 +477,7 @@ const styles = StyleSheet.create({
     top: 50,
     backgroundColor: 'transparent',
   },
-  CricleOverlayMain:{
+  CircleOverlayMain:{
     width: '35%',
     height: '65%',
     bottom: 40,

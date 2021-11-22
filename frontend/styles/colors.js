@@ -2,9 +2,9 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
     background: {
-        backgroundColor: '#FAEBEF',
+        backgroundColor: 'rgba(244,245,250,1)',
     },
     textField: {
-        backgroundColor: 'rgba(69, 120, 144, 1)',
+        backgroundColor: 'rgba(244,245,250,1)',
     },
   });

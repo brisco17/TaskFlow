@@ -3,8 +3,12 @@ import React, { useState } from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Button, ScrollView, Dimensions, Pressable } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Modal from "react-native-modal";
-import {Ionicons,SimpleLineIcons, Foundation} from '@expo/vector-icons';
+import {Ionicons,SimpleLineIcons, Foundation,Entypo} from '@expo/vector-icons';
 import ScrollingButtonMenu from 'react-native-scroll-menu';
+import ModernHeader from "react-native-modern-header";
+import BottomBar from 'react-native-bottom-bar';
+
+
 
 export default class MainScreen extends React.Component {
   constructor(props) {
@@ -26,7 +30,6 @@ export default class MainScreen extends React.Component {
 
   async componentDidMount() {
     let token = await SecureStore.getItemAsync('session')
-    
     if (token) {
       console.log('User Token: ' + token)
       this.setState({sessionToken: token})
@@ -100,9 +103,9 @@ export default class MainScreen extends React.Component {
           <>
           <TouchableOpacity style={styles.button} onPress={() => this.goToDetails(task)}>
             <Text style={styles.titleText}> {task.title} </Text>
-            <Text style={styles.buttonText}> {task.description} </Text>
-            <Text style={styles.buttonText}> {"Due on " + task.due_date} </Text>
-            <Text style={styles.buttonText}> {"Created on " + task.creation_date} </Text>
+            <Text style={styles.buttonText}> {"Discription: " + task.description} </Text>
+            <Text style={{color: 'rgba(69, 120, 144, 1)', size: .5, position: 'absolute', top: "95%", left: 10}}> {"Due: " + task.due_date} </Text>
+            <Text style={{color: 'rgba(69, 120, 144, 1)', size: .5, position: 'absolute', top: "95%", left: "50%"}}> {"Creation Date: " + task.creation_date} </Text>
           </TouchableOpacity>
           </>
           )
@@ -229,6 +232,12 @@ export default class MainScreen extends React.Component {
 
 
 
+        <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} 
+        leftComponentDisable={true} 
+        rightCustomComponent={<Entypo name="dots-three-horizontal" size={24} color="black" />}
+        />
+        {//<BottomBar/>
+        }
         <ScrollView contentContainerStyle={styles.contentContainer}>
           { this.makeTasks() }
           <View style={styles.bottomPad} />
@@ -240,18 +249,18 @@ export default class MainScreen extends React.Component {
             <View style = {styles.CircleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}
                 onPress = {() => navigation.navigate("Settings")}>
-                  <Ionicons style = {{padding: 12, left: 5}} name="settings-sharp" size={40} color="rgba(69, 120, 144, 1)" />
+                  <Ionicons style = {{top: '25%', left: '25%'}} name="settings-sharp" size={40} color="rgba(69, 120, 144, 1)" />
               </TouchableOpacity>
             </View>
             <View style = {styles.CircleOverlayMain}>
               <TouchableOpacity style = {styles.innerCircleMain}
                 onPress = {() => navigation.navigate('Create Task')}>
-                  <Foundation style = {{padding: 18, left: 15}} name="plus" size={50} color="rgba(69, 120, 144, 1)"/>
+                  <Foundation style = {{top: '25%', left: '32%'}} name="plus" size={50} color="rgba(69, 120, 144, 1)"/>
                 </TouchableOpacity>
             </View>
             <View style = {styles.CircleOverlay}>
               <TouchableOpacity style={styles.innerCircle} onPress={this.changeState}>
-              <Foundation style = {{padding: 15, left: 5}} name="filter" size={40} color="rgba(69, 120, 144, 1)"/>
+              <Foundation style = {{top: '30%', left: '30%'}} name="filter" size={40} color="rgba(69, 120, 144, 1)"/>
               </TouchableOpacity>
 
               <Modal 
@@ -354,21 +363,26 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 30,
     marginBottom: 10,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    color: '#fff',
+    backgroundColor: 'rgba(244,245,250,1)',
+    shadowOffset: {width: 1, height: 1},
+    shadowRadius: 5,
+    shadowOpacity: .5,
+    shadowColor: 'black',
     padding: 10,
     marginLeft: 5,
     marginRight: 5,
-    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: 'rgba(69, 120, 144, 1)',
+    borderRadius: 20,
   },
   buttonText: {
-    color: 'rgba(168, 218, 220, 1)',
+    color: 'rgba(69, 120, 144, 1)',
     marginBottom: 25,
   },
   titleText: {
     textAlign: 'center',
     fontSize: 28,
-    color: 'rgba(168, 218, 220, 1)',
+    color: 'rgba(69, 120, 144, 1)',
     fontWeight: 'bold',
     marginBottom: 25,
   },
@@ -377,7 +391,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     width: '100%',
     height: '100%',
-    top: 20,
+    top: 30,
     justifyContent: 'space-evenly',
     position: 'absolute',
   },
@@ -474,7 +488,7 @@ const styles = StyleSheet.create({
     height: '25%',
     width: '100%',
     position: 'relative',
-    top: 50,
+    top: 60,
     backgroundColor: 'transparent',
   },
   CircleOverlayMain:{

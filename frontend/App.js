@@ -53,7 +53,6 @@ export default class App extends React.Component {
     // See if there's a session data stored on the phone and set whatever is there to the state
     this.props.navigate("Register")
   }
-
   render() {
     // get our session variable from the state
     const { session } = this.state
@@ -64,7 +63,6 @@ export default class App extends React.Component {
               <Stack.Screen 
                 name="Home" 
                 component={MainScreen} 
-                options={{headerShown: false}}
                 initialParams={
                   {
                     onLoggedIn: () => this.checkIfLoggedIn()
@@ -75,7 +73,6 @@ export default class App extends React.Component {
                 <Stack.Screen
                   name="Login"
                   component={LoginScreen}
-                  options={{headerShown: false}}
                   initialParams={
                     {
                       onLoggedIn: () => this.checkIfLoggedIn(),
@@ -84,10 +81,9 @@ export default class App extends React.Component {
                 />
               )
               }
-            <Stack.Screen name="Register" component={RegisterScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="Register" component={RegisterScreen}/>
             <Stack.Screen name="Settings" 
               component ={SettingScreen}
-              options={{headerShown: false}}
               initialParams={
               {
                 onLoggedIn: () => this.checkIfLoggedIn(),

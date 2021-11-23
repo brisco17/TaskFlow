@@ -53,6 +53,9 @@ INSTALLED_APPS = [
 
 STATIC_URL = 'static/'
 AUTH_USER_MODEL = 'user.UserProfile'
+LOGIN_URL = '/auth/token/login/'
+
+
 
 
 REST_FRAMEWORK =  {
@@ -107,7 +110,15 @@ SWAGGER_SETTINGS = {
         'drf_yasg.inspectors.SimpleFieldInspector',
         'drf_yasg.inspectors.StringDefaultFieldInspector',
     ],
+  'SECURITY_DEFINITIONS': {
+     'Token (Append  \"Token\" to your token': {
+           'type': 'apiKey',
+           'name': 'Authorization',
+           'in': 'header'
+     }
+  }
 }
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

@@ -3,11 +3,8 @@ import React, { useState } from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Button, ScrollView, Dimensions, Pressable } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Modal from "react-native-modal";
-import {Ionicons,SimpleLineIcons, Foundation,Entypo} from '@expo/vector-icons';
-import ModernHeader from "react-native-modern-header";
-import BottomBar from 'react-native-bottom-bar';
-
-
+import {Ionicons,SimpleLineIcons, Foundation} from '@expo/vector-icons';
+import ScrollingButtonMenu from 'react-native-scroll-menu';
 
 export default class MainScreen extends React.Component {
   constructor(props) {
@@ -22,11 +19,14 @@ export default class MainScreen extends React.Component {
       taskSet: [],
       displayTasks: [],
       appliedTag: '',
+      appliedTagID: 1,
+      menus: [],
     }
   }
 
   async componentDidMount() {
     let token = await SecureStore.getItemAsync('session')
+    
     if (token) {
       console.log('User Token: ' + token)
       this.setState({sessionToken: token})
@@ -60,6 +60,18 @@ export default class MainScreen extends React.Component {
     .then((response => response.json()))
     .then(json => {
       this.setState({tags: json})
+      let arr = this.state.tags;
+      console.log(this.state.tags)
+      let arr2 =  arr.map(tag =>
+      ({name: tag.title,id: tag.pk})
+      );
+      let arr3 = [
+        {"id": 1,
+        "name": "All"}]
+      
+      this.setState({menus:arr3.concat(arr2)})
+      this.setState({appliedTagID : 1})
+      console.log(menus)
      }
     )
   }
@@ -88,9 +100,9 @@ export default class MainScreen extends React.Component {
           <>
           <TouchableOpacity style={styles.button} onPress={() => this.goToDetails(task)}>
             <Text style={styles.titleText}> {task.title} </Text>
-            <Text style={styles.buttonText}> {"Description: " + task.description} </Text>
-            <Text style={{color: 'rgba(69, 120, 144, 1)', size: .5, position: 'absolute', top: "95%", left: 10}}> {"Due: " + task.due_date} </Text>
-            <Text style={{color: 'rgba(69, 120, 144, 1)', size: .5, position: 'absolute', top: "95%", left: "50%"}}> {"Creation Date: " + task.creation_date} </Text>
+            <Text style={styles.buttonText}> {task.description} </Text>
+            <Text style={styles.buttonText}> {"Due on " + task.due_date} </Text>
+            <Text style={styles.buttonText}> {"Created on " + task.creation_date} </Text>
           </TouchableOpacity>
           </>
           )
@@ -112,8 +124,8 @@ export default class MainScreen extends React.Component {
 
     var tasks = []
 
-    if (tag == this.state.appliedTag) {
-      this.setState({displayTasks: this.state.taskSet, appliedTag: ''})
+    if (tag == this.state.appliedTag || tag == 'All') {
+      this.setState({displayTasks: this.state.taskSet, appliedTag: '', appliedTagID: 1})
       console.log('Removed applied tag')
     }
     else if (tag == 'due_date') {
@@ -144,7 +156,7 @@ export default class MainScreen extends React.Component {
         console.log(tasks)
       }
       console.log(tasks)
-      this.setState({displayTasks: tasks, appliedTag: tag})
+      this.setState({displayTasks: tasks, appliedTag: tag, appliedTagID: tag.pk})
     }
   }
 
@@ -193,35 +205,53 @@ export default class MainScreen extends React.Component {
     const {navigation} = this.props;
 
     return (
+      
       <View style={styles.MainScreen}>
-        <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} 
-        leftComponentDisable={true} 
-        rightCustomComponent={<Entypo name="dots-three-horizontal" size={24} color="black" />}
-        />
-        {//<BottomBar/>
-        }
+
+          
+        <View style={styles.contentContainer}>
+        <ScrollingButtonMenu 
+          items={this.state.menus}
+          onPress={
+            (e) => {
+              if(e.name === "All") {
+                this.showTasksByTag(e.name)
+              }
+              else{
+                this.showTasksByTag(this.state.tags.find(tag => tag.pk === e.id))
+              }
+            }
+            
+          }
+          selected={this.state.appliedTagID}
+          />
+        </View>
+
+
+
         <ScrollView contentContainerStyle={styles.contentContainer}>
           { this.makeTasks() }
           <View style={styles.bottomPad} />
         </ScrollView>
+        
           <View style = {styles.navBarContainer}>
           <View style={{ height: '100%', width: '100%', position: 'absolute', backgroundColor: '#A8DADC', top: '30%'}}/>
           <View style={styles.TaskBarContainer}>   
-            <View style = {styles.CricleOverlay}>
+            <View style = {styles.CircleOverlay}>
               <TouchableOpacity style = {styles.innerCircle}
                 onPress = {() => navigation.navigate("Settings")}>
-                  <Ionicons style = {{top: '25%', left: '25%'}} name="settings-sharp" size={40} color="rgba(69, 120, 144, 1)" />
+                  <Ionicons style = {{padding: 12, left: 5}} name="settings-sharp" size={40} color="rgba(69, 120, 144, 1)" />
               </TouchableOpacity>
             </View>
-            <View style = {styles.CricleOverlayMain}>
+            <View style = {styles.CircleOverlayMain}>
               <TouchableOpacity style = {styles.innerCircleMain}
                 onPress = {() => navigation.navigate('Create Task')}>
-                  <Foundation style = {{top: '25%', left: '32%'}} name="plus" size={50} color="rgba(69, 120, 144, 1)"/>
+                  <Foundation style = {{padding: 18, left: 15}} name="plus" size={50} color="rgba(69, 120, 144, 1)"/>
                 </TouchableOpacity>
             </View>
-            <View style = {styles.CricleOverlay}>
+            <View style = {styles.CircleOverlay}>
               <TouchableOpacity style={styles.innerCircle} onPress={this.changeState}>
-              <Foundation style = {{top: '30%', left: '30%'}} name="filter" size={40} color="rgba(69, 120, 144, 1)"/>
+              <Foundation style = {{padding: 15, left: 5}} name="filter" size={40} color="rgba(69, 120, 144, 1)"/>
               </TouchableOpacity>
 
               <Modal 
@@ -256,10 +286,7 @@ export default class MainScreen extends React.Component {
                       <Text style={styles.button}>Created</Text>
                     </TouchableOpacity>
                     <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-                    <Text style={styles.modalHeader}>
-                      Apply Tag:
-                    </Text>
-                    { this.showTags() }
+                    
                     <Text style={styles.modalHeader}>
                       Manage Tags:
                     </Text>                        
@@ -327,26 +354,21 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 30,
     marginBottom: 10,
-    backgroundColor: 'rgba(244,245,250,1)',
-    shadowOffset: {width: 1, height: 1},
-    shadowRadius: 5,
-    shadowOpacity: .5,
-    shadowColor: 'black',
+    backgroundColor: 'rgba(69, 120, 144, 1)',
+    color: '#fff',
     padding: 10,
     marginLeft: 5,
     marginRight: 5,
-    borderWidth: 2,
-    borderColor: 'rgba(69, 120, 144, 1)',
-    borderRadius: 20,
+    borderRadius: 5,
   },
   buttonText: {
-    color: 'rgba(69, 120, 144, 1)',
+    color: 'rgba(168, 218, 220, 1)',
     marginBottom: 25,
   },
   titleText: {
     textAlign: 'center',
     fontSize: 28,
-    color: 'rgba(69, 120, 144, 1)',
+    color: 'rgba(168, 218, 220, 1)',
     fontWeight: 'bold',
     marginBottom: 25,
   },
@@ -355,11 +377,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     width: '100%',
     height: '100%',
-    top: 30,
+    top: 20,
     justifyContent: 'space-evenly',
     position: 'absolute',
   },
-  CricleOverlay:{
+  CircleOverlay:{
     width: '25%',
     height: '50%',
     borderRadius: 500000/2,
@@ -452,10 +474,10 @@ const styles = StyleSheet.create({
     height: '25%',
     width: '100%',
     position: 'relative',
-    top: 60,
+    top: 50,
     backgroundColor: 'transparent',
   },
-  CricleOverlayMain:{
+  CircleOverlayMain:{
     width: '35%',
     height: '65%',
     bottom: 40,

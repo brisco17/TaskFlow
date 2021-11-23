@@ -1,13 +1,9 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, Alert, TextInput, TouchableOpacity } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
 import Dialog from 'react-native-dialog';
 import * as Google from "expo-google-app-auth";
-import ModernHeader from "react-native-modern-header";
-
+import GDrive from "expo-google-drive-api-wrapper";
 
 export default class SettingScreen extends React.Component{
 
@@ -23,14 +19,21 @@ export default class SettingScreen extends React.Component{
       newGoogleAlert: false,
       google: false,
       sessionToken:'',
+      accessToken: ""
     }
     
   }
   async componentDidMount() {
     let token = await SecureStore.getItemAsync('session')
+    let accessToken = await SecureStore.getItemAsync('GoogleToken')
     if (token) {
       console.log('Token ' + token)
       this.setState({sessionToken: token})
+    }
+    if (accessToken) {
+      this.setState({
+        accessToken: accessToken,
+        google: true})
     }
   }
 
@@ -81,6 +84,27 @@ export default class SettingScreen extends React.Component{
 
         })
     }
+
+    getDriveFiles = (accessToken) => {
+      fetch("https://www.googleapis.com/drive/v3/files?key=AIzaSyBEzp_Qpq5hwFoTgHembUAAOZDa9wcnrlE",{
+        method: "GET",
+        headers: {  Authorization: `Bearer ${accessToken}`,
+                    Accept: 'application/json' },
+      })
+      .then(response => response.json())
+      .then(json => {
+        SecureStore.setItemAsync('DriveData', JSON.stringify(json.files)).then(() => {
+          console.log("Saved drive data.")
+        });
+      })
+
+      // GDrive.setAccessToken(accessToken)
+      // GDrive.init();
+      // var files =  GDrive.files.list({})
+      // console.log(JSON.stringify(files))
+    }
+
+
     onDelete = () => {
 
       const {navigation} = this.props;
@@ -111,16 +135,21 @@ export default class SettingScreen extends React.Component{
         const {navigation} = this.props;
         console.log("SettingScreen.js 106 | logging in");
         try {
-          const { type, user } = await Google.logInAsync({
+          const { type, accessToken, user } = await Google.logInAsync({
             iosClientId: `22428134723-pq3rqvntskvn45979el7kmkrnksmajgs.apps.googleusercontent.com`,
             androidClientId: `22428134723-4clne824h5k1q433vh1tmgf6r443t2dp.apps.googleusercontent.com`,
+            scopes: ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.readonly', 'https://www.googleapis.com/auth/drive.metadata.readonly']
           });
-
           if (type === "success") {
+            let userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+              headers: {  Authorization: `Bearer ${accessToken}`,
+                          Accept: 'application/json' },
+            });
+            this.getDriveFiles(accessToken)
             // Then you can use the Google REST API
+            console.log("Info: " + userInfoResponse)
             console.log("SettingScreen.js 115 | success, adding to settings");
-            //SecureStore.setItemAsync('google_details', JSON.stringify(user)).then(() => {
-                  //const google_details = SecureStore.getItemAsync('google_details')
+            SecureStore.setItemAsync('GoogleToken', JSON.stringify(accessToken)).then(() => {
                   console.log('Right before fetch call');
                   console.log(user)
                   fetch("https://young-chow-productivity-app.herokuapp.com/settings/", {
@@ -152,17 +181,20 @@ export default class SettingScreen extends React.Component{
               })
               .catch(exception => {
                   console.log("Error occured", exception);
-                  // Do something when login fails
+                  this.setState({google: false})
               });
-            }
+            });
+          }
           else {
             this.setState({google: false})
           }
-        } catch (error) {
-          console.log("SettingScreen.js 125 | error with login", error);
+        }
+        catch {
+          console.log("Error occured", exception);
           this.setState({google: false})
         }
-}
+      }
+
 
       changeAlertState = () => {
         if(this.state.alertVisible){
@@ -192,19 +224,13 @@ export default class SettingScreen extends React.Component{
           this.setState({newGoogleAlert: true})
         }
       }
-      onBack = () => {
-        const {navigation} = this.props;
-        navigation.pop()
-
-      }
 
     render() {
+      const {navigation} = this.props;
 
         return(
             <View style={styles.MainScreen}>
-            <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightComponentDisable={true} onLeftPress={() => this.onBack()}/>
             <View style = {{flexDirection: 'column', justifyContent: 'space-evenly', width: '100%', height: '80%'}}>
-              
             <TouchableOpacity 
             style = {styles.button}
             onPress = {this.changeAlertState}>
@@ -246,6 +272,12 @@ export default class SettingScreen extends React.Component{
               <Dialog.Button label="Cancel" onPress={this.newPasswordAlertState}/>
               <Dialog.Button label="Confirm" onPress={this.toggleBothAlerts}/>
             </Dialog.Container>
+
+            <TouchableOpacity 
+            style = {styles.button}
+            onPress = {() => navigation.navigate("NotificationScreen")}>
+            <Text style = {styles.buttonText}>Notifications</Text>
+            </TouchableOpacity>
             
             <TouchableOpacity 
             style = {styles.button}

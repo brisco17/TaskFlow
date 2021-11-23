@@ -22,14 +22,16 @@
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.22428134723-pq3rqvntskvn45979el7kmkrnksmajgs"
         }
-      }
+      },
+      "bundleIdentifier": "com.young-chow.taskflow"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.cpalladi.frontend"
+      "package": "com.cpalladi.frontend",
+      "permissions": [ "WRITE_EXTERNAL_STORAGE" ],
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -88,7 +88,7 @@ export default class MainScreen extends React.Component {
           <>
           <TouchableOpacity style={styles.button} onPress={() => this.goToDetails(task)}>
             <Text style={styles.titleText}> {task.title} </Text>
-            <Text style={styles.buttonText}> {"Discription: " + task.description} </Text>
+            <Text style={styles.buttonText}> {"Description: " + task.description} </Text>
             <Text style={{color: 'rgba(69, 120, 144, 1)', size: .5, position: 'absolute', top: "95%", left: 10}}> {"Due: " + task.due_date} </Text>
             <Text style={{color: 'rgba(69, 120, 144, 1)', size: .5, position: 'absolute', top: "95%", left: "50%"}}> {"Creation Date: " + task.creation_date} </Text>
           </TouchableOpacity>

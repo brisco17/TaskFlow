@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Button, ScrollView, Dimensions, Pressable } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Modal from "react-native-modal";
-import {Ionicons,SimpleLineIcons, Foundation} from '@expo/vector-icons';
+import {Ionicons,SimpleLineIcons, Foundation,Entypo} from '@expo/vector-icons';
+import ModernHeader from "react-native-modern-header";
+
 import ScrollingButtonMenu from 'react-native-scroll-menu';
 
 export default class MainScreen extends React.Component {
@@ -208,7 +210,10 @@ export default class MainScreen extends React.Component {
       
       <View style={styles.MainScreen}>
 
-          
+        <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} 
+        leftComponentDisable={true} 
+        rightCustomComponent={<Entypo name="dots-three-horizontal" size={24} color="black" />}
+        />
         <View style={styles.contentContainer}>
         <ScrollingButtonMenu 
           items={this.state.menus}

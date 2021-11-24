@@ -4,6 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 import Dialog from 'react-native-dialog';
 import * as Google from "expo-google-app-auth";
 import GDrive from "expo-google-drive-api-wrapper";
+import ModernHeader from "react-native-modern-header";
 
 export default class SettingScreen extends React.Component{
 
@@ -230,6 +231,7 @@ export default class SettingScreen extends React.Component{
 
         return(
             <View style={styles.MainScreen}>
+            <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightComponentDisable={true} onLeftPress={() => this.onBack()}/>
             <View style = {{flexDirection: 'column', justifyContent: 'space-evenly', width: '100%', height: '80%'}}>
             <TouchableOpacity 
             style = {styles.button}

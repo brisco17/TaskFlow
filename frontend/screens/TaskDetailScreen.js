@@ -8,6 +8,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Dialog from 'react-native-dialog';
 import {FontAwesome5} from '@expo/vector-icons';
+import ModernHeader from "react-native-modern-header";
 
 
 export default class CreateTaskScreen extends React.Component{
@@ -211,6 +212,7 @@ export default class CreateTaskScreen extends React.Component{
 
     return (
       <View style={styles.container}>
+        <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightCustomComponent={<FontAwesome5 name="trash-alt" size={24} color="black" />} onLeftPress={() => this.onBack()}/>
         <FontAwesome5 style = {{postion: 'absolute', right: "37%", top: "19%"}} name="tasks" size={24} color="black"/>
         <View style={styles.inputContainer}>
           <Text style={styles.titleText}>Edit Title & Description</Text>

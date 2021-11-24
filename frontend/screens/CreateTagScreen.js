@@ -5,6 +5,7 @@ import colors from '../styles/colors.js';
 import components from '../styles/components.js';
 import containers from '../styles/containers.js';
 import typography from '../styles/typography.js';
+import ModernHeader from "react-native-modern-header";
 
 export default class CreateTagScreen extends React.Component{
   constructor(props) {
@@ -63,7 +64,8 @@ export default class CreateTagScreen extends React.Component{
 
     return (
       <View style={styles.container}>
-
+        <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightComponentDisable={true} onLeftPress={() => this.onBack()}/>
+        <AntDesign style={{zIndex: 999,position: 'relative',right: '37%', top: 48}} name="tags" size={30} color="black"/>
         <View style={styles.inputContainer}>
           <TextInput
             onSubmitEditing={Keyboard.dismiss}

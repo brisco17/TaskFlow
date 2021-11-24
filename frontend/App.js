@@ -62,7 +62,8 @@ export default class App extends React.Component {
           {session ? (
               <Stack.Screen 
                 name="Home" 
-                component={MainScreen} 
+                component={MainScreen}
+                options={{headerShown: false}} 
                 initialParams={
                   {
                     onLoggedIn: () => this.checkIfLoggedIn()
@@ -73,6 +74,7 @@ export default class App extends React.Component {
                 <Stack.Screen
                   name="Login"
                   component={LoginScreen}
+                  options={{headerShown: false}}
                   initialParams={
                     {
                       onLoggedIn: () => this.checkIfLoggedIn(),
@@ -81,19 +83,20 @@ export default class App extends React.Component {
                 />
               )
               }
-            <Stack.Screen name="Register" component={RegisterScreen}/>
+            <Stack.Screen name="Register" component={RegisterScreen} options={{headerShown: false}}/>
             <Stack.Screen name="Settings" 
               component ={SettingScreen}
+              options={{headerShown: false}}
               initialParams={
               {
                 onLoggedIn: () => this.checkIfLoggedIn(),
               }
             }/>
-          <Stack.Screen name="GoogleRegister" component={GoogleRegister} />
-          <Stack.Screen name="Create Task" component={CreateTaskScreen} />
-          <Stack.Screen name="Create Tag" component={CreateTagScreen} />
-          <Stack.Screen name="TaskDetailScreen" component={TaskDetailScreen} />
-          <Stack.Screen name="NotificationScreen" component={NotficationScreen} />
+          <Stack.Screen name="GoogleRegister" component={GoogleRegister} options={{headerShown: false}}/>
+          <Stack.Screen name="Create Task" component={CreateTaskScreen} options={{headerShown: false}}/>
+          <Stack.Screen name="Create Tag" component={CreateTagScreen} options={{headerShown: false}}/>
+          <Stack.Screen name="TaskDetailScreen" component={TaskDetailScreen} options={{headerShown: false}}/>
+          <Stack.Screen name="NotificationScreen" component={NotficationScreen} options={{headerShown: false}}/>
         </Stack.Navigator>
       </NavigationContainer>
     );

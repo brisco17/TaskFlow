@@ -17,7 +17,11 @@ export default class CreateTagScreen extends React.Component{
     }
   }
 
+  onBack = () => {
+    const {navigation} = this.props;
+    navigation.pop()
 
+  }
   onSubmit = () => {
     const { title, description } = this.state;
     const {navigation} = this.props;

@@ -225,7 +225,12 @@ export default class SettingScreen extends React.Component{
           this.setState({newGoogleAlert: true})
         }
       }
+      
+      onBack = () => {
+        const {navigation} = this.props;
+        navigation.pop()
 
+      }
     render() {
       const {navigation} = this.props;
 

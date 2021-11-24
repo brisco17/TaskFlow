@@ -204,7 +204,11 @@ export default class CreateTaskScreen extends React.Component{
       subCreate: toSet
     })
   }
-  
+  onBack = () => {
+    const {navigation} = this.props;
+    navigation.pop()
+
+  }
   
   render() {
     const {navigation} = this.props;

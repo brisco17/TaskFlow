@@ -64,7 +64,11 @@ export default class CreateTaskScreen extends React.Component{
     });
   }
 
+  onBack = () => {
+    const {navigation} = this.props;
+    navigation.pop()
 
+  }
 
   onSubmit = () => {
     const { title, description, due_date, taskTag } = this.state;

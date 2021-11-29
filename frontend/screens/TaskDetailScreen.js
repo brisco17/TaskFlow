@@ -28,7 +28,7 @@ export default class CreateTaskScreen extends React.Component{
       subCreate: false,
       subTitleTemp: '',
       countries: ["Egypt", "Canada", "Australia", "Ireland"],
-      drive: [],
+      drive: {},
       driveChoice: ""
     }
     this.onDateChange = this.onDateChange.bind(this);
@@ -86,11 +86,14 @@ export default class CreateTaskScreen extends React.Component{
       
     }
     if (driveData) {
-      var temp = []
+      var temp = {}
 
       for (var data in JSON.parse(driveData)) {
-        temp.push(JSON.parse(driveData)[data].name)
+        console.log(data)
+        temp[JSON.parse(driveData)[data].name] = JSON.parse(driveData)[data].id
       }
+
+      console.log(temp)
       
       this.setState({
         drive: temp
@@ -249,11 +252,11 @@ export default class CreateTaskScreen extends React.Component{
         </View>
 
         <SelectDropdown
-          data={this.state.drive}
-          defaultButtonText={"Select Drive File"}
+          data={Object.keys(this.state.drive).sort()}
+          defaultButtonText={this.state.driveChoice ? this.state.driveChoice : "Select Drive File"}
           onSelect={(selectedItem, index) => {
             this.setState({driveChoice: selectedItem})
-            console.log(selectedItem)
+            console.log(this.state.drive)
             console.log("new item selected")
           }}
           buttonTextAfterSelection={(selectedItem, index) => {
@@ -351,7 +354,7 @@ export default class CreateTaskScreen extends React.Component{
 
 const styles = StyleSheet.create({
   dropdown1BtnStyle: {
-    width: "60%",
+    width: "80%",
     height: 50,
     backgroundColor: 'rgba(256, 256, 256, 1)',
     borderRadius: 8,

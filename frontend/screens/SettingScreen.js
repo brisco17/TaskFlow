@@ -96,6 +96,7 @@ export default class SettingScreen extends React.Component{
       .then(json => {
         SecureStore.setItemAsync('DriveData', JSON.stringify(json.files)).then(() => {
           console.log("Saved drive data.")
+          console.log(json)
         });
       })
 

@@ -5,6 +5,7 @@ import colors from '../styles/colors.js';
 import components from '../styles/components.js';
 import containers from '../styles/containers.js';
 import typography from '../styles/typography.js';
+import { AntDesign } from '@expo/vector-icons';
 import ModernHeader from "react-native-modern-header";
 import { AntDesign } from '@expo/vector-icons';
 
@@ -17,12 +18,13 @@ export default class CreateTagScreen extends React.Component{
       description: '',
     }
   }
-
   onBack = () => {
     const {navigation} = this.props;
     navigation.pop()
 
   }
+
+
   onSubmit = () => {
     const { title, description } = this.state;
     const {navigation} = this.props;
@@ -72,13 +74,14 @@ export default class CreateTagScreen extends React.Component{
         <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightComponentDisable={true} onLeftPress={() => this.onBack()}/>
         <AntDesign style={{zIndex: 999,position: 'relative',right: '37%', top: 48}} name="tags" size={30} color="black"/>
         <View style={styles.inputContainer}>
+        
           <TextInput
             onSubmitEditing={Keyboard.dismiss}
             style={styles.input}
             onChangeText={text => this.setState({ title: text })}
             value={this.state.title}
             placeholder="Tag Title"
-            placeholderTextColor="rgba(168, 218, 220, 1)"
+            placeholderTextColor="rgba(69, 120, 144, 1)"
             textContentType="none"
             multiline={false}
           />
@@ -91,7 +94,7 @@ export default class CreateTagScreen extends React.Component{
             onChangeText={text => this.setState({ description: text })}
             value={this.state.description}
             placeholder="Tag Description"
-            placeholderTextColor="rgba(168, 218, 220, 1)"
+            placeholderTextColor="rgba(69, 120, 144, 1)"
             textContentType="none"
             textAlignVertical="top"
             multiline={true}
@@ -141,4 +144,3 @@ const styles = StyleSheet.create({
 
   
 });
-

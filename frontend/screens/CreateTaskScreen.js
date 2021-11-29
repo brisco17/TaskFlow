@@ -8,6 +8,9 @@ import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {FontAwesome5} from '@expo/vector-icons';
 import ModernHeader from "react-native-modern-header";
+import * as Notifications from 'expo-notifications';
+
+
 
 export default class CreateTaskScreen extends React.Component{
   constructor(props) {
@@ -20,7 +23,8 @@ export default class CreateTaskScreen extends React.Component{
       due_date: '',
       tags: [],
       taskTag: {},
-      countries: ["Egypt", "Canada", "Australia", "Ireland"]
+      reminderTime: '',
+      reminderOptions: ['1 Day', '2 Days' ,'3 Days']
     }
     this.onDateChange = this.onDateChange.bind(this);
   }
@@ -70,9 +74,43 @@ export default class CreateTaskScreen extends React.Component{
 
   }
 
-  onSubmit = () => {
+  async schedulePushNotification(reminderTime) {
+
+    var trigger = new Date();
+
+    if (reminderTime == '') {
+      return reminderTime
+    }
+    if (reminderTime == '1 day') {
+      trigger.setDate(trigger.getDate()-1);
+    }
+    if (reminderTime == '2 days') {
+      trigger.setDate(trigger.getDate()-2);
+    }
+    if (reminderTime == '3 days') {
+      trigger.setDate(trigger.getDate()-3);
+    }
+
+    // trigger = new Date();
+    // console.log(trigger)
+    // trigger.setSeconds(trigger.getSeconds() + 10);
+    // console.log(trigger)
+
+    const identifier = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: this.state.title,
+        body: 'This task is due in ' + reminderTime,
+      },
+      trigger: trigger,
+    });
+    console.log("NOTIF TEST" + identifier)
+    return identifier
+  }
+
+ onSubmit = async () => {
     const { title, description, due_date, taskTag } = this.state;
     const {navigation} = this.props;
+    const reminder = await this.schedulePushNotification(this.state.reminderTime)
     
 
     // I don't want to talk about it
@@ -93,7 +131,8 @@ export default class CreateTaskScreen extends React.Component{
           title: title,
           description: description,
           due_date: formatted,
-          tag: parseInt(taskTag.pk)
+          tag: parseInt(taskTag.pk),
+          reminder: reminder,
 
         })
       })
@@ -131,7 +170,7 @@ export default class CreateTaskScreen extends React.Component{
       <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightComponentDisable={true} onLeftPress={() => this.onBack()}/>
       <ScrollView contentContainerStyle={styles.container}>
         
-        <FontAwesome5 style = {{right: "37%", top: "6%"}} name="tasks" size={24} color="black"/>
+        <FontAwesome5 style = {{postion: 'absolute', right: "37%", top: "6%"}} name="tasks" size={24} color="black"/>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
@@ -162,6 +201,37 @@ export default class CreateTaskScreen extends React.Component{
             multiline={true}
           />
         </View>
+
+        <SelectDropdown
+          data={this.state.reminderOptions}
+          defaultButtonText={"Set Reminder"}
+          onSelect={(selectedItem, index) => {
+            this.setState({reminderTime: selectedItem})
+            console.log("new reminder time selected")
+            console.log(selectedItem)
+          }}
+          buttonTextAfterSelection={(selectedItem, index) => {
+            // text represented after item is selected
+            // if data array is an array of objects then return selectedItem.property to render after item is selected
+            return selectedItem
+          }}
+          rowTextForSelection={(item, index) => {
+            // text represented for each item in dropdown
+            // if data array is an array of objects then return item.property to represent item in dropdown
+            return item
+          }}
+          buttonStyle={styles.dropdown1BtnStyle}
+          buttonTextStyle={styles.dropdown1BtnTxtStyle}
+          renderDropdownIcon={() => {
+            return (
+              <FontAwesome name="chevron-down" color={"#444"} size={18} />
+            );
+          }}
+          dropdownIconPosition={"right"}
+          dropdownStyle={styles.dropdown1DropdownStyle}
+          rowStyle={styles.dropdown1RowStyle}
+          rowTextStyle={styles.dropdown1RowTxtStyle}
+        />
 
         <SelectDropdown
           data={this.state.tags}
@@ -307,7 +377,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(244,245,250,1)',
     color: 'rgba(69, 120, 144, 1)',
   },
-
+  MainScreen: {
+    flex: 1,
+    backgroundColor: 'rgba(244,245,250,1)',
+    height: '100%'
+  },
 
   
 });

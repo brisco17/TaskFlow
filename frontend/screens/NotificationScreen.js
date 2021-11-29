@@ -70,13 +70,14 @@ export default class NotificationScreen extends React.Component {
     };
 
     async schedulePushNotification() {
-        await Notifications.scheduleNotificationAsync({
+        const identifier = await Notifications.scheduleNotificationAsync({
           content: {
             title: "Notifications proof of concept ❗",
             body: 'Task descriptions will go here!',
           },
           trigger: { seconds: 2 },
         });
+        return identifier
       }
 
   render() {
@@ -89,7 +90,8 @@ export default class NotificationScreen extends React.Component {
         <Button
         title="Press to schedule a notification"
         onPress={async () => {
-          await this.schedulePushNotification();
+          const identifier = await this.schedulePushNotification();
+          console.log(identifier)
         }}
       />
       </View>

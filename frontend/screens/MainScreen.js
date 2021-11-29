@@ -73,7 +73,7 @@ export default class MainScreen extends React.Component {
       
       this.setState({menus:arr3.concat(arr2)})
       this.setState({appliedTagID : 1})
-      console.log(menus)
+      console.log(this.state.menus)
      }
     )
   }

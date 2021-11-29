@@ -217,7 +217,7 @@ export default class CreateTaskScreen extends React.Component{
     return (
       <View style={styles.container}>
         <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightCustomComponent={<FontAwesome5 name="trash-alt" size={24} color="black" />} onLeftPress={() => this.onBack()}/>
-        <FontAwesome5 style = {{postion: 'absolute', right: "37%", top: "19%"}} name="tasks" size={24} color="black"/>
+        <FontAwesome5 style = {{postion: 'absolute', right: "37%", top: "16%"}} name="tasks" size={24} color="black"/>
         <View style={styles.inputContainer}>
           <Text style={styles.titleText}>Edit Title & Description</Text>
           <TextInput
@@ -247,7 +247,7 @@ export default class CreateTaskScreen extends React.Component{
             multiline={true}
           />
         </View>
-
+        <View style ={styles.dropDownContainer}>
         <SelectDropdown
           data={this.state.drive}
           defaultButtonText={"Select Drive File"}
@@ -278,31 +278,7 @@ export default class CreateTaskScreen extends React.Component{
           rowStyle={styles.dropdown1RowStyle}
           rowTextStyle={styles.dropdown1RowTxtStyle}
         />
-
-        
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <SafeAreaView>
-        <View>
-          {this.makeSubTasks()}
-          <TouchableOpacity
-                style={styles.makeSub}
-                onPress={this.updateSubModal}
-          >
-            <Text style={styles.buttonText}> Create New Subtask </Text>
-          </TouchableOpacity>
-          <Dialog.Container visible={this.state.subCreate}>
-              <Dialog.Title>Create Subtask</Dialog.Title>
-              <Dialog.Input 
-              onChangeText={title => this.setState({subTitleTemp: title})}
-              value={this.state.subTitleTemp}
-              placeholder={'Subtask Title'}
-              ></Dialog.Input>
-              <Dialog.Button label="Cancel" onPress={this.updateSubModal}/>
-              <Dialog.Button label="Confirm" onPress={this.createSubTask}/>
-            </Dialog.Container>
-        </View>
-
-        <SelectDropdown
+          <SelectDropdown
           data={this.state.tags}
           defaultButtonText={"Select Tag"}
           onSelect={(selectedItem, index) => {
@@ -332,16 +308,36 @@ export default class CreateTaskScreen extends React.Component{
           rowStyle={styles.dropdown1RowStyle}
           rowTextStyle={styles.dropdown1RowTxtStyle}
         />
-        
-
+        </View>
         <TouchableOpacity
+                style={styles.makeSub}
+                onPress={this.updateSubModal}
+          >
+            <Text style={styles.buttonText}> Create New Subtask </Text>
+          </TouchableOpacity>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <SafeAreaView>
+        <View>
+          {this.makeSubTasks()}
+          <Dialog.Container visible={this.state.subCreate}>
+              <Dialog.Title>Create Subtask</Dialog.Title>
+              <Dialog.Input 
+              onChangeText={title => this.setState({subTitleTemp: title})}
+              value={this.state.subTitleTemp}
+              placeholder={'Subtask Title'}
+              ></Dialog.Input>
+              <Dialog.Button label="Cancel" onPress={this.updateSubModal}/>
+              <Dialog.Button label="Confirm" onPress={this.createSubTask}/>
+            </Dialog.Container>
+        </View>
+         </SafeAreaView>
+      </ScrollView>
+      <TouchableOpacity
           style={styles.button}
           onPress={() => this.onSubmit()}
         >
           <Text style={styles.buttonText}> Submit </Text>
         </TouchableOpacity>
-         </SafeAreaView>
-      </ScrollView>
      
       </View>
       
@@ -351,13 +347,13 @@ export default class CreateTaskScreen extends React.Component{
 
 const styles = StyleSheet.create({
   dropdown1BtnStyle: {
-    width: "60%",
+    width: "50%",
     height: 50,
     backgroundColor: 'rgba(256, 256, 256, 1)',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#444",
-    marginBottom: 30
+    bottom: 80
   },
   dropdown1BtnTxtStyle: { color: 'rgba(69, 120, 144, 1)', textAlign: "center" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },
@@ -373,10 +369,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scrollContainer: {
+    width: '100%',
     backgroundColor: 'rgba(244,245,250,1)',
     justifyContent: 'space-evenly',
-    left: "10%",
-
     flexGrow: 1
   },
   inputContainer: {
@@ -397,7 +392,7 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 45,
-    bottom: '10%',
+    bottom: 20,
     width: '65%',
     alignItems: 'center',
     position: 'relative',
@@ -410,7 +405,7 @@ const styles = StyleSheet.create({
     shadowOpacity: .5,
   },
   subStyle: {
-    width: "80%",
+    width: '100%',
     height: 50,
     backgroundColor: 'rgba(69, 120, 144, 1)',
     borderRadius: 8,
@@ -419,12 +414,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 16,
     color: 'white',
-    paddingStart: 20,
-    paddingEnd: 20,
   },
   makeSub: {
     height: 45,
-    bottom: '10%',
+    bottom: '8%',
+    marginBottom: -45,
     width: '65%',
     alignItems: 'center',
     backgroundColor: 'rgba(256, 256, 256, 1)',
@@ -450,8 +444,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: 'rgba(69, 120, 144, 1)',
     fontWeight: 'bold',
-    marginBottom: 25,
-    bottom: "20%"
+    bottom: "30%"
   },
   loginText: {
     bottom: "10%",
@@ -494,5 +487,10 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     alignSelf: "flex-end",
+  },
+
+  dropDownContainer: {
+    flexDirection: 'row'
+
   },
 });

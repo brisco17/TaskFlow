@@ -1,6 +1,6 @@
 import { setStatusBarBackgroundColor, StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Button, ScrollView, Dimensions, Pressable } from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Button, Alert,ScrollView, Dimensions, Pressable } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Modal from "react-native-modal";
 import {Ionicons,SimpleLineIcons, Foundation,Entypo} from '@expo/vector-icons';
@@ -74,7 +74,7 @@ export default class MainScreen extends React.Component {
       
       this.setState({menus:arr3.concat(arr2)})
       this.setState({appliedTagID : 1})
-      console.log(menus)
+      console.log(this.state.menus)
      }
     )
   }
@@ -190,8 +190,28 @@ export default class MainScreen extends React.Component {
   handleOnScroll = event => {
     this.setState({
       scrollOffset: event.nativeEvent.contentOffset.y,
-      });
-    };
+    });
+  };
+
+  onDeleteTag(tag) {
+    console.log("IN DELETE TAG"+ tag.pk)
+    const {naviation} = this.props
+    fetch("https://young-chow-productivity-app.herokuapp.com/tags/" + tag.pk, {
+      method: "DELETE",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+        }),
+      })
+    .then(() => { 
+      console.log('Deleted Tag')
+      //console.log(json)
+      Alert.alert("Tag Succesfully Deleted")
+      this.getTags()
+    }
+    )
+    .then(this.changeTagState())
+  }
 
   showTags() {
     if (this.state.tags.length > 0) {
@@ -215,7 +235,7 @@ export default class MainScreen extends React.Component {
       return this.state.tags.map((tag) => {
         return (
         <>
-        <TouchableOpacity key={'tag' + tag.id} onPress={() => this.showTasksByTag(tag)}>
+        <TouchableOpacity key={'tag' + tag.id} onPress={() => this.onDeleteTag(tag)}>
           <Text style={styles.button}>{tag.title}</Text>
         </TouchableOpacity>
         <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
@@ -227,8 +247,6 @@ export default class MainScreen extends React.Component {
       return (<Text style={styles.modalText}> No tags exist </Text>)
     }
   }
-
-  
 
 
   render() {
@@ -362,7 +380,7 @@ export default class MainScreen extends React.Component {
                     <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
                     
                     <Text style={styles.modalHeader}>
-                      Manage Tags:
+                      Delete Tags:
                     </Text>
                     
                     {this.manageTags()}

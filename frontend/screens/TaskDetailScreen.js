@@ -133,6 +133,7 @@ export default class CreateTaskScreen extends React.Component{
           description: description,
           due_date: formatted,
           subtasks: subtasks,
+          attatchedFile: this.state.driveChoice,
           tag: this.state.taskTag.pk
         })
       })

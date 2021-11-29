@@ -6,6 +6,7 @@ import components from '../styles/components.js';
 import containers from '../styles/containers.js';
 import typography from '../styles/typography.js';
 import ModernHeader from "react-native-modern-header";
+import { AntDesign } from '@expo/vector-icons';
 
 export default class CreateTagScreen extends React.Component{
   constructor(props) {

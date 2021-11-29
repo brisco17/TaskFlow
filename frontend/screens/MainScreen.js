@@ -1,6 +1,6 @@
 import { setStatusBarBackgroundColor, StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Button, ScrollView, Dimensions, Pressable } from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Button, Alert,ScrollView, Dimensions, Pressable } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Modal from "react-native-modal";
 import {Ionicons,SimpleLineIcons, Foundation,Entypo} from '@expo/vector-icons';
@@ -16,6 +16,7 @@ export default class MainScreen extends React.Component {
       email: SecureStore.getItemAsync("email") || '',
       sessionToken: "",
       isVisible: false,
+      tagVisible: false,
       tags: [],
       scrollOffset: null,
       taskSet: [],
@@ -73,7 +74,7 @@ export default class MainScreen extends React.Component {
       
       this.setState({menus:arr3.concat(arr2)})
       this.setState({appliedTagID : 1})
-      console.log(menus)
+      console.log(this.state.menus)
      }
     )
   }
@@ -170,8 +171,18 @@ export default class MainScreen extends React.Component {
   changeState = () => {
     if(this.state.isVisible){
       this.setState({isVisible: false})
-    }else{
+    }
+    else{
       this.setState({isVisible: true})
+    }
+  }
+
+  changeTagState = () => {
+    if(this.state.tagVisible){
+      this.setState({tagVisible: false})
+    }
+    else{
+      this.setState({tagVisible: true})
     }
   }
 
@@ -179,28 +190,63 @@ export default class MainScreen extends React.Component {
   handleOnScroll = event => {
     this.setState({
       scrollOffset: event.nativeEvent.contentOffset.y,
-      });
-    };
+    });
+  };
 
-    showTags() {
-      if (this.state.tags.length > 0) {
-        return this.state.tags.map((tag) => {
-          return (
-          <>
-          <TouchableOpacity key={'tag' + tag.id} onPress={() => this.showTasksByTag(tag)}>
-            <Text style={styles.button}>{tag.title}</Text>
-          </TouchableOpacity>
-          <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-          </>
-          )
-        })
-      }
-      else {
-        return (<Text style={styles.modalText}> No tags exist </Text>)
-      }
+  onDeleteTag(tag) {
+    console.log("IN DELETE TAG"+ tag.pk)
+    const {naviation} = this.props
+    fetch("https://young-chow-productivity-app.herokuapp.com/tags/" + tag.pk, {
+      method: "DELETE",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+        }),
+      })
+    .then(() => { 
+      console.log('Deleted Tag')
+      //console.log(json)
+      Alert.alert("Tag Succesfully Deleted")
+      this.getTags()
     }
+    )
+    .then(this.changeTagState())
+  }
 
-  
+  showTags() {
+    if (this.state.tags.length > 0) {
+      return this.state.tags.map((tag) => {
+        return (
+        <>
+        <TouchableOpacity key={'tag' + tag.id} onPress={() => this.showTasksByTag(tag)}>
+          <Text style={styles.button}>{tag.title}</Text>
+        </TouchableOpacity>
+        <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+        </>
+        )
+      })
+    }
+    else {
+      return (<Text style={styles.modalText}> No tags exist </Text>)
+    }
+  }
+  manageTags() {
+    if (this.state.tags.length > 0) {
+      return this.state.tags.map((tag) => {
+        return (
+        <>
+        <TouchableOpacity key={'tag' + tag.id} onPress={() => this.onDeleteTag(tag)}>
+          <Text style={styles.button}>{tag.title}</Text>
+        </TouchableOpacity>
+        <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+        </>
+        )
+      })
+    }
+    else {
+      return (<Text style={styles.modalText}> No tags exist </Text>)
+    }
+  }
 
 
   render() {
@@ -213,6 +259,7 @@ export default class MainScreen extends React.Component {
         <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} 
         leftComponentDisable={true} 
         rightCustomComponent={<Entypo name="dots-three-horizontal" size={24} color="black" />}
+        onRightPress={() => this.changeTagState()}
         />
         <View style={styles.contentContainer}>
         <ScrollingButtonMenu 
@@ -302,6 +349,51 @@ export default class MainScreen extends React.Component {
                       </TouchableOpacity>
                       <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
 
+
+                  </ScrollView>
+                </View>
+
+              </Modal>
+
+              <Modal 
+                isVisible={this.state.tagVisible}
+                propagateSwipe={true}
+                animationIn="fadeIn"
+                animationOut="fadeOut"
+                backdropTransitionOutTiming={0}
+                onBackdropPress={this.changeTagState}
+                onSwipeComplete={this.changeTagState}
+                swipeDirection={['down']}
+                propagateSwipe
+                scrollOffset={this.state.scrollOffset}
+                style={styles.bottomModal}>
+                  
+
+
+                <View style={styles.modalView}>
+                  
+                  <ScrollView
+                    onScroll={this.handleOnScroll}
+                    scrollEventThrottle={16}>
+
+                    
+                    <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+                    
+                    <Text style={styles.modalHeader}>
+                      Delete Tags:
+                    </Text>
+                    
+                    {this.manageTags()}
+                    
+                    <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+                    <Text style={styles.modalHeader}>
+                      Create Tag:
+                    </Text>
+                    
+                    <TouchableOpacity
+                    onPress = { () => {this.setState({tagVisible: false}); navigation.navigate('Create Tag');} }>
+                    <Text style={styles.button}>Create new tag</Text>
+                    </TouchableOpacity>
 
                   </ScrollView>
                 </View>

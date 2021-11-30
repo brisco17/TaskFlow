@@ -105,7 +105,23 @@ export default class CreateTaskScreen extends React.Component{
     });
   }
 
-
+  onDeleteTask = () => {
+    console.log("IN DELETE TASK"+ this.state.task.id)
+    fetch("https://young-chow-productivity-app.herokuapp.com/tasks/" + this.state.task.id, {
+      method: "DELETE",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+        }),
+      })
+    .then(() => { 
+      console.log('Deleted Task')
+      //console.log(json)
+      Alert.alert("Task Succesfully Deleted")
+    }
+    )
+    .then(this.onBack())
+  }
 
   onSubmit = () => {
     const { title, description, due_date, taskTag } = this.state;
@@ -216,7 +232,9 @@ export default class CreateTaskScreen extends React.Component{
 
     return (
       <View style={styles.container}>
-        <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightCustomComponent={<FontAwesome5 name="trash-alt" size={24} color="black" />} onLeftPress={() => this.onBack()}/>
+        <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightCustomComponent={<FontAwesome5 name="trash-alt" size={24} color="black" />} 
+        onLeftPress={() => this.onBack()} 
+        onRightPress={() => this.onDeleteTask()}/>
         <FontAwesome5 style = {{postion: 'absolute', right: "37%", top: "19%"}} name="tasks" size={24} color="black"/>
         <View style={styles.inputContainer}>
           <Text style={styles.titleText}>Edit Title & Description</Text>

@@ -9,6 +9,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Dialog from 'react-native-dialog';
 import {FontAwesome5} from '@expo/vector-icons';
 import ModernHeader from "react-native-modern-header";
+import * as Notifications from 'expo-notifications';
 
 
 export default class CreateTaskScreen extends React.Component{
@@ -25,9 +26,12 @@ export default class CreateTaskScreen extends React.Component{
       task: [],
       tags: [],
       subTasks: {},
+      notificationsEnabled: false,
+      reminder: null,
+      reminderTime: null,
+      reminderOptions: ['1 Day', '2 Days' ,'3 Days'],
       subCreate: false,
       subTitleTemp: '',
-      countries: ["Egypt", "Canada", "Australia", "Ireland"],
       drive: [],
       driveChoice: ""
     }
@@ -56,6 +60,26 @@ export default class CreateTaskScreen extends React.Component{
     )
   }
 
+  async checkSettings() {
+    fetch("https://young-chow-productivity-app.herokuapp.com/settings/",{
+      method: "GET",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+      })
+    })
+    .then(response => response.json())
+    .then(json => {
+      json.forEach((obj) => {
+        if (obj.name == 'Notifications') {
+          if (obj.value == 'true') {
+            this.setState({notificationsEnabled: true})
+          }
+        }
+      })
+    })
+  }
+
 
   async componentDidMount() {
     let taskToken = await SecureStore.getItemAsync('currentTask')
@@ -76,12 +100,14 @@ export default class CreateTaskScreen extends React.Component{
         due_date: moment(new Date(curTask.due_date)),
         description: curTask.description,
         subTasks: subtasks,
+        reminder: curTask.reminder,
         tagPk: curTask.tag
       }, () => {
         this.getTags().then(() => {
           console.log("Now tag: " + this.state.taskTag)
         })
       });
+      await this.checkSettings()
       
       
     }
@@ -105,11 +131,49 @@ export default class CreateTaskScreen extends React.Component{
     });
   }
 
+  async updatePushNotification(currReminder, reminderTime) {
+    if (currReminder == '' || currReminder == null) {
+      await Notifications.cancelScheduledNotificationAsync(currReminder)
+    }
+    console.log("before: " + this.state.due_date)
+    var trigger = new Date(this.state.due_date);
+
+    if (reminderTime == '' || reminderTime == null) {
+      return reminderTime
+    }
+    if (reminderTime == '1 day') {
+      trigger.setDate(trigger.getDate()-1);
+    }
+    if (reminderTime == '2 days') {
+      trigger.setDate(trigger.getDate()-2);
+    }
+    if (reminderTime == '3 days') {
+      trigger.setDate(trigger.getDate()-3);
+    }
+
+    // trigger = new Date();
+    // console.log(trigger)
+    // trigger.setSeconds(trigger.getSeconds() + 10);
+    // console.log(trigger)
+    console.log("after: " + this.state.due_date)
+
+    const identifier = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: this.state.title,
+        body: 'This task is due in ' + reminderTime,
+      },
+      trigger: trigger,
+    });
+    console.log("NOTIF TEST" + identifier)
+    return identifier
+  }
 
 
-  onSubmit = () => {
+
+  onSubmit = async () => {
     const { title, description, due_date, taskTag } = this.state;
     const {navigation} = this.props;
+    const reminder = await this.updatePushNotification(this.state.reminder, this.state.reminderTime)
     
 
     // I don't want to talk about it
@@ -130,7 +194,8 @@ export default class CreateTaskScreen extends React.Component{
           description: description,
           due_date: formatted,
           subtasks: subtasks,
-          tag: this.state.taskTag.pk
+          tag: this.state.taskTag.pk,
+          reminder: reminder
         })
       })
       .then(response => response.json())
@@ -278,6 +343,39 @@ export default class CreateTaskScreen extends React.Component{
           rowStyle={styles.dropdown1RowStyle}
           rowTextStyle={styles.dropdown1RowTxtStyle}
         />
+
+        {this.state.notificationsEnabled == true && new Date() < new Date(this.state.due_date) &&
+        <SelectDropdown
+          data={this.state.reminderOptions}
+          defaultButtonText={"Set Reminder"}
+          onSelect={(selectedItem, index) => {
+            this.setState({reminderTime: selectedItem})
+            console.log("new reminder time selected")
+            console.log(selectedItem)
+          }}
+          buttonTextAfterSelection={(selectedItem, index) => {
+            // text represented after item is selected
+            // if data array is an array of objects then return selectedItem.property to render after item is selected
+            return selectedItem
+          }}
+          rowTextForSelection={(item, index) => {
+            // text represented for each item in dropdown
+            // if data array is an array of objects then return item.property to represent item in dropdown
+            return item
+          }}
+          buttonStyle={styles.dropdown1BtnStyle}
+          buttonTextStyle={styles.dropdown1BtnTxtStyle}
+          renderDropdownIcon={() => {
+            return (
+              <FontAwesome name="chevron-down" color={"#444"} size={18} />
+            );
+          }}
+          dropdownIconPosition={"right"}
+          dropdownStyle={styles.dropdown1DropdownStyle}
+          rowStyle={styles.dropdown1RowStyle}
+          rowTextStyle={styles.dropdown1RowTxtStyle}
+        />
+        }
 
         
         <ScrollView contentContainerStyle={styles.scrollContainer}>

@@ -13,7 +13,6 @@ import SettingScreen from './screens/SettingScreen';
 import CreateTaskScreen from './screens/CreateTaskScreen';
 import CreateTagScreen from './screens/CreateTagScreen';
 import TaskDetailScreen from './screens/TaskDetailScreen';
-import NotficationScreen from './screens/NotificationScreen';
 
 // This is a warning that occurs on new react versions. It wants me to use event listeners instead,
 // which isn't happening for the time being.
@@ -96,7 +95,6 @@ export default class App extends React.Component {
           <Stack.Screen name="Create Task" component={CreateTaskScreen} options={{headerShown: false}}/>
           <Stack.Screen name="Create Tag" component={CreateTagScreen} options={{headerShown: false}}/>
           <Stack.Screen name="TaskDetailScreen" component={TaskDetailScreen} options={{headerShown: false}}/>
-          <Stack.Screen name="NotificationScreen" component={NotficationScreen} options={{headerShown: false}}/>
         </Stack.Navigator>
       </NavigationContainer>
     );

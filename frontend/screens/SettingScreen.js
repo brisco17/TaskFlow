@@ -5,6 +5,17 @@ import Dialog from 'react-native-dialog';
 import * as Google from "expo-google-app-auth";
 import GDrive from "expo-google-drive-api-wrapper";
 import ModernHeader from "react-native-modern-header";
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default class SettingScreen extends React.Component{
 
@@ -19,11 +30,64 @@ export default class SettingScreen extends React.Component{
       newPasswordAlert: false,
       newGoogleAlert: false,
       google: false,
+      notificationsEnabled: false,
+      notifSettingID: -1,
+      notification: {},
+      expoPushToken: '',
+      googleSettingID: -1,
       sessionToken:'',
       accessToken: ""
     }
     
   }
+
+  _handleNotification = notification => {
+    this.setState({ notification: notification });
+  };
+
+  _handleNotificationResponse = response => {
+    console.log(response);
+  };
+
+  addNotifListeners() {
+    Notifications.addNotificationReceivedListener(this._handleNotification);
+    Notifications.addNotificationResponseReceivedListener(this._handleNotificationResponse);
+  }
+
+  disableNotifListeners() {
+    Notifications.removeNotificationSubscription(this._handleNotification);
+    Notifications.removeNotificationSubscription(this._handleNotificationResponse);
+  }
+
+  async registerForPushNotificationsAsync() {
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log(token);
+      this.setState({ expoPushToken: token });
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+  
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+    };
+
   async componentDidMount() {
     let token = await SecureStore.getItemAsync('session')
     let accessToken = await SecureStore.getItemAsync('GoogleToken')
@@ -35,6 +99,86 @@ export default class SettingScreen extends React.Component{
       this.setState({
         accessToken: accessToken,
         google: true})
+    }
+    await this.checkSettings()
+    if (this.state.notificationsEnabled == true) {
+      this.addNotifListeners()
+    }
+  }
+
+  async checkSettings() {
+    fetch("https://young-chow-productivity-app.herokuapp.com/settings/",{
+      method: "GET",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+      })
+    })
+    .then(response => response.json())
+    .then(json => {
+      json.forEach((obj) => {
+        if (obj.name == 'Notifications') {
+          if (obj.value == 'true') {
+            this.setState({notificationsEnabled: true})
+          }
+          this.setState({notifSettingID: obj.id})
+        }
+        else if (obj.name == 'Google Log In') {
+          this.setState({googleSettingID: obj.value})
+        }
+      })
+    })
+  }
+
+  async updateNotifications(bool) {
+    var alertMessage = ''
+    if (bool) { 
+      this.registerForPushNotificationsAsync()
+      this.addNotifListeners()
+      alertMessage = 'Notifications have been enabled'
+     }
+    else {
+      this.disableNotifListeners()
+      await Notifications.cancelAllScheduledNotificationsAsync()
+      alertMessage = 'Notifications have been disabled.\n\n All pending notifications have been canceled.'
+    }
+    if (this.state.notifSettingID != -1) {
+      fetch("https://young-chow-productivity-app.herokuapp.com/settings/" + this.state.notifSettingID,{
+        method: "PATCH",
+        headers: new Headers({
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + this.state.sessionToken
+        }),
+        body: JSON.stringify({
+          value: bool.toString()
+        })
+      })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json)
+        this.setState({notificationsEnabled: bool})
+        alert(alertMessage)
+      })
+    }
+    else {
+      fetch("https://young-chow-productivity-app.herokuapp.com/settings/",{
+        method: "POST",
+        headers: new Headers({
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + this.state.sessionToken
+        }),
+        body: JSON.stringify({
+          name: 'Notifications',
+          value: bool.toString()
+        })
+      })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json)
+        this.setState({notificationsEnabled: bool})
+        this.setState({notifSettingID: json.id})
+        alert(alertMessage)
+      })
     }
   }
 
@@ -55,13 +199,13 @@ export default class SettingScreen extends React.Component{
       .then(json => {
         console.log(json.current_password.toString())
         if(this.state.reenterPassword != this.state.newPassword){
-          Alert.alert("New Passwords did not match")
+          Alert.alert("New Passwords did not match.")
         }
         else if(json.current_password.toString() == ""){
-          Alert.alert("Inputed Wrong password")
+          Alert.alert("Entered incorrect password. Please try again.")
         }
         else{
-          Alert.alert("Password Changed")
+          Alert.alert("Password successfully updated")
         }
       })
     }
@@ -233,6 +377,7 @@ export default class SettingScreen extends React.Component{
       }
     render() {
       const {navigation} = this.props;
+      const notifEnabled = this.state.notificationsEnabled
 
         return(
             <View style={styles.MainScreen}>
@@ -280,11 +425,20 @@ export default class SettingScreen extends React.Component{
               <Dialog.Button label="Confirm" onPress={this.toggleBothAlerts}/>
             </Dialog.Container>
 
-            <TouchableOpacity 
-            style = {styles.button}
-            onPress = {() => navigation.navigate("NotificationScreen")}>
-            <Text style = {styles.buttonText}>Notifications</Text>
-            </TouchableOpacity>
+            {this.state.notificationsEnabled ? (
+              <TouchableOpacity 
+              style = {styles.button}
+              onPress = {() => this.updateNotifications(!this.state.notificationsEnabled)}>
+                <Text style = {styles.buttonText}>Disable Reminders</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity 
+              style = {styles.button}
+              onPress = {() => this.updateNotifications(!this.state.notificationsEnabled)}>
+                <Text style = {styles.buttonText}>Enable Reminders</Text>
+              </TouchableOpacity>
+            )}
+
             
             <TouchableOpacity 
             style = {styles.button}

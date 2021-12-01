@@ -195,7 +195,7 @@ export default class MainScreen extends React.Component {
 
   onDeleteTag(tag) {
     console.log("IN DELETE TAG"+ tag.pk)
-    const {naviation} = this.props
+    const {navigation} = this.props
     fetch("https://young-chow-productivity-app.herokuapp.com/tags/" + tag.pk, {
       method: "DELETE",
       headers: new Headers({
@@ -210,7 +210,9 @@ export default class MainScreen extends React.Component {
       this.getTags()
     }
     )
-    .then(this.changeTagState())
+    .then(
+    this.changeTagState()
+    )
   }
 
   showTags() {

@@ -252,7 +252,7 @@ export default class SettingScreen extends React.Component{
             <TouchableOpacity
             style={styles.button}
             onPress = {() => this.gLogin()}>
-            <Text style = {styles.buttonText}>Google Log In:         Status: {String(this.state.google)}</Text>
+            <Text style = {styles.buttonText}>Google Log In:</Text>
             </TouchableOpacity>
             <View>
               <Switch

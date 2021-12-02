@@ -195,7 +195,7 @@ export default class MainScreen extends React.Component {
 
   onDeleteTag(tag) {
     console.log("IN DELETE TAG"+ tag.pk)
-    const {naviation} = this.props
+    const {navigation} = this.props
     fetch("https://young-chow-productivity-app.herokuapp.com/tags/" + tag.pk, {
       method: "DELETE",
       headers: new Headers({
@@ -210,7 +210,9 @@ export default class MainScreen extends React.Component {
       this.getTags()
     }
     )
-    .then(this.changeTagState())
+    .then(
+    this.changeTagState()
+    )
   }
 
   showTags() {
@@ -307,6 +309,7 @@ export default class MainScreen extends React.Component {
               </TouchableOpacity>
 
               <Modal 
+                // FILTER TASK MODAL
                 isVisible={this.state.isVisible}
                 propagateSwipe={true}
                 animationIn="fadeIn"
@@ -339,16 +342,6 @@ export default class MainScreen extends React.Component {
                     </TouchableOpacity>
                     <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
                     
-                    <Text style={styles.modalHeader}>
-                      Manage Tags:
-                    </Text>                        
-                      <TouchableOpacity
-                      onPress = { () => {this.setState({isVisible: false}); navigation.navigate('Create Tag');} }
-                      >
-                      <Text style={styles.button}>Create new tag</Text>
-                      </TouchableOpacity>
-                      <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-
 
                   </ScrollView>
                 </View>
@@ -356,6 +349,7 @@ export default class MainScreen extends React.Component {
               </Modal>
 
               <Modal 
+                // MANGE TAGS MODAL
                 isVisible={this.state.tagVisible}
                 propagateSwipe={true}
                 animationIn="fadeIn"

@@ -9,6 +9,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Dialog from 'react-native-dialog';
 import {FontAwesome5} from '@expo/vector-icons';
 import ModernHeader from "react-native-modern-header";
+import * as Notifications from 'expo-notifications';
 
 
 export default class CreateTaskScreen extends React.Component{
@@ -25,10 +26,14 @@ export default class CreateTaskScreen extends React.Component{
       task: [],
       tags: [],
       subTasks: {},
+      notificationsEnabled: false,
+      reminder: null,
+      reminderTime: null,
+      reminderOptions: ['1 Day', '2 Days' ,'3 Days'],
       subCreate: false,
       subTitleTemp: '',
       countries: ["Egypt", "Canada", "Australia", "Ireland"],
-      drive: [],
+      drive: {},
       driveChoice: ""
     }
     this.onDateChange = this.onDateChange.bind(this);
@@ -56,6 +61,26 @@ export default class CreateTaskScreen extends React.Component{
     )
   }
 
+  async checkSettings() {
+    fetch("https://young-chow-productivity-app.herokuapp.com/settings/",{
+      method: "GET",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+      })
+    })
+    .then(response => response.json())
+    .then(json => {
+      json.forEach((obj) => {
+        if (obj.name == 'Notifications') {
+          if (obj.value == 'true') {
+            this.setState({notificationsEnabled: true})
+          }
+        }
+      })
+    })
+  }
+
 
   async componentDidMount() {
     let taskToken = await SecureStore.getItemAsync('currentTask')
@@ -76,25 +101,41 @@ export default class CreateTaskScreen extends React.Component{
         due_date: moment(new Date(curTask.due_date)),
         description: curTask.description,
         subTasks: subtasks,
+        reminder: curTask.reminder,
         tagPk: curTask.tag
       }, () => {
         this.getTags().then(() => {
           console.log("Now tag: " + this.state.taskTag)
         })
       });
+      await this.checkSettings()
       
       
     }
     if (driveData) {
-      var temp = []
+      var temp = {}
 
       for (var data in JSON.parse(driveData)) {
-        temp.push(JSON.parse(driveData)[data].name)
+        console.log(data)
+        temp[JSON.parse(driveData)[data].name] = JSON.parse(driveData)[data].id
       }
+
+      console.log(temp)
       
       this.setState({
         drive: temp
       })
+
+
+      if (curTask.attachedFile) {
+        console.log("file is already attatched!")
+
+        for (const [key,value] in Object.entries(temp)) {
+          if (value == curTask.attachedFile) this.setState({driveChoice: key})
+        }
+
+        
+      }
     }
   }
 
@@ -105,11 +146,67 @@ export default class CreateTaskScreen extends React.Component{
     });
   }
 
+  onDeleteTask = () => {
+    console.log("IN DELETE TASK"+ this.state.task.id)
+    fetch("https://young-chow-productivity-app.herokuapp.com/tasks/" + this.state.task.id, {
+      method: "DELETE",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+        }),
+      })
+    .then(() => { 
+      console.log('Deleted Task')
+      //console.log(json)
+      Alert.alert("Task Succesfully Deleted")
+    }
+    )
+    .then(this.onBack())
+  }
+  
+  async updatePushNotification(currReminder, reminderTime) {
+    if (currReminder == '' || currReminder == null) {
+      //await Notifications.cancelScheduledNotificationAsync(currReminder)
+    }
+    console.log("before: " + this.state.due_date)
+    var trigger = new Date(this.state.due_date);
+
+    if (reminderTime == '' || reminderTime == null) {
+      return reminderTime
+    }
+    if (reminderTime == '1 day') {
+      trigger.setDate(trigger.getDate()-1);
+    }
+    if (reminderTime == '2 days') {
+      trigger.setDate(trigger.getDate()-2);
+    }
+    if (reminderTime == '3 days') {
+      trigger.setDate(trigger.getDate()-3);
+    }
+
+    // trigger = new Date();
+    // console.log(trigger)
+    // trigger.setSeconds(trigger.getSeconds() + 10);
+    // console.log(trigger)
+    console.log("after: " + this.state.due_date)
+
+    const identifier = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: this.state.title,
+        body: 'This task is due in ' + reminderTime,
+      },
+      trigger: trigger,
+    });
+    console.log("NOTIF TEST" + identifier)
+    return identifier
+  }
 
 
-  onSubmit = () => {
+
+  onSubmit = async () => {
     const { title, description, due_date, taskTag } = this.state;
     const {navigation} = this.props;
+    const reminder = await this.updatePushNotification(this.state.reminder, this.state.reminderTime)
     
 
     // I don't want to talk about it
@@ -130,7 +227,9 @@ export default class CreateTaskScreen extends React.Component{
           description: description,
           due_date: formatted,
           subtasks: subtasks,
-          tag: this.state.taskTag.pk
+          tag: this.state.taskTag.pk,
+          reminder: reminder,
+          attachedFile: this.state.drive[this.state.driveChoice] ,
         })
       })
       .then(response => response.json())
@@ -141,7 +240,10 @@ export default class CreateTaskScreen extends React.Component{
           if (json.title) Alert.alert("Error: ", json.title.toString())
           else if (json.description) Alert.alert("Error: ", json.description.toString())
           else if (json.due_date) Alert.alert("Error: ", json.due_date.toString())
-          else Alert.alert("Fatal Error, contact dev because something is wrong")
+          else {
+            console.log ("Error: " + JSON.stringify(json))
+            Alert.alert("Fatal Error, contact dev because something is wrong")
+          }
         }
         else
         {
@@ -216,8 +318,10 @@ export default class CreateTaskScreen extends React.Component{
 
     return (
       <View style={styles.container}>
-        <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightCustomComponent={<FontAwesome5 name="trash-alt" size={24} color="black" />} onLeftPress={() => this.onBack()}/>
-        <FontAwesome5 style = {{postion: 'absolute', right: "37%", top: "16%"}} name="tasks" size={24} color="black"/>
+        <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightCustomComponent={<FontAwesome5 name="trash-alt" size={24} color="black" />} 
+        onLeftPress={() => this.onBack()} 
+        onRightPress={() => this.onDeleteTask()}/>
+        <FontAwesome5 style = {{postion: 'absolute', right: "37%", top: "19%"}} name="tasks" size={24} color="black"/>
         <View style={styles.inputContainer}>
           <Text style={styles.titleText}>Edit Title & Description</Text>
           <TextInput
@@ -247,13 +351,13 @@ export default class CreateTaskScreen extends React.Component{
             multiline={true}
           />
         </View>
-        <View style ={styles.dropDownContainer}>
+
         <SelectDropdown
-          data={this.state.drive}
-          defaultButtonText={"Select Drive File"}
+          data={Object.keys(this.state.drive).sort()}
+          defaultButtonText={this.state.driveChoice ? this.state.driveChoice : "Select Drive File"}
           onSelect={(selectedItem, index) => {
             this.setState({driveChoice: selectedItem})
-            console.log(selectedItem)
+            console.log(this.state.drive)
             console.log("new item selected")
           }}
           buttonTextAfterSelection={(selectedItem, index) => {
@@ -278,7 +382,64 @@ export default class CreateTaskScreen extends React.Component{
           rowStyle={styles.dropdown1RowStyle}
           rowTextStyle={styles.dropdown1RowTxtStyle}
         />
-          <SelectDropdown
+
+        {this.state.notificationsEnabled == true && new Date() < new Date(this.state.due_date) &&
+        <SelectDropdown
+          data={this.state.reminderOptions}
+          defaultButtonText={"Set Reminder"}
+          onSelect={(selectedItem, index) => {
+            this.setState({reminderTime: selectedItem})
+            console.log("new reminder time selected")
+            console.log(selectedItem)
+          }}
+          buttonTextAfterSelection={(selectedItem, index) => {
+            // text represented after item is selected
+            // if data array is an array of objects then return selectedItem.property to render after item is selected
+            return selectedItem
+          }}
+          rowTextForSelection={(item, index) => {
+            // text represented for each item in dropdown
+            // if data array is an array of objects then return item.property to represent item in dropdown
+            return item
+          }}
+          buttonStyle={styles.dropdown1BtnStyle}
+          buttonTextStyle={styles.dropdown1BtnTxtStyle}
+          renderDropdownIcon={() => {
+            return (
+              <FontAwesome name="chevron-down" color={"#444"} size={18} />
+            );
+          }}
+          dropdownIconPosition={"right"}
+          dropdownStyle={styles.dropdown1DropdownStyle}
+          rowStyle={styles.dropdown1RowStyle}
+          rowTextStyle={styles.dropdown1RowTxtStyle}
+        />
+        }
+
+        
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <SafeAreaView>
+        <View>
+          {this.makeSubTasks()}
+          <TouchableOpacity
+                style={styles.makeSub}
+                onPress={this.updateSubModal}
+          >
+            <Text style={styles.buttonText}> Create New Subtask </Text>
+          </TouchableOpacity>
+          <Dialog.Container visible={this.state.subCreate}>
+              <Dialog.Title>Create Subtask</Dialog.Title>
+              <Dialog.Input 
+              onChangeText={title => this.setState({subTitleTemp: title})}
+              value={this.state.subTitleTemp}
+              placeholder={'Subtask Title'}
+              ></Dialog.Input>
+              <Dialog.Button label="Cancel" onPress={this.updateSubModal}/>
+              <Dialog.Button label="Confirm" onPress={this.createSubTask}/>
+            </Dialog.Container>
+        </View>
+
+        <SelectDropdown
           data={this.state.tags}
           defaultButtonText={"Select Tag"}
           onSelect={(selectedItem, index) => {
@@ -308,36 +469,16 @@ export default class CreateTaskScreen extends React.Component{
           rowStyle={styles.dropdown1RowStyle}
           rowTextStyle={styles.dropdown1RowTxtStyle}
         />
-        </View>
+        
+
         <TouchableOpacity
-                style={styles.makeSub}
-                onPress={this.updateSubModal}
-          >
-            <Text style={styles.buttonText}> Create New Subtask </Text>
-          </TouchableOpacity>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <SafeAreaView>
-        <View>
-          {this.makeSubTasks()}
-          <Dialog.Container visible={this.state.subCreate}>
-              <Dialog.Title>Create Subtask</Dialog.Title>
-              <Dialog.Input 
-              onChangeText={title => this.setState({subTitleTemp: title})}
-              value={this.state.subTitleTemp}
-              placeholder={'Subtask Title'}
-              ></Dialog.Input>
-              <Dialog.Button label="Cancel" onPress={this.updateSubModal}/>
-              <Dialog.Button label="Confirm" onPress={this.createSubTask}/>
-            </Dialog.Container>
-        </View>
-         </SafeAreaView>
-      </ScrollView>
-      <TouchableOpacity
           style={styles.button}
           onPress={() => this.onSubmit()}
         >
           <Text style={styles.buttonText}> Submit </Text>
         </TouchableOpacity>
+         </SafeAreaView>
+      </ScrollView>
      
       </View>
       
@@ -347,13 +488,13 @@ export default class CreateTaskScreen extends React.Component{
 
 const styles = StyleSheet.create({
   dropdown1BtnStyle: {
-    width: "50%",
+    width: "80%",
     height: 50,
     backgroundColor: 'rgba(256, 256, 256, 1)',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#444",
-    bottom: 80
+    marginBottom: 30
   },
   dropdown1BtnTxtStyle: { color: 'rgba(69, 120, 144, 1)', textAlign: "center" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },
@@ -369,9 +510,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scrollContainer: {
-    width: '100%',
     backgroundColor: 'rgba(244,245,250,1)',
     justifyContent: 'space-evenly',
+    left: "10%",
+
     flexGrow: 1
   },
   inputContainer: {
@@ -392,7 +534,7 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 45,
-    bottom: 20,
+    bottom: '10%',
     width: '65%',
     alignItems: 'center',
     position: 'relative',
@@ -405,7 +547,7 @@ const styles = StyleSheet.create({
     shadowOpacity: .5,
   },
   subStyle: {
-    width: '100%',
+    width: "80%",
     height: 50,
     backgroundColor: 'rgba(69, 120, 144, 1)',
     borderRadius: 8,
@@ -414,11 +556,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 16,
     color: 'white',
+    paddingStart: 20,
+    paddingEnd: 20,
   },
   makeSub: {
     height: 45,
-    bottom: '8%',
-    marginBottom: -45,
+    bottom: '10%',
     width: '65%',
     alignItems: 'center',
     backgroundColor: 'rgba(256, 256, 256, 1)',
@@ -444,7 +587,8 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: 'rgba(69, 120, 144, 1)',
     fontWeight: 'bold',
-    bottom: "30%"
+    marginBottom: 25,
+    bottom: "20%"
   },
   loginText: {
     bottom: "10%",
@@ -487,10 +631,5 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     alignSelf: "flex-end",
-  },
-
-  dropDownContainer: {
-    flexDirection: 'row'
-
   },
 });

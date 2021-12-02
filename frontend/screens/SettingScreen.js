@@ -1,10 +1,21 @@
 import React from 'react';
-import { StyleSheet, Text, View, Alert, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Alert, TextInput, Switch,TouchableOpacity } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Dialog from 'react-native-dialog';
 import * as Google from "expo-google-app-auth";
 import GDrive from "expo-google-drive-api-wrapper";
 import ModernHeader from "react-native-modern-header";
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default class SettingScreen extends React.Component{
 
@@ -19,11 +30,64 @@ export default class SettingScreen extends React.Component{
       newPasswordAlert: false,
       newGoogleAlert: false,
       google: false,
+      notificationsEnabled: false,
+      notifSettingID: -1,
+      notification: {},
+      expoPushToken: '',
+      googleSettingID: -1,
       sessionToken:'',
       accessToken: ""
     }
     
   }
+
+  _handleNotification = notification => {
+    this.setState({ notification: notification });
+  };
+
+  _handleNotificationResponse = response => {
+    console.log(response);
+  };
+
+  addNotifListeners() {
+    Notifications.addNotificationReceivedListener(this._handleNotification);
+    Notifications.addNotificationResponseReceivedListener(this._handleNotificationResponse);
+  }
+
+  disableNotifListeners() {
+    Notifications.removeNotificationSubscription(this._handleNotification);
+    Notifications.removeNotificationSubscription(this._handleNotificationResponse);
+  }
+
+  async registerForPushNotificationsAsync() {
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log(token);
+      this.setState({ expoPushToken: token });
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+  
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+    };
+
   async componentDidMount() {
     let token = await SecureStore.getItemAsync('session')
     let accessToken = await SecureStore.getItemAsync('GoogleToken')
@@ -36,203 +100,290 @@ export default class SettingScreen extends React.Component{
         accessToken: accessToken,
         google: true})
     }
+    await this.checkSettings()
+    if (this.state.notificationsEnabled == true) {
+      this.addNotifListeners()
+    }
   }
 
-    onChangePassword = () => {
-      fetch("https://young-chow-productivity-app.herokuapp.com/auth/users/set_password/",{
+  async checkSettings() {
+    fetch("https://young-chow-productivity-app.herokuapp.com/settings/",{
+      method: "GET",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+      })
+    })
+    .then(response => response.json())
+    .then(json => {
+      json.forEach((obj) => {
+        if (obj.name == 'Notifications') {
+          if (obj.value == 'true') {
+            this.setState({notificationsEnabled: true})
+          }
+          this.setState({notifSettingID: obj.id})
+        }
+        else if (obj.name == 'Google Log In') {
+          this.setState({googleSettingID: obj.value})
+        }
+      })
+    })
+  }
+
+  async updateNotifications(bool) {
+    var alertMessage = ''
+    if (bool) { 
+      this.registerForPushNotificationsAsync()
+      this.addNotifListeners()
+      alertMessage = 'Notifications have been enabled'
+     }
+    else {
+      this.disableNotifListeners()
+      await Notifications.cancelAllScheduledNotificationsAsync()
+      alertMessage = 'Notifications have been disabled.\n\n All pending notifications have been canceled.'
+    }
+    if (this.state.notifSettingID != -1) {
+      fetch("https://young-chow-productivity-app.herokuapp.com/settings/" + this.state.notifSettingID,{
+        method: "PATCH",
+        headers: new Headers({
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + this.state.sessionToken
+        }),
+        body: JSON.stringify({
+          value: bool.toString()
+        })
+      })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json)
+        this.setState({notificationsEnabled: bool})
+        alert(alertMessage)
+      })
+    }
+    else {
+      fetch("https://young-chow-productivity-app.herokuapp.com/settings/",{
         method: "POST",
         headers: new Headers({
             'Content-Type': 'application/json',
             'Authorization': 'Token ' + this.state.sessionToken
         }),
         body: JSON.stringify({
-          new_password: this.state.reenterPassword,
-          re_new_password: this.state.newPassword,
-          current_password: this.state.password,
+          name: 'Notifications',
+          value: bool.toString()
         })
       })
       .then(response => response.json())
       .then(json => {
-        console.log(json.current_password.toString())
-        if(this.state.reenterPassword != this.state.newPassword){
-          Alert.alert("New Passwords did not match")
-        }
-        else if(json.current_password.toString() == ""){
-          Alert.alert("Inputed Wrong password")
-        }
-        else{
-          Alert.alert("Password Changed")
-        }
+        console.log(json)
+        this.setState({notificationsEnabled: bool})
+        this.setState({notifSettingID: json.id})
+        alert(alertMessage)
       })
     }
+  }
 
-    onLogout = () => {
-      const {navigation} = this.props;
-        fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/logout/",{
-            method: "POST",
-            headers: new Headers({
-                'Content-Type': 'application/json'
-            })
-        })
-        .then(response => response.json())
-        .then(json => {
-          console.log('LogOut Button Hit')
+  onChangePassword = () => {
+    fetch("https://young-chow-productivity-app.herokuapp.com/auth/users/set_password/",{
+      method: "POST",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+      }),
+      body: JSON.stringify({
+        new_password: this.state.reenterPassword,
+        re_new_password: this.state.newPassword,
+        current_password: this.state.password,
+      })
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.log(json.current_password.toString())
+      if(this.state.reenterPassword != this.state.newPassword){
+        Alert.alert("New Passwords did not match.")
+      }
+      else if(json.current_password.toString() == ""){
+        Alert.alert("Entered incorrect password. Please try again.")
+      }
+      else{
+        Alert.alert("Password successfully updated")
+      }
+    })
+  }
 
-          SecureStore.deleteItemAsync('session').then(() => {
-            this.props.route.params.onLoggedIn();
-            navigation.pop();
+  onLogout = () => {
+    const {navigation} = this.props;
+      fetch("https://young-chow-productivity-app.herokuapp.com/auth/token/logout/",{
+          method: "POST",
+          headers: new Headers({
+              'Content-Type': 'application/json'
           })
-
-        })
-    }
-
-    getDriveFiles = (accessToken) => {
-      fetch("https://www.googleapis.com/drive/v3/files?key=AIzaSyBEzp_Qpq5hwFoTgHembUAAOZDa9wcnrlE",{
-        method: "GET",
-        headers: {  Authorization: `Bearer ${accessToken}`,
-                    Accept: 'application/json' },
       })
       .then(response => response.json())
       .then(json => {
+        console.log('LogOut Button Hit')
+        
         SecureStore.setItemAsync('DriveData', JSON.stringify(json.files)).then(() => {
           console.log("Saved drive data.")
+          console.log(json)
         });
-      })
 
-      // GDrive.setAccessToken(accessToken)
-      // GDrive.init();
-      // var files =  GDrive.files.list({})
-      // console.log(JSON.stringify(files))
+        SecureStore.deleteItemAsync('session').then(() => {
+          this.props.route.params.onLoggedIn();
+          navigation.pop();
+        })
+
+        
+      })
+  }
+
+  getDriveFiles = (accessToken) => {
+    fetch("https://www.googleapis.com/drive/v3/files?key=AIzaSyBEzp_Qpq5hwFoTgHembUAAOZDa9wcnrlE",{
+      method: "GET",
+      headers: {  Authorization: `Bearer ${accessToken}`,
+                  Accept: 'application/json' },
+    })
+    .then(response => response.json())
+    .then(json => {
+      SecureStore.setItemAsync('DriveData', JSON.stringify(json.files)).then(() => {
+        console.log("Saved drive data.")
+      });
+    })
+
+    // GDrive.setAccessToken(accessToken)
+    // GDrive.init();
+    // var files =  GDrive.files.list({})
+    // console.log(JSON.stringify(files))
+  }
+
+
+  onDelete = () => {
+
+    const {navigation} = this.props;
+        fetch("https://young-chow-productivity-app.herokuapp.com/auth/users/me/",{
+          method: "DELETE",
+          headers: new Headers({
+              'Content-Type': 'application/json',
+              'Authorization': 'Token ' + this.state.sessionToken
+          }),
+          body: JSON.stringify({
+            current_password: this.state.password,
+          })
+      })
+      .then(response => response.json())
+      .then(json => {
+        console.log('Account Deleted')
+        console.log(json)
+        SecureStore.deleteItemAsync('session').then(() => {
+          this.props.route.params.onLoggedIn();
+          navigation.pop();
+          Alert.alert("Account Succesfully Deleted")
+        })
+      })
     }
 
-
-    onDelete = () => {
+    async gLogin  () {
 
       const {navigation} = this.props;
-          fetch("https://young-chow-productivity-app.herokuapp.com/auth/users/me/",{
-            method: "DELETE",
-            headers: new Headers({
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + this.state.sessionToken
-            }),
-            body: JSON.stringify({
-              current_password: this.state.password,
-            })
-        })
-        .then(response => response.json())
-        .then(json => {
-          console.log('Account Deleted')
-          console.log(json)
-          SecureStore.deleteItemAsync('session').then(() => {
-            this.props.route.params.onLoggedIn();
-            navigation.pop();
-            Alert.alert("Account Succesfully Deleted")
-          })
-        })
-      }
-
-      async gLogin  () {
-
-        const {navigation} = this.props;
-        console.log("SettingScreen.js 106 | logging in");
-        try {
-          const { type, accessToken, user } = await Google.logInAsync({
-            iosClientId: `22428134723-pq3rqvntskvn45979el7kmkrnksmajgs.apps.googleusercontent.com`,
-            androidClientId: `22428134723-4clne824h5k1q433vh1tmgf6r443t2dp.apps.googleusercontent.com`,
-            scopes: ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.readonly', 'https://www.googleapis.com/auth/drive.metadata.readonly']
+      console.log("SettingScreen.js 106 | logging in");
+      try {
+        const { type, accessToken, user } = await Google.logInAsync({
+          iosClientId: `22428134723-pq3rqvntskvn45979el7kmkrnksmajgs.apps.googleusercontent.com`,
+          androidClientId: `22428134723-4clne824h5k1q433vh1tmgf6r443t2dp.apps.googleusercontent.com`,
+          scopes: ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.readonly', 'https://www.googleapis.com/auth/drive.metadata.readonly']
+        });
+        if (type === "success") {
+          let userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+            headers: {  Authorization: `Bearer ${accessToken}`,
+                        Accept: 'application/json' },
           });
-          if (type === "success") {
-            let userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-              headers: {  Authorization: `Bearer ${accessToken}`,
-                          Accept: 'application/json' },
-            });
-            this.getDriveFiles(accessToken)
-            // Then you can use the Google REST API
-            console.log("Info: " + userInfoResponse)
-            console.log("SettingScreen.js 115 | success, adding to settings");
-            SecureStore.setItemAsync('GoogleToken', JSON.stringify(accessToken)).then(() => {
-                  console.log('Right before fetch call');
-                  console.log(user)
-                  fetch("https://young-chow-productivity-app.herokuapp.com/settings/", {
-                    method: "POST",
-                    headers: new Headers({
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Token ' + this.state.sessionToken
-                    }),
-                    body: JSON.stringify({
-                      name: "Google Log In",
-                      value: JSON.stringify(user)
-                    })
+          this.getDriveFiles(accessToken)
+          // Then you can use the Google REST API
+          console.log("Info: " + userInfoResponse)
+          console.log("SettingScreen.js 115 | success, adding to settings");
+          SecureStore.setItemAsync('GoogleToken', JSON.stringify(accessToken)).then(() => {
+                console.log('Right before fetch call');
+                console.log(user)
+                fetch("https://young-chow-productivity-app.herokuapp.com/settings/", {
+                  method: "POST",
+                  headers: new Headers({
+                      'Content-Type': 'application/json',
+                      'Authorization': 'Token ' + this.state.sessionToken
+                  }),
+                  body: JSON.stringify({
+                    name: "Google Log In",
+                    value: JSON.stringify(user)
                   })
-                //})
-              .then(response => response.json())
-              .then(json => {
+                })
+              //})
+            .then(response => response.json())
+            .then(json => {
+              this.setState({google: true})
+              console.log(json)
+              if(!json.id) {
+                if (json.name) Alert.alert("Error: ", json.name.toString())
+                else if (json.value) Alert.alert("Error: ", json.value.toString())
+                else Alert.alert("Fatal Error, contact dev because something is wrong")
+              }
+              else
+              {
                 this.setState({google: true})
-                console.log(json)
-                if(!json.id) {
-                  if (json.name) Alert.alert("Error: ", json.name.toString())
-                  else if (json.value) Alert.alert("Error: ", json.value.toString())
-                  else Alert.alert("Fatal Error, contact dev because something is wrong")
-                }
-                else
-                {
-                  this.setState({google: true})
-                  Alert.alert("Google Sign Setting has been successfully created.")
-                }
-              })
-              .catch(exception => {
-                  console.log("Error occured", exception);
-                  this.setState({google: false})
-              });
+                Alert.alert("Google Sign Setting has been successfully created.")
+              }
+            })
+            .catch(exception => {
+                console.log("Error occured", exception);
+                this.setState({google: false})
             });
-          }
-          else {
-            this.setState({google: false})
-          }
+          });
         }
-        catch {
-          console.log("Error occured", exception);
+        else {
           this.setState({google: false})
         }
       }
-
-
-      changeAlertState = () => {
-        if(this.state.alertVisible){
-          this.setState({alertVisible: false})
-        }else{
-          this.setState({alertVisible: true})
-        }
+      catch {
+        console.log("Error occured", exception);
+        this.setState({google: false})
       }
+    }
 
-      toggleBothAlerts = () => {
-        this.newPasswordAlertState()
-        this.onChangePassword()
-      }
 
-      newPasswordAlertState = () => {
-        if(this.state.newPasswordAlert){
-          this.setState({newPasswordAlert: false})
-        }else{
-          this.setState({newPasswordAlert: true})
-        }
+    changeAlertState = () => {
+      if(this.state.alertVisible){
+        this.setState({alertVisible: false})
+      }else{
+        this.setState({alertVisible: true})
       }
+    }
 
-      newGoogleAlertState = () => {
-        if(this.state.newGoogleAlert){
-          this.setState({newGoogleAlert: false})
-        }else{
-          this.setState({newGoogleAlert: true})
-        }
-      }
-      
-      onBack = () => {
-        const {navigation} = this.props;
-        navigation.pop()
+    toggleBothAlerts = () => {
+      this.newPasswordAlertState()
+      this.onChangePassword()
+    }
 
+    newPasswordAlertState = () => {
+      if(this.state.newPasswordAlert){
+        this.setState({newPasswordAlert: false})
+      }else{
+        this.setState({newPasswordAlert: true})
       }
+    }
+
+    newGoogleAlertState = () => {
+      if(this.state.newGoogleAlert){
+        this.setState({newGoogleAlert: false})
+      }else{
+        this.setState({newGoogleAlert: true})
+      }
+    }
+    
+    onBack = () => {
+      const {navigation} = this.props;
+      navigation.pop()
+
+    }
     render() {
       const {navigation} = this.props;
+      const notifEnabled = this.state.notificationsEnabled
 
         return(
             <View style={styles.MainScreen}>
@@ -252,8 +403,17 @@ export default class SettingScreen extends React.Component{
             <TouchableOpacity
             style={styles.button}
             onPress = {() => this.gLogin()}>
-            <Text style = {styles.buttonText}>Google Log In:         Status: {String(this.state.google)}</Text>
+            <Text style = {styles.buttonText}>Google Log In:</Text>
             </TouchableOpacity>
+            <View>
+              <Switch
+                disabled={true}
+                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                thumbColor={this.state.google ? "#f5dd4b" : "#f4f3f4"}
+                ios_backgroundColor="#3e3e3e"
+                value={this.state.google}
+              />
+           </View>
 
             {/* Current Password Overlay */}
             <Dialog.Container visible={this.state.newPasswordAlert}>
@@ -280,11 +440,22 @@ export default class SettingScreen extends React.Component{
               <Dialog.Button label="Confirm" onPress={this.toggleBothAlerts}/>
             </Dialog.Container>
 
-            <TouchableOpacity 
-            style = {styles.button}
-            onPress = {() => navigation.navigate("NotificationScreen")}>
-            <Text style = {styles.buttonText}>Notifications</Text>
-            </TouchableOpacity>
+            {this.state.notificationsEnabled ? (
+              <TouchableOpacity 
+              style = {styles.button}
+              onPress = {() => this.updateNotifications(!this.state.notificationsEnabled)}>
+                <Text style = {styles.buttonText}>Disable Reminders</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity 
+              style = {styles.button}
+              onPress = {() => this.updateNotifications(!this.state.notificationsEnabled)}>
+                <Text style = {styles.buttonText}>Enable Reminders</Text>
+              </TouchableOpacity>
+            )}
+
+            
+
             
             <TouchableOpacity 
             style = {styles.button}

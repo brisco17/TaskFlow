@@ -32,7 +32,8 @@ export default class CreateTaskScreen extends React.Component{
       reminderOptions: ['1 Day', '2 Days' ,'3 Days'],
       subCreate: false,
       subTitleTemp: '',
-      drive: [],
+      countries: ["Egypt", "Canada", "Australia", "Ireland"],
+      drive: {},
       driveChoice: ""
     }
     this.onDateChange = this.onDateChange.bind(this);
@@ -112,15 +113,29 @@ export default class CreateTaskScreen extends React.Component{
       
     }
     if (driveData) {
-      var temp = []
+      var temp = {}
 
       for (var data in JSON.parse(driveData)) {
-        temp.push(JSON.parse(driveData)[data].name)
+        console.log(data)
+        temp[JSON.parse(driveData)[data].name] = JSON.parse(driveData)[data].id
       }
+
+      console.log(temp)
       
       this.setState({
         drive: temp
       })
+
+
+      if (curTask.attachedFile) {
+        console.log("file is already attatched!")
+
+        for (const [key,value] in Object.entries(temp)) {
+          if (value == curTask.attachedFile) this.setState({driveChoice: key})
+        }
+
+        
+      }
     }
   }
 
@@ -151,7 +166,7 @@ export default class CreateTaskScreen extends React.Component{
   
   async updatePushNotification(currReminder, reminderTime) {
     if (currReminder == '' || currReminder == null) {
-      await Notifications.cancelScheduledNotificationAsync(currReminder)
+      //await Notifications.cancelScheduledNotificationAsync(currReminder)
     }
     console.log("before: " + this.state.due_date)
     var trigger = new Date(this.state.due_date);
@@ -213,7 +228,8 @@ export default class CreateTaskScreen extends React.Component{
           due_date: formatted,
           subtasks: subtasks,
           tag: this.state.taskTag.pk,
-          reminder: reminder
+          reminder: reminder,
+          attachedFile: this.state.drive[this.state.driveChoice] ,
         })
       })
       .then(response => response.json())
@@ -224,7 +240,10 @@ export default class CreateTaskScreen extends React.Component{
           if (json.title) Alert.alert("Error: ", json.title.toString())
           else if (json.description) Alert.alert("Error: ", json.description.toString())
           else if (json.due_date) Alert.alert("Error: ", json.due_date.toString())
-          else Alert.alert("Fatal Error, contact dev because something is wrong")
+          else {
+            console.log ("Error: " + JSON.stringify(json))
+            Alert.alert("Fatal Error, contact dev because something is wrong")
+          }
         }
         else
         {
@@ -334,11 +353,11 @@ export default class CreateTaskScreen extends React.Component{
         </View>
 
         <SelectDropdown
-          data={this.state.drive}
-          defaultButtonText={"Select Drive File"}
+          data={Object.keys(this.state.drive).sort()}
+          defaultButtonText={this.state.driveChoice ? this.state.driveChoice : "Select Drive File"}
           onSelect={(selectedItem, index) => {
             this.setState({driveChoice: selectedItem})
-            console.log(selectedItem)
+            console.log(this.state.drive)
             console.log("new item selected")
           }}
           buttonTextAfterSelection={(selectedItem, index) => {
@@ -469,7 +488,7 @@ export default class CreateTaskScreen extends React.Component{
 
 const styles = StyleSheet.create({
   dropdown1BtnStyle: {
-    width: "60%",
+    width: "80%",
     height: 50,
     backgroundColor: 'rgba(256, 256, 256, 1)',
     borderRadius: 8,

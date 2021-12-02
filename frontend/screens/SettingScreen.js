@@ -221,12 +221,18 @@ export default class SettingScreen extends React.Component{
       .then(response => response.json())
       .then(json => {
         console.log('LogOut Button Hit')
+        
+        SecureStore.setItemAsync('DriveData', JSON.stringify(json.files)).then(() => {
+          console.log("Saved drive data.")
+          console.log(json)
+        });
 
         SecureStore.deleteItemAsync('session').then(() => {
           this.props.route.params.onLoggedIn();
           navigation.pop();
         })
 
+        
       })
   }
 

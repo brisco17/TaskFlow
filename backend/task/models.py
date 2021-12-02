@@ -19,7 +19,7 @@ class Task(models.Model):
     title = models.CharField(max_length=30)
     description = models.CharField(max_length=100)
     subtasks = models.JSONField(null=True, blank=True,)
-    attatchedFile = models.CharField(max_length=30)
+    attatchedFile = models.CharField(max_length=20, null=True, blank=True)
     creation_date = models.DateField(auto_now_add=True)
     due_date = models.DateField()
     completion_date = models.DateField(blank=True,null=True)

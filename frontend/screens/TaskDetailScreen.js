@@ -98,6 +98,13 @@ export default class CreateTaskScreen extends React.Component{
       this.setState({
         drive: temp
       })
+
+
+      if (curTask.attachedFile) {
+        console.log("file is already attatched!")
+
+        this.setState({driveChoice: curTask.attachedFile})
+      }
     }
   }
 
@@ -133,7 +140,7 @@ export default class CreateTaskScreen extends React.Component{
           description: description,
           due_date: formatted,
           subtasks: subtasks,
-          attatchedFile: this.state.driveChoice,
+          attachedFile: this.state.driveChoice,
           tag: this.state.taskTag.pk
         })
       })

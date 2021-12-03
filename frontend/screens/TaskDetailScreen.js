@@ -10,6 +10,7 @@ import Dialog from 'react-native-dialog';
 import {FontAwesome5} from '@expo/vector-icons';
 import ModernHeader from "react-native-modern-header";
 import * as Notifications from 'expo-notifications';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 export default class CreateTaskScreen extends React.Component{
@@ -34,7 +35,8 @@ export default class CreateTaskScreen extends React.Component{
       subTitleTemp: '',
       countries: ["Egypt", "Canada", "Australia", "Ireland"],
       drive: {},
-      driveChoice: ""
+      driveChoice: "",
+      date: new Date()
     }
     this.onDateChange = this.onDateChange.bind(this);
   }
@@ -318,11 +320,10 @@ export default class CreateTaskScreen extends React.Component{
 
     return (
       
-      
         <SafeAreaView style ={styles.MainSafe}>
           <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: -20}} rightCustomComponent={<FontAwesome5 name="trash-alt" size={24} color="black" />} 
-        onLeftPress={() => this.onBack()} 
-        onRightPress={() => this.onDeleteTask()}/>
+            onLeftPress={() => this.onBack()} 
+            onRightPress={() => this.onDeleteTask()}/>
       <ScrollView contentContainerStyle={styles.mainScrollContainer} keyboardShouldPersistTaps={'never'} contentInset={{top: -40}} scrollEnabled={true}>
         <FontAwesome5 name="tasks" size={24} color="black"/>
           <Text style={styles.titleText}>Edit Title & Description</Text>
@@ -335,12 +336,28 @@ export default class CreateTaskScreen extends React.Component{
             textContentType="none"
           />
 
-          {/* <View style={styles.calContainer}>
-            <CalendarPicker
-              scaleFactor={Dimensions.get('window').width}
-              onDateChange={this.onDateChange}
-            />
-          </View> */}
+          <View style={styles.rowContainer}>
+            <Text>Set Deadline</Text>
+            <DateTimePicker 
+              value={this.state.date}
+              mode='date'
+              display='default'
+              minimumDate={this.state.date}
+              onChange={ (e, d) => {this.setState({ date: d }); 
+                                    console.log(this.state.date.toLocaleDateString()
+                                    + " " + this.state.date.toLocaleTimeString()) }}/>
+          </View>
+          <View style={styles.rowContainer}>
+            <Text>Set Time</Text>
+            <DateTimePicker 
+                value={this.state.date}
+                mode='time'
+                display='default'
+                minimumDate={this.state.date}
+                onChange={ (e, d) => {this.setState({ date: d });
+                                      console.log(this.state.date.toLocaleDateString()
+                                      + " " + this.state.date.toLocaleTimeString()) }} />
+          </View>
         
           <TextInput
             style={styles.largeInput}
@@ -647,7 +664,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(244,245,250,1)',
   },
   mainScrollContainer: {
-    marginTop: '30%',
+    marginTop: '40%',
     marginHorizontal: 20,
   }
 });

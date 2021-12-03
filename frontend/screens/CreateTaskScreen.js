@@ -193,7 +193,7 @@ export default class CreateTaskScreen extends React.Component{
       <ModernHeader style={{backgroundColor: 'rgba(244,245,250,0)', top: 10}} rightComponentDisable={true} onLeftPress={() => this.onBack()}/>
       <ScrollView contentContainerStyle={styles.container}>
         
-        <FontAwesome5 style = {{postion: 'absolute', right: "37%", top: "6%"}} name="tasks" size={24} color="black"/>
+        <FontAwesome5 style = {{right: "37%", top: "6%"}} name="tasks" size={24} color="black"/>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}

@@ -100,14 +100,12 @@ export default class MainScreen extends React.Component {
     if (this.state.displayTasks.length > 0) {
       return this.state.displayTasks.map((task) => {
           return (
-          <>
           <TouchableOpacity style={styles.button} onPress={() => this.goToDetails(task)}>
             <Text style={styles.titleText}> {task.title} </Text>
             <Text style={styles.buttonText}> {task.description} </Text>
             <Text style={styles.buttonText}> {"Due on " + task.due_date} </Text>
             <Text style={styles.buttonText}> {"Created on " + task.creation_date} </Text>
           </TouchableOpacity>
-          </>
           )
         })
       }
@@ -219,12 +217,9 @@ export default class MainScreen extends React.Component {
     if (this.state.tags.length > 0) {
       return this.state.tags.map((tag) => {
         return (
-        <>
         <TouchableOpacity key={'tag' + tag.id} onPress={() => this.showTasksByTag(tag)}>
           <Text style={styles.button}>{tag.title}</Text>
         </TouchableOpacity>
-        <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-        </>
         )
       })
     }
@@ -236,12 +231,9 @@ export default class MainScreen extends React.Component {
     if (this.state.tags.length > 0) {
       return this.state.tags.map((tag) => {
         return (
-        <>
         <TouchableOpacity key={'tag' + tag.id} onPress={() => this.onDeleteTag(tag)}>
           <Text style={styles.button}>{tag.title}</Text>
         </TouchableOpacity>
-        <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-        </>
         )
       })
     }

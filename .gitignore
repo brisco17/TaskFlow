@@ -20,6 +20,11 @@ __pycache__/
 instance/
 db.sqlite3
 
+# Local builds
+*/ios
+*/android
+
+
 # IDEs
 .vscode/
 .idea/

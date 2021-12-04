@@ -372,14 +372,6 @@ export default class MainScreen extends React.Component {
 
                     
                     <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-                    
-                    <Text style={styles.modalHeader}>
-                      Delete Tags:
-                    </Text>
-                    
-                    {this.manageTags()}
-                    
-                    <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
                     <Text style={styles.modalHeader}>
                       Create Tag:
                     </Text>
@@ -388,6 +380,15 @@ export default class MainScreen extends React.Component {
                     onPress = { () => {this.setState({tagVisible: false}); navigation.navigate('Create Tag');} }>
                     <Text style={styles.button}>Create new tag</Text>
                     </TouchableOpacity>
+                    <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+                    <Text style={styles.modalHeader}>
+                      Delete Tags:
+                    </Text>
+                    
+                    {this.manageTags()}
+                    
+                    
+                    
 
                   </ScrollView>
                 </View>

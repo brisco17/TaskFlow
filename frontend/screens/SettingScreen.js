@@ -105,6 +105,7 @@ export default class SettingScreen extends React.Component{
       this.addNotifListeners()
     }
     if (this.state.googleSettingID != -1) {
+      console.log(this.state.googleSettingID)
       this.setState({google: true})
     }
   }
@@ -120,6 +121,7 @@ export default class SettingScreen extends React.Component{
     .then(response => response.json())
     .then(json => {
       json.forEach((obj) => {
+        console.log(obj)
         if (obj.name == 'Notifications') {
           if (obj.value == 'true') {
             this.setState({notificationsEnabled: true})
@@ -244,7 +246,7 @@ export default class SettingScreen extends React.Component{
         <>
         <TouchableOpacity
             style={styles.button}
-            disabled={true}>
+            onPress= {() => this.deleteGoogle()}>
             <Text style = {styles.buttonText}>Sign Out of Google:</Text>
             </TouchableOpacity>
         </>
@@ -283,7 +285,25 @@ export default class SettingScreen extends React.Component{
     // console.log(JSON.stringify(files))
   }
 
-
+  deleteGoogle = () => {
+    const {navigation} = this.props;
+        fetch("https://young-chow-productivity-app.herokuapp.com/settings/"+ this.state.googleSettingID,{
+          method: "DELETE",
+          headers: new Headers({
+              'Content-Type': 'application/json',
+              'Authorization': 'Token ' + this.state.sessionToken
+          }),
+      })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json)
+        console.log('Settings Deleted')
+        navigation.pop();
+        Alert.alert("Google Setting Deleted")
+      })
+      .then(this.setState({google:false})
+      )
+  }
   onDelete = () => {
 
     const {navigation} = this.props;

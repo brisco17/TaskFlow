@@ -250,9 +250,6 @@ export default class MainScreen extends React.Component {
             </>
             )
         }
-        else{
-          return (<Text style={styles.modalText}> No tag selected </Text>)
-        }
       })
     }
     else {

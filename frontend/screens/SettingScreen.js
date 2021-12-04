@@ -104,6 +104,9 @@ export default class SettingScreen extends React.Component{
     if (this.state.notificationsEnabled == true) {
       this.addNotifListeners()
     }
+    if (this.state.googleSettingID != -1) {
+      this.setState({google: true})
+    }
   }
 
   async checkSettings() {
@@ -234,6 +237,31 @@ export default class SettingScreen extends React.Component{
 
         
       })
+  }
+  loginModal = () => {
+    if (this.state.google){
+      return (
+        <>
+        <TouchableOpacity
+            style={styles.button}
+            disabled={true}>
+            <Text style = {styles.buttonText}>Sign Out of Google:</Text>
+            </TouchableOpacity>
+        </>
+      )
+    }
+    else{
+      return (
+        <>
+        <TouchableOpacity
+            style={styles.button}
+            onPress = {() => this.gLogin()}>
+            <Text style = {styles.buttonText}>Google Log In:</Text>
+            </TouchableOpacity>
+        </>
+      )
+    }
+
   }
 
   getDriveFiles = (accessToken) => {
@@ -400,21 +428,8 @@ export default class SettingScreen extends React.Component{
             <Text style = {styles.buttonText}>Change Password</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-            style={styles.button}
-            onPress = {() => this.gLogin()}>
-            <Text style = {styles.buttonText}>Google Log In:</Text>
-            </TouchableOpacity>
-            <View>
-              <Switch
-                disabled={true}
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={this.state.google ? "#f5dd4b" : "#f4f3f4"}
-                ios_backgroundColor="#3e3e3e"
-                value={this.state.google}
-              />
-           </View>
-
+            {this.loginModal()}
+      
             {/* Current Password Overlay */}
             <Dialog.Container visible={this.state.newPasswordAlert}>
               <Dialog.Title>Change Password</Dialog.Title>

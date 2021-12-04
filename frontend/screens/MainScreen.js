@@ -1,11 +1,11 @@
 import { setStatusBarBackgroundColor, StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Button, Alert,ScrollView, Dimensions, Pressable } from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, TextInput, Alert,ScrollView, Dimensions, Pressable } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Modal from "react-native-modal";
 import {Ionicons,SimpleLineIcons, Foundation,Entypo} from '@expo/vector-icons';
 import ModernHeader from "react-native-modern-header";
-
+import * as Font from 'expo-font';
 import ScrollingButtonMenu from 'react-native-scroll-menu';
 
 export default class MainScreen extends React.Component {
@@ -24,10 +24,27 @@ export default class MainScreen extends React.Component {
       appliedTag: '',
       appliedTagID: 1,
       menus: [],
+      fontsLoaded: false,
+      searchQuery: ''
     }
   }
 
+  async loadFonts() {
+    await Font.loadAsync({
+      // Load a font `Montserrat` from a static resource
+      AvenirNextMedium: require('../assets/AvenirNext-Medium.otf'),
+
+      // Any string can be used as the fontFamily name. Here we use an object to provide more control
+      'AvenirNext-Medium': {
+        uri: require('../assets/AvenirNext-Medium.otf'),
+        display: Font.FontDisplay.FALLBACK,
+      },
+    });
+    this.setState({ fontsLoaded: true });
+  }
+
   async componentDidMount() {
+    this.loadFonts();
     let token = await SecureStore.getItemAsync('session')
     
     if (token) {
@@ -64,7 +81,7 @@ export default class MainScreen extends React.Component {
     .then(json => {
       this.setState({tags: json})
       let arr = this.state.tags;
-      console.log(this.state.tags)
+
       let arr2 =  arr.map(tag =>
       ({name: tag.title,id: tag.pk})
       );
@@ -74,7 +91,6 @@ export default class MainScreen extends React.Component {
       
       this.setState({menus:arr3.concat(arr2)})
       this.setState({appliedTagID : 1})
-      console.log(this.state.menus)
      }
     )
   }
@@ -252,8 +268,9 @@ export default class MainScreen extends React.Component {
 
 
   render() {
-    const {navigation} = this.props;
+    if (!this.state.fontsLoaded) return null;
 
+    const {navigation} = this.props;
     return (
       
       <View style={styles.MainScreen}>
@@ -263,9 +280,27 @@ export default class MainScreen extends React.Component {
         rightCustomComponent={<Entypo name="dots-three-horizontal" size={24} color="black" />}
         onRightPress={() => this.changeTagState()}
         />
-        <View style={styles.contentContainer}>
+        <View style={styles.tagContainer}>
+        <TouchableOpacity
+          style={[
+              styles.tabItem
+          ]}
+          onPress={() => console.log("Searching...")}
+          onLayout={(event) => {
+              // const layout = event.nativeEvent.layout;
+              // this.dataSourceCords[route.id] = layout;
+          }}
+      >
+          <TextInput
+            style= {styles.tabItemText}
+            underlineColorAndroid="transparent"
+            placeholder = "Search"
+            onChangeText={text => this.setState({ searchQuery: text })}
+          />
+      </TouchableOpacity>
         <ScrollingButtonMenu 
-          items={this.state.menus}
+          // Checks if search query exists. If so, filter by it (excluding "All"). Otherwise don't. 1 line if-statements ftw.
+          items={this.state.searchQuery ? this.state.menus.filter(word => word.name == "All" || word.name.includes(this.state.searchQuery)) : this.state.menus}
           onPress={
             (e) => {
               if(e.name === "All") {
@@ -418,6 +453,11 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     width: screen.width,
+  },
+  tagContainer: {
+    width: screen.width,
+    flexDirection: "row",
+    flex: 0
   },
   modalHeader: {
     fontSize: 20,
@@ -587,6 +627,32 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 1, height: 1},
     shadowRadius: 5,
     shadowOpacity: .5,
-  }
+  },
+  tabItem: {
+    borderRadius: 5,
+    borderColor: '#858585',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    padding: 6,
+    height: "65%",
+    width: "25%",
+    top: 19,
+    marginLeft: 10,
+  },
+  tabItemText: {
+      color: '#5d5d5d',
+      fontFamily: 'AvenirNext-Medium',
+      fontSize: 14,
+      fontWeight: '500',
+      fontStyle: 'normal',
+      textAlign: 'center',
+      lineHeight: 20,
+  },
+  tabItemFocused: {
+      borderWidth: 0,
+  },
+  tabItemTextFocused: {
+      color: '#fff',
+  },
 });
 

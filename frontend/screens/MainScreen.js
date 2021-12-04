@@ -639,6 +639,7 @@ const styles = StyleSheet.create({
     top: 19,
     marginLeft: 10,
   },
+  
   tabItemText: {
       color: '#5d5d5d',
       fontFamily: 'AvenirNext-Medium',

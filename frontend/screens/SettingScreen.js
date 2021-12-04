@@ -221,7 +221,7 @@ export default class SettingScreen extends React.Component{
       .then(response => response.json())
       .then(json => {
         console.log('LogOut Button Hit')
-        
+
         SecureStore.setItemAsync('DriveData', JSON.stringify(json.files)).then(() => {
           console.log("Saved drive data.")
           console.log(json)
@@ -402,8 +402,11 @@ export default class SettingScreen extends React.Component{
 
             <TouchableOpacity
             style={styles.button}
-            onPress = {() => this.gLogin()}>
+            onPress = {() => this.gLogin()}
+            disabled = {this.state.google}>
+            
             <Text style = {styles.buttonText}>Google Log In:</Text>
+            
             </TouchableOpacity>
             <View>
               <Switch

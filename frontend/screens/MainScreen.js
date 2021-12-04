@@ -22,7 +22,7 @@ export default class MainScreen extends React.Component {
       taskSet: [],
       displayTasks: [],
       appliedTag: '',
-      appliedTagID: 0,
+      appliedTagID: Number.MAX_SAFE_INTEGER,
       menus: [],
     }
   }
@@ -69,12 +69,13 @@ export default class MainScreen extends React.Component {
       ({name: tag.title,id: tag.pk})
       );
       let arr3 = [
-        {"id": 0,
+        {"id": Number.MAX_SAFE_INTEGER,
         "name": "All"}]
       
       this.setState({menus:arr3.concat(arr2)})
-      this.setState({appliedTagID : 0})
+      this.setState({appliedTagID : Number.MAX_SAFE_INTEGER})
       console.log(this.state.menus)
+      console.log(this.state.appliedTagID)
      }
     )
   }
@@ -128,8 +129,9 @@ export default class MainScreen extends React.Component {
     var tasks = []
 
     if (tag == this.state.appliedTag || tag == 'All') {
-      this.setState({displayTasks: this.state.taskSet, appliedTag: '', appliedTagID: 0})
+      this.setState({displayTasks: this.state.taskSet, appliedTag: '', appliedTagID: Number.MAX_SAFE_INTEGER})
       console.log('Removed applied tag')
+      console.log(this.state.appliedTagID)
     }
     else if (tag == 'due_date') {
       console.log('sorting by due date')
@@ -232,21 +234,29 @@ export default class MainScreen extends React.Component {
       return (<Text style={styles.modalText}> No tags exist </Text>)
     }
   }
-  manageTags() {
-    if (this.state.tags.length > 0) {
+  deleteTag() {
+    if (this.state.appliedTagID != Number.MAX_SAFE_INTEGER) {
       return this.state.tags.map((tag) => {
-        return (
-        <>
-        <TouchableOpacity key={'tag' + tag.id} onPress={() => this.onDeleteTag(tag)}>
-          <Text style={styles.button}>{tag.title}</Text>
-        </TouchableOpacity>
-        <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-        </>
-        )
+        console.log('TAG: ' + tag+ 'tag.title value '+ tag.title)
+        console.log('APPLIEDTAG: ' + this.state.appliedTag+ 'appliedTAg name is' + this.state.appliedTag.title)
+        console.log(tag.title === this.state.appliedTag.title)
+        if(tag.title === this.state.appliedTag.title){
+          return (
+            <>
+            <TouchableOpacity key={'tag' + tag.id} onPress={() => this.onDeleteTag(tag)}>
+              <Text style={styles.button}>{tag.title}</Text>
+            </TouchableOpacity>
+            <View key={'view' + tag.id}style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+            </>
+            )
+        }
+        else{
+          return (<Text style={styles.modalText}> No tag selected </Text>)
+        }
       })
     }
     else {
-      return (<Text style={styles.modalText}> No tags exist </Text>)
+      return (<Text style={styles.modalText}> No tag selected </Text>)
     }
   }
 
@@ -372,14 +382,6 @@ export default class MainScreen extends React.Component {
 
                     
                     <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-                    
-                    <Text style={styles.modalHeader}>
-                      Delete Tags:
-                    </Text>
-                    
-                    {this.manageTags()}
-                    
-                    <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
                     <Text style={styles.modalHeader}>
                       Create Tag:
                     </Text>
@@ -388,6 +390,14 @@ export default class MainScreen extends React.Component {
                     onPress = { () => {this.setState({tagVisible: false}); navigation.navigate('Create Tag');} }>
                     <Text style={styles.button}>Create new tag</Text>
                     </TouchableOpacity>
+                    <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+                    
+                    <Text style={styles.modalHeader}>
+                      Delete Selected Tag:
+                    </Text>
+                    
+                    {this.deleteTag()}
+                    
 
                   </ScrollView>
                 </View>

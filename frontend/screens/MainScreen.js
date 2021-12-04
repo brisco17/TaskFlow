@@ -22,7 +22,7 @@ export default class MainScreen extends React.Component {
       taskSet: [],
       displayTasks: [],
       appliedTag: '',
-      appliedTagID: 1,
+      appliedTagID: 0,
       menus: [],
     }
   }
@@ -69,11 +69,11 @@ export default class MainScreen extends React.Component {
       ({name: tag.title,id: tag.pk})
       );
       let arr3 = [
-        {"id": 1,
+        {"id": 0,
         "name": "All"}]
       
       this.setState({menus:arr3.concat(arr2)})
-      this.setState({appliedTagID : 1})
+      this.setState({appliedTagID : 0})
       console.log(this.state.menus)
      }
     )
@@ -128,7 +128,7 @@ export default class MainScreen extends React.Component {
     var tasks = []
 
     if (tag == this.state.appliedTag || tag == 'All') {
-      this.setState({displayTasks: this.state.taskSet, appliedTag: '', appliedTagID: 1})
+      this.setState({displayTasks: this.state.taskSet, appliedTag: '', appliedTagID: 0})
       console.log('Removed applied tag')
     }
     else if (tag == 'due_date') {

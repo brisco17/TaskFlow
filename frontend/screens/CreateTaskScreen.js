@@ -23,7 +23,8 @@ export default class CreateTaskScreen extends React.Component{
       due_date: '',
       tags: [],
       taskTag: {},
-      reminderTime: '',
+      notificationsEnabled: false,
+      reminderTime: null,
       reminderOptions: ['1 Day', '2 Days' ,'3 Days']
     }
     this.onDateChange = this.onDateChange.bind(this);
@@ -38,6 +39,27 @@ export default class CreateTaskScreen extends React.Component{
       this.setState({sessionToken: token})
       this.getTags();
     }
+    await this.checkSettings()
+  }
+
+  async checkSettings() {
+    fetch("https://young-chow-productivity-app.herokuapp.com/settings/",{
+      method: "GET",
+      headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + this.state.sessionToken
+      })
+    })
+    .then(response => response.json())
+    .then(json => {
+      json.forEach((obj) => {
+        if (obj.name == 'Notifications') {
+          if (obj.value == 'true') {
+            this.setState({notificationsEnabled: true})
+          }
+        }
+      })
+    })
   }
 
   getTags() {
@@ -76,9 +98,9 @@ export default class CreateTaskScreen extends React.Component{
 
   async schedulePushNotification(reminderTime) {
 
-    var trigger = new Date();
+    var trigger = new Date(this.state.due_date);
 
-    if (reminderTime == '') {
+    if (reminderTime == '' || reminderTime == null) {
       return reminderTime
     }
     if (reminderTime == '1 day') {
@@ -104,6 +126,7 @@ export default class CreateTaskScreen extends React.Component{
       trigger: trigger,
     });
     console.log("NOTIF TEST" + identifier)
+    console.log(trigger)
     return identifier
   }
 
@@ -201,7 +224,7 @@ export default class CreateTaskScreen extends React.Component{
             multiline={true}
           />
         </View>
-
+        {this.state.notificationsEnabled == true &&
         <SelectDropdown
           data={this.state.reminderOptions}
           defaultButtonText={"Set Reminder"}
@@ -232,6 +255,7 @@ export default class CreateTaskScreen extends React.Component{
           rowStyle={styles.dropdown1RowStyle}
           rowTextStyle={styles.dropdown1RowTxtStyle}
         />
+        }
 
         <SelectDropdown
           data={this.state.tags}

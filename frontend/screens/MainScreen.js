@@ -22,7 +22,7 @@ export default class MainScreen extends React.Component {
       taskSet: [],
       displayTasks: [],
       appliedTag: '',
-      appliedTagID: 0,
+      appliedTagID: 1,
       menus: [],
     }
   }
@@ -69,11 +69,11 @@ export default class MainScreen extends React.Component {
       ({name: tag.title,id: tag.pk})
       );
       let arr3 = [
-        {"id": 0,
+        {"id": 1,
         "name": "All"}]
       
       this.setState({menus:arr3.concat(arr2)})
-      this.setState({appliedTagID : 0})
+      this.setState({appliedTagID : 1})
       console.log(this.state.menus)
      }
     )
@@ -128,7 +128,7 @@ export default class MainScreen extends React.Component {
     var tasks = []
 
     if (tag == this.state.appliedTag || tag == 'All') {
-      this.setState({displayTasks: this.state.taskSet, appliedTag: '', appliedTagID: 0})
+      this.setState({displayTasks: this.state.taskSet, appliedTag: '', appliedTagID: 1})
       console.log('Removed applied tag')
     }
     else if (tag == 'due_date') {
@@ -372,6 +372,14 @@ export default class MainScreen extends React.Component {
 
                     
                     <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+                    
+                    <Text style={styles.modalHeader}>
+                      Delete Tags:
+                    </Text>
+                    
+                    {this.manageTags()}
+                    
+                    <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
                     <Text style={styles.modalHeader}>
                       Create Tag:
                     </Text>
@@ -380,15 +388,6 @@ export default class MainScreen extends React.Component {
                     onPress = { () => {this.setState({tagVisible: false}); navigation.navigate('Create Tag');} }>
                     <Text style={styles.button}>Create new tag</Text>
                     </TouchableOpacity>
-                    <View style={{width:screen.width, borderBottomColor: 'black', borderBottomWidth: StyleSheet.hairlineWidth}}/>
-                    <Text style={styles.modalHeader}>
-                      Delete Tags:
-                    </Text>
-                    
-                    {this.manageTags()}
-                    
-                    
-                    
 
                   </ScrollView>
                 </View>

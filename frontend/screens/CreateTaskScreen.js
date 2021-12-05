@@ -216,7 +216,7 @@ export default class CreateTaskScreen extends React.Component {
               onChangeText={(text) => this.setState({ title: text })}
               value={this.state.title}
               placeholder="Title for Reminder"
-              placeholderTextColor="rgba(69, 120, 144, 1)"
+              placeholderTextColor="rgba(50, 50, 50, 1)"
               textContentType="none"
             />
           </View>
@@ -234,7 +234,7 @@ export default class CreateTaskScreen extends React.Component {
               onChangeText={(text) => this.setState({ description: text })}
               value={this.state.description}
               placeholder="Description"
-              placeholderTextColor="rgba(69, 120, 144, 1)"
+              placeholderTextColor="rgba(50, 50, 50, 1)"
               textContentType="none"
               textAlignVertical="top"
               multiline={true}
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     borderColor: "#444",
     bottom: 100,
   },
-  dropdown1BtnTxtStyle: { color: "rgba(69, 120, 144, 1)", textAlign: "center" },
+  dropdown1BtnTxtStyle: { color: "rgba(50, 50, 50, 1)", textAlign: "center" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },
   dropdown1RowStyle: {
     backgroundColor: "#EFEFEF",
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
   buttonText: {
     height: 25,
     top: 3,
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
     fontWeight: "bold",
   },
   loginText: {

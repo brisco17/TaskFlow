@@ -443,7 +443,7 @@ export default class SettingScreen extends React.Component {
     return (
       <View style={styles.MainScreen}>
         <ModernHeader
-          style={{ backgroundColor: "rgba(244,245,250,0)", top: 10 }}
+          style={{ backgroundColor: "rgba(244,245,250,0)", top: 15 }}
           rightComponentDisable={true}
           onLeftPress={() => this.onBack()}
         />
@@ -558,7 +558,8 @@ const styles = StyleSheet.create({
   button: {
     position: "relative",
     height: 45,
-    width: "65%",
+    width: "50%",
+    left: "25%",
     alignItems: "center",
     backgroundColor: "rgba(256, 256, 256, 1)",
     borderRadius: 10,
@@ -571,7 +572,7 @@ const styles = StyleSheet.create({
   buttonText: {
     height: 25,
     top: 3,
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
     fontWeight: "bold",
   },
 });

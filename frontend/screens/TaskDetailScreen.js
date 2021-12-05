@@ -344,7 +344,7 @@ export default class CreateTaskScreen extends React.Component {
     return (
       <SafeAreaView style={styles.MainSafe}>
         <ModernHeader
-          style={{ backgroundColor: "rgba(244,245,250,0)", top: -20 }}
+          style={{ backgroundColor: "rgba(244,245,250,0)", top: -15 }}
           rightCustomComponent={
             <FontAwesome5 name="trash-alt" size={24} color="black" />
           }
@@ -357,7 +357,7 @@ export default class CreateTaskScreen extends React.Component {
           contentInset={{ top: -40 }}
           scrollEnabled={true}
         >
-          <FontAwesome5 name="tasks" size={24} color="black" />
+          <FontAwesome5 style = {{position: 'absolute',top: '5.4%', left: 10}} name="tasks" size={24} color="black" />
           <Text style={styles.titleText}>Edit Title & Description</Text>
           <TextInput
             style={styles.input}
@@ -386,8 +386,10 @@ export default class CreateTaskScreen extends React.Component {
             multiline={true}
           />
 
+          <Text style = {{position: 'absolute', top: '30%', left: 50}}>Set Date</Text>
+          <Text style = {{position: 'absolute', top: '30%', right: 50}}>Set Time</Text>
           <View style={styles.rowContainer}>
-             <Text>Set Deadline</Text>
+            <TouchableOpacity style = {{flexGrow: 1, top: 25}}>
              <DateTimePicker 
                value={this.state.date}
                mode='date'
@@ -396,9 +398,9 @@ export default class CreateTaskScreen extends React.Component {
                onChange={ (e, d) => {this.setState({ date: d }); 
                                      console.log(this.state.date.toLocaleDateString()
                                      + " " + this.state.date.toLocaleTimeString()) }}/>
-           </View>
-           <View style={styles.rowContainer}>
-             <Text>Set Time</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style = {{flexGrow:1, top: 25}}>
              <DateTimePicker 
                  value={this.state.date}
                  mode='time'
@@ -407,6 +409,7 @@ export default class CreateTaskScreen extends React.Component {
                  onChange={ (e, d) => {this.setState({ date: d });
                                        console.log(this.state.date.toLocaleDateString()
                                        + " " + this.state.date.toLocaleTimeString()) }} />
+              </TouchableOpacity>
            </View>
 
           <SelectDropdown
@@ -527,7 +530,7 @@ export default class CreateTaskScreen extends React.Component {
             <Dialog.Button label="Confirm" onPress={this.createSubTask} />
           </Dialog.Container>
 
-          <View style={{ bottom: 50, width: "100%", height: 80 }}>
+          <View style={{width: "100%", height: 100 }}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
               <SafeAreaView>
                 <View>{this.makeSubTasks()}</View>
@@ -555,16 +558,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#444",
-    marginBottom: 10,
-    bottom: 80,
+    top: 10,
+    marginBottom: 20,
   },
-  dropdown1BtnTxtStyle: { color: "rgba(69, 120, 144, 1)", textAlign: "center" },
+  dropdown1BtnTxtStyle: { color: "rgba(50, 50, 50, 1)", textAlign: "center" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },
   dropdown1RowStyle: {
     backgroundColor: "#EFEFEF",
     borderBottomColor: "#C5C5C5",
   },
-  dropdown1RowTxtStyle: { color: "#444", textAlign: "left" },
+  dropdown1RowTxtStyle: { color: "rgba(50, 50, 50, 1)", textAlign: "left" },
   container: {
     width: "100%",
     backgroundColor: "rgba(244,245,250,1)",
@@ -584,8 +587,12 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   rowContainer: {
+    //backgroundColor: 'black',
+    height: 75,
     flexDirection: "row",
-    justifyContent: "space-between",
+    right: 30,
+    width: '100%',
+    position: 'relative',
   },
   calContainer: {
     maxHeight: "30%",
@@ -595,7 +602,6 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 45,
-    bottom: "10%",
     width: "65%",
     left: 50,
     alignItems: "center",
@@ -604,30 +610,29 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     shadowRadius: 3,
-    shadowColor: "black",
+    marginTop: 20,
+    shadowColor: "rgba(50, 50, 50, 1)",
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.5,
   },
   subStyle: {
     width: "80%",
     height: 50,
+    alignContent: 'center',
     backgroundColor: "rgba(69, 120, 144, 1)",
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#444",
+    borderColor: "rgba(50, 50, 50, 1)",
     marginBottom: 10,
     fontSize: 16,
     color: "white",
-    paddingStart: 20,
     paddingEnd: 20,
   },
   makeSub: {
     height: 45,
-    flex: 1,
-    bottom: "10%",
     width: "70%",
     left: 50,
-    marginBottom: 5,
+    marginBottom: 20,
     alignItems: "center",
     backgroundColor: "rgba(256, 256, 256, 1)",
     borderRadius: 10,
@@ -640,7 +645,7 @@ const styles = StyleSheet.create({
   buttonText: {
     height: 25,
     top: 3,
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
     fontWeight: "bold",
   },
   subText: {
@@ -650,13 +655,11 @@ const styles = StyleSheet.create({
   titleText: {
     textAlign: "center",
     fontSize: 28,
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
     fontWeight: "bold",
     marginBottom: 25,
-    bottom: "20%",
   },
   loginText: {
-    bottom: "10%",
     fontSize: 50,
     textAlign: "center",
     color: "rgba(29, 53, 87, 1)",
@@ -667,7 +670,6 @@ const styles = StyleSheet.create({
   input: {
     height: 60,
     width: "100%",
-    bottom: 100,
     fontSize: 16,
     paddingStart: 50,
     marginBottom: 20,
@@ -676,12 +678,11 @@ const styles = StyleSheet.create({
     borderBottomColor: "#000",
     borderBottomWidth: 1,
     backgroundColor: "rgba(0,0,20,0)",
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
   },
   largeInput: {
-    height: "40%",
+    height: "15%",
     width: "100%",
-    bottom: 100,
     fontSize: 16,
     paddingStart: 20,
     borderWidth: 1,
@@ -691,7 +692,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     position: "relative",
     backgroundColor: "rgba(244,245,250,1)",
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
   },
   checkbox: {
     alignSelf: "flex-end",
@@ -703,6 +704,7 @@ const styles = StyleSheet.create({
   },
   mainScrollContainer: {
     marginTop: "30%",
+    height: '130%',
     marginHorizontal: 20,
   },
 });

@@ -21,6 +21,7 @@ import Dialog from "react-native-dialog";
 import { FontAwesome5 } from "@expo/vector-icons";
 import ModernHeader from "react-native-modern-header";
 import * as Notifications from "expo-notifications";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default class CreateTaskScreen extends React.Component {
   constructor(props) {
@@ -45,6 +46,8 @@ export default class CreateTaskScreen extends React.Component {
       countries: ["Egypt", "Canada", "Australia", "Ireland"],
       drive: {},
       driveChoice: "",
+      driveChoice: "",
+      date: new Date(),
     };
     this.onDateChange = this.onDateChange.bind(this);
   }
@@ -382,6 +385,29 @@ export default class CreateTaskScreen extends React.Component {
             textAlignVertical="top"
             multiline={true}
           />
+
+          <View style={styles.rowContainer}>
+             <Text>Set Deadline</Text>
+             <DateTimePicker 
+               value={this.state.date}
+               mode='date'
+               display='default'
+               minimumDate={this.state.date}
+               onChange={ (e, d) => {this.setState({ date: d }); 
+                                     console.log(this.state.date.toLocaleDateString()
+                                     + " " + this.state.date.toLocaleTimeString()) }}/>
+           </View>
+           <View style={styles.rowContainer}>
+             <Text>Set Time</Text>
+             <DateTimePicker 
+                 value={this.state.date}
+                 mode='time'
+                 display='default'
+                 minimumDate={this.state.date}
+                 onChange={ (e, d) => {this.setState({ date: d });
+                                       console.log(this.state.date.toLocaleDateString()
+                                       + " " + this.state.date.toLocaleTimeString()) }} />
+           </View>
 
           <SelectDropdown
             data={Object.keys(this.state.drive).sort()}

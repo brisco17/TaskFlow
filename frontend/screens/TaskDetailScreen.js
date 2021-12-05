@@ -46,7 +46,6 @@ export default class CreateTaskScreen extends React.Component {
       countries: ["Egypt", "Canada", "Australia", "Ireland"],
       drive: {},
       driveChoice: "",
-      driveChoice: "",
       date: new Date(),
     };
     this.onDateChange = this.onDateChange.bind(this);
@@ -215,21 +214,15 @@ export default class CreateTaskScreen extends React.Component {
   }
 
   onSubmit = async () => {
-    const { title, description, due_date, taskTag } = this.state;
+    const { title, description, due_date, taskTag, date } = this.state;
     const { navigation } = this.props;
     const reminder = await this.updatePushNotification(
       this.state.reminder,
       this.state.reminderTime
     );
 
-    // I don't want to talk about it
-    var stringDate = due_date
-      .toString()
-      .slice(
-        due_date.toString().indexOf(" ") + 1,
-        due_date.toString().indexOf("2021 ") + 4
-      );
-    const formatted = moment(new Date(stringDate)).format("YYYY-MM-DD");
+    const formatted = moment(date).format("YYYY-MM-DD");
+    console.log(formatted)
     //Checks if subTasks is emtpy. If it is, send null. Otherwise send value.
     const subtasks = Object.keys(this.state.subTasks).length
       ? this.state.subTasks
@@ -259,7 +252,7 @@ export default class CreateTaskScreen extends React.Component {
         .then((response) => response.json())
         .then((json) => {
           // enter login logic here
-          console.log("We here now bois");
+          console.log("Back to feed");
           if (!json.id) {
             if (json.title) Alert.alert("Error: ", json.title.toString());
             else if (json.description)
@@ -386,28 +379,36 @@ export default class CreateTaskScreen extends React.Component {
             multiline={true}
           />
 
+<Text style = {{position: 'absolute', top: '53%', left: 50}}>Set Date</Text>
+          <Text style = {{position: 'absolute', top: '53%', left: 227}}>Set Time</Text>
           <View style={styles.rowContainer}>
-             <Text>Set Deadline</Text>
+            <TouchableOpacity style = {{flexGrow: 1, top: 10}}>
              <DateTimePicker 
                value={this.state.date}
                mode='date'
                display='default'
-               minimumDate={this.state.date}
+               minimumDate={new Date()}
                onChange={ (e, d) => {this.setState({ date: d }); 
-                                     console.log(this.state.date.toLocaleDateString()
-                                     + " " + this.state.date.toLocaleTimeString()) }}/>
-           </View>
-           <View style={styles.rowContainer}>
-             <Text>Set Time</Text>
+                                     console.log(this.state.date.toString()) }}/>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style = {{flexGrow:1, top: 10}}>
              <DateTimePicker 
                  value={this.state.date}
                  mode='time'
                  display='default'
-                 minimumDate={this.state.date}
+                 minimumDate={new Date()}
                  onChange={ (e, d) => {this.setState({ date: d });
-                                       console.log(this.state.date.toLocaleDateString()
-                                       + " " + this.state.date.toLocaleTimeString()) }} />
+                                      console.log(this.state.date.toString()); }} />
+              </TouchableOpacity>
            </View>
+           <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.onSubmit()}
+          >
+            <Text style={styles.buttonText}> Submit </Text>
+          </TouchableOpacity>
+
 
           <SelectDropdown
             data={Object.keys(this.state.drive).sort()}
@@ -584,8 +585,17 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   rowContainer: {
+    //backgroundColor: 'black',
+    flex: 1,
     flexDirection: "row",
-    justifyContent: "space-between",
+    right: 30,
+    width: '100%',
+    height: 40,
+    position: 'relative',
+    zIndex: 999,
+    bottom: 80,
+    marginTop: 10,
+    marginBottom: 20,
   },
   calContainer: {
     maxHeight: "30%",

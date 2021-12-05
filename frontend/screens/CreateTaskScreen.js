@@ -18,6 +18,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { FontAwesome5 } from "@expo/vector-icons";
 import ModernHeader from "react-native-modern-header";
 import * as Notifications from "expo-notifications";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default class CreateTaskScreen extends React.Component {
   constructor(props) {
@@ -33,6 +34,7 @@ export default class CreateTaskScreen extends React.Component {
       notificationsEnabled: false,
       reminderTime: null,
       reminderOptions: ["1 Day", "2 Days", "3 Days"],
+      date: new Date(),
     };
     this.onDateChange = this.onDateChange.bind(this);
   }
@@ -133,22 +135,13 @@ export default class CreateTaskScreen extends React.Component {
   }
 
   onSubmit = async () => {
-    const { title, description, due_date, taskTag } = this.state;
+    const { title, description, due_date, taskTag, date } = this.state;
     const { navigation } = this.props;
     const reminder = await this.schedulePushNotification(
       this.state.reminderTime
     );
 
-    // I don't want to talk about it
-    console.log("Original: " + due_date.toString);
-    var stringDate = due_date
-      .toString()
-      .slice(
-        due_date.toString().indexOf(" ") + 1,
-        due_date.toString().indexOf("2021 ") + 4
-      );
-    console.log("String Date: " + stringDate);
-    const formatted = moment(new Date(stringDate)).format("YYYY-MM-DD");
+    const formatted = moment(date).format("YYYY-MM-DD");
     console.log("Formatted: " + formatted);
 
     SecureStore.getItemAsync("session").then((sessionToken) => {
@@ -221,13 +214,6 @@ export default class CreateTaskScreen extends React.Component {
             />
           </View>
 
-          <View style={styles.calContainer}>
-            <CalendarPicker
-              scaleFactor={Dimensions.get("window").width}
-              onDateChange={this.onDateChange}
-            />
-          </View>
-
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.largeInput}
@@ -240,6 +226,29 @@ export default class CreateTaskScreen extends React.Component {
               multiline={true}
             />
           </View>
+          <Text style = {{position: 'absolute', top: '53%', left: 50}}>Set Date</Text>
+          <Text style = {{position: 'absolute', top: '53%', left: 227}}>Set Time</Text>
+          <View style={styles.rowContainer}>
+            <TouchableOpacity style = {{flexGrow: 1, top: 10}}>
+             <DateTimePicker 
+               value={this.state.date}
+               mode='date'
+               display='default'
+               minimumDate={new Date()}
+               onChange={ (e, d) => {this.setState({ date: d }); 
+                                     console.log(this.state.date.toString()) }}/>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style = {{flexGrow:1, top: 10}}>
+             <DateTimePicker 
+                 value={this.state.date}
+                 mode='time'
+                 display='default'
+                 minimumDate={new Date()}
+                 onChange={ (e, d) => {this.setState({ date: d });
+                                      console.log(this.state.date.toString()); }} />
+              </TouchableOpacity>
+           </View>
           {this.state.notificationsEnabled == true && (
             <SelectDropdown
               data={this.state.reminderOptions}
@@ -345,8 +354,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   rowContainer: {
+    //backgroundColor: 'black',
+    flex: 1,
     flexDirection: "row",
-    justifyContent: "space-between",
+    right: 30,
+    width: '100%',
+    height: 40,
+    position: 'relative',
+    zIndex: 999,
+    bottom: 80,
+    marginTop: 10,
+    marginBottom: 20,
   },
   calContainer: {
     flexDirection: "row",

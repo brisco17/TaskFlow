@@ -4,12 +4,12 @@ const screen = Dimensions.get("screen");
 
 export default StyleSheet.create({
     buttonText: {
-        color: 'rgba(69, 120, 144, 1)',
+        color: 'rgba(50, 50, 50, 1)',
         fontWeight: 'bold',
       },
     text: {
         fontSize: 16,
-        color: 'white',
+        color: 'rgba(50, 50, 50, 1)',
         textAlign: 'left',
     },
     

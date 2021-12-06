@@ -9,6 +9,7 @@ import {
   Alert,
   Dimensions,
   ScrollView,
+  SafeAreaView,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import CalendarPicker from "react-native-calendar-picker";
@@ -201,15 +202,15 @@ export default class CreateTaskScreen extends React.Component {
     // const open = false
 
     return (
-      <View style={styles.MainScreen}>
+      <SafeAreaView style={styles.MainSafe}>
         <ModernHeader
-          style={{ backgroundColor: "rgba(244,245,250,0)", top: 10 }}
+          style={{ backgroundColor: "rgba(244,245,250,0)"}}
           rightComponentDisable={true}
           onLeftPress={() => this.onBack()}
         />
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView style={styles.mainScrollContainer}>
           <FontAwesome5
-            style={{ postion: "absolute", right: "37%", top: "6%" }}
+            style={{ postion: "absolute", top: 40, left: 30}}
             name="tasks"
             size={24}
             color="black"
@@ -220,7 +221,7 @@ export default class CreateTaskScreen extends React.Component {
               onChangeText={(text) => this.setState({ title: text })}
               value={this.state.title}
               placeholder="Title for Reminder"
-              placeholderTextColor="rgba(69, 120, 144, 1)"
+              placeholderTextColor="rgba(50, 50, 50, 1)"
               textContentType="none"
             />
           </View>
@@ -231,16 +232,16 @@ export default class CreateTaskScreen extends React.Component {
               onChangeText={(text) => this.setState({ description: text })}
               value={this.state.description}
               placeholder="Description"
-              placeholderTextColor="rgba(69, 120, 144, 1)"
+              placeholderTextColor="rgba(50, 50, 50, 1)"
               textContentType="none"
               textAlignVertical="top"
               multiline={true}
             />
           </View>
-          <Text style = {{position: 'absolute', top: '53%', left: 50}}>Set Date</Text>
-          <Text style = {{position: 'absolute', top: '53%', left: 227}}>Set Time</Text>
+          <Text style = {{position: 'absolute', top: '80%', left: 50}}>Set Date</Text>
+          <Text style = {{position: 'absolute', top: '80%', left: 227}}>Set Time</Text>
           <View style={styles.rowContainer}>
-            <TouchableOpacity style = {{flexGrow: 1, top: 10}}>
+            <TouchableOpacity style = {{flexGrow: 1, top: 40}}>
              <DateTimePicker 
                value={this.state.date}
                mode='date'
@@ -250,7 +251,7 @@ export default class CreateTaskScreen extends React.Component {
                                      console.log(this.state.date.toString()) }}/>
               </TouchableOpacity>
               
-              <TouchableOpacity style = {{flexGrow:1, top: 10}}>
+              <TouchableOpacity style = {{flexGrow:1, top: 40}}>
              <DateTimePicker 
                  value={this.state.date}
                  mode='time'
@@ -331,7 +332,7 @@ export default class CreateTaskScreen extends React.Component {
             <Text style={styles.buttonText}> Submit </Text>
           </TouchableOpacity>
         </ScrollView>
-      </View>
+        </SafeAreaView>
     );
   }
 }
@@ -340,14 +341,14 @@ const styles = StyleSheet.create({
   dropdown1BtnStyle: {
     width: "60%",
     height: 50,
-    bottom: "25%",
+    marginBottom: 20,
+    alignSelf: 'center',
     backgroundColor: "rgba(256, 256, 256, 1)",
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#444",
-    bottom: 100,
   },
-  dropdown1BtnTxtStyle: { color: "rgba(69, 120, 144, 1)", textAlign: "center" },
+  dropdown1BtnTxtStyle: { color: "rgba(50, 50, 50, 1)", textAlign: "center" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },
   dropdown1RowStyle: {
     backgroundColor: "#EFEFEF",
@@ -356,6 +357,7 @@ const styles = StyleSheet.create({
   dropdown1RowTxtStyle: { color: "#444", textAlign: "left" },
   container: {
     flex: 1,
+    height: "150%",
     backgroundColor: "rgba(244,245,250,1)",
     alignItems: "center",
     justifyContent: "center",
@@ -388,9 +390,9 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 45,
-    bottom: "10%",
     width: "65%",
     alignItems: "center",
+    alignSelf: 'center',
     backgroundColor: "rgba(256, 256, 256, 1)",
     borderRadius: 10,
     padding: 10,
@@ -402,14 +404,13 @@ const styles = StyleSheet.create({
   buttonText: {
     height: 25,
     top: 3,
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
     fontWeight: "bold",
   },
   loginText: {
-    bottom: "10%",
     fontSize: 50,
     textAlign: "center",
-    color: "rgba(29, 53, 87, 1)",
+    color: "rgba(50, 50, 50, 1)",
     textShadowColor: "rgba(29, 53, 87, 1)",
     textShadowOffset: { height: 2 },
     textShadowRadius: 10,
@@ -426,10 +427,10 @@ const styles = StyleSheet.create({
     borderBottomColor: "#000",
     borderBottomWidth: 1,
     backgroundColor: "rgba(0,0,20,0)",
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
   },
   largeInput: {
-    height: "40%",
+    height: "60%",
     width: "90%",
     left: "5%",
     fontSize: 16,
@@ -441,11 +442,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     backgroundColor: "rgba(244,245,250,1)",
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
   },
-  MainScreen: {
-    flex: 1,
+  mainScrollContainer: {
+    alignContent: "center",
+    height: '130%',
+    marginHorizontal: 20,
+  },
+  MainSafe: {
+    alignContent: "center",
     backgroundColor: "rgba(244,245,250,1)",
-    height: "100%",
   },
+
 });

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
 # are we testing localhost or production urls
 in=$1
 if [ "$in" == "localhost" ] 
@@ -9,19 +12,19 @@ elif [ "$in" == "production" ]
 then
     URL="https://young-chow-productivity-app.herokuapp.com"
 else
-    echo "Please enter either localhost for local testing or production for production testing"
+    echo -e "${RED}Please enter either localhost for local testing or production for production testing"
     exit
 fi
 
 # check for httpie 
 if [ -z $(which http) ] 
 then
-    echo "Please install httpie from your package manager"
+    echo -e "${RED}Please install httpie from your package manager"
 fi
 
 if [ -z $(which jq) ] 
 then
-    echo "Please install jq from your package manager"
+    echo -e "{RED}Please install jq from your package manager"
 fi
 
 #Sign in token
@@ -53,17 +56,17 @@ ID=$( echo $OUT | jq '.id' )
 
 if [ -z "$ID" ]
 then
-    echo "POST ON /SETTINGS FAILED"
+    echo -e "${RED}Creating a new setting failed."
     exit
 fi
 
 OUT=$( http DELETE "$URL/settings/$ID" "$HEADER" )
 if [ ! -z "$OUT" ]
 then
-    echo "Deleting the new setting failed."
+    echo -e "${RED}Deleting the new setting failed."
     exit
 else
-    echo "Settings tests passed"
+    echo -e "${GREEN}Settings tests passed."
 fi
 
 # TAG TESTS
@@ -72,17 +75,17 @@ ID=$( echo $OUT | jq '.pk' )
 
 if [ -z "$ID" ]
 then
-    echo "Posting on /tags/ FAILED"
+    echo -e "${RED}Creating a new tag failed."
     exit
 fi
 
 OUT=$( http DELETE "$URL/tags/$ID" "$HEADER" )
 if [ ! -z "$OUT" ]
 then
-    echo "Deleting the new tag failed."
+    echo -e "${RED}Deleting the new tag failed."
     exit
 else
-    echo "Tag tests passed"
+    echo -e "${GREEN}Tag tests passed."
 fi
 
 # TASK TESTS
@@ -91,15 +94,15 @@ ID=$( echo $OUT | jq '.id' )
 
 if [ -z "$ID" ]
 then
-    echo "Posting on /tasks/ FAILED"
+    echo -e "${RED}Creating a new task failed."
     exit
 fi
 
 OUT=$( http DELETE "$URL/tasks/$ID" "$HEADER" )
 if [ ! -z "$OUT" ]
 then
-    echo "Deleting the new task failed."
+    echo -e "${RED}Deleting the new task failed."
     exit
 else
-    echo "Task tests passed"
+    echo -e "${GREEN}Task tests passed."
 fi

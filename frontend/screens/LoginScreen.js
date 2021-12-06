@@ -139,7 +139,7 @@ export default class LoginScreen extends React.Component {
             onChangeText={(text) => this.setState({ email: text })}
             value={email}
             placeholder="Email"
-            placeholderTextColor="rgba(69, 120, 144, 1)"
+            placeholderTextColor="rgba(50, 50, 50, 1)"
             textContentType="emailAddress"
           />
           <Entypo
@@ -154,7 +154,7 @@ export default class LoginScreen extends React.Component {
             value={password}
             textContentType="password"
             placeholder="Password"
-            placeholderTextColor="rgba(69, 120, 144, 1)"
+            placeholderTextColor="rgba(50, 50, 50, 1)"
             secureTextEntry={true}
           />
         </View>
@@ -258,18 +258,18 @@ const styles = StyleSheet.create({
   buttonText: {
     height: 25,
     top: 3,
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
     fontWeight: "bold",
   },
   registerText: {
     position: "relative",
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
     fontWeight: "bold",
   },
   loginText: {
     fontSize: 40,
     textAlign: "center",
-    color: "rgba(29, 53, 87, 1)",
+    color: "rgba(50, 50, 50, 1)",
     textShadowColor: "rgba(29, 53, 87, 1)",
   },
   input: {
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#000",
     borderBottomWidth: 1,
     backgroundColor: "rgba(0,0,20,0)",
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
   },
   Gtext: {
     height: 25,

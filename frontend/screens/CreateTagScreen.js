@@ -94,7 +94,7 @@ export default class CreateTagScreen extends React.Component {
             onChangeText={(text) => this.setState({ title: text })}
             value={this.state.title}
             placeholder="Tag Title"
-            placeholderTextColor="rgba(69, 120, 144, 1)"
+            placeholderTextColor="rgba(50, 50, 50, 1)"
             textContentType="none"
             multiline={false}
           />
@@ -107,7 +107,7 @@ export default class CreateTagScreen extends React.Component {
             onChangeText={(text) => this.setState({ description: text })}
             value={this.state.description}
             placeholder="Tag Description"
-            placeholderTextColor="rgba(69, 120, 144, 1)"
+            placeholderTextColor="rgba(50, 50, 50, 1)"
             textContentType="none"
             textAlignVertical="top"
             multiline={true}

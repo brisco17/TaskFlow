@@ -10,6 +10,7 @@ import {
   ScrollView,
   Dimensions,
   Pressable,
+  SafeAreaView,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import Modal from "react-native-modal";
@@ -251,14 +252,12 @@ export default class MainScreen extends React.Component {
               key={"tag" + tag.id}
               onPress={() => this.showTasksByTag(tag)}
             >
-              <Text style={styles.button}>{tag.title}</Text>
+              <View style={styles.button}><Text style = {styles.buttonText}>{tag.title}</Text></View>
             </TouchableOpacity>
             <View
               key={"view" + tag.id}
               style={{
                 width: screen.width,
-                borderBottomColor: "black",
-                borderBottomWidth: StyleSheet.hairlineWidth,
               }}
             />
           </>
@@ -287,14 +286,12 @@ export default class MainScreen extends React.Component {
                 key={"tag" + tag.id}
                 onPress={() => this.onDeleteTag(tag)}
               >
-                <Text style={styles.button}>{tag.title}</Text>
+                <View style={styles.button}><Text style = {styles.buttonText}>{tag.title}</Text></View>
               </TouchableOpacity>
               <View
                 key={"view" + tag.id}
                 style={{
                   width: screen.width,
-                  borderBottomColor: "black",
-                  borderBottomWidth: StyleSheet.hairlineWidth,
                 }}
               />
             </>
@@ -315,8 +312,9 @@ export default class MainScreen extends React.Component {
     const { navigation } = this.props;
     return (
       <View style={styles.MainScreen}>
+        <Text style={{position: 'absolute', top: '5%', left: '40%'}}>Task Flow</Text>
         <ModernHeader
-          style={{ backgroundColor: "rgba(244,245,250,0)", top: 10 }}
+          style={{ backgroundColor: "rgba(244,245,250,0)", top: 10}}
           leftComponentDisable={true}
           rightCustomComponent={
             <Entypo name="dots-three-horizontal" size={24} color="black" />
@@ -327,7 +325,7 @@ export default class MainScreen extends React.Component {
           <TextInput
             style={styles.tabItem}
             underlineColorAndroid="transparent"
-            placeholder="Search"
+            placeholder="Search Tags"
             onChangeText={(text) => this.setState({ searchQuery: text })}
             placeholderTextColor="#858585"
           />
@@ -375,7 +373,7 @@ export default class MainScreen extends React.Component {
             height: 50,
             width: "100%",
             position: "absolute",
-            backgroundColor: "#A8DADC",
+            backgroundColor: "rgba(50, 50, 50, 1)",
             bottom: "0%",
           }}
         />
@@ -389,7 +387,7 @@ export default class MainScreen extends React.Component {
                 style={{ padding: 12, left: 5 }}
                 name="settings-sharp"
                 size={40}
-                color="rgba(69, 120, 144, 1)"
+                color="rgba(50, 50, 50, 1)"
               />
             </TouchableOpacity>
           </View>
@@ -399,10 +397,10 @@ export default class MainScreen extends React.Component {
               onPress={() => navigation.navigate("Create Task")}
             >
               <Foundation
-                style={{ padding: 18, left: 15 }}
+                style={{ padding: 18, left: 15, top: 5 }}
                 name="plus"
                 size={50}
-                color="rgba(69, 120, 144, 1)"
+                color="rgba(50, 50, 50, 1)"
               />
             </TouchableOpacity>
           </View>
@@ -415,7 +413,7 @@ export default class MainScreen extends React.Component {
                 style={{ padding: 15, left: 5 }}
                 name="filter"
                 size={40}
-                color="rgba(69, 120, 144, 1)"
+                color="rgba(50, 50, 50, 1)"
               />
             </TouchableOpacity>
           </View>
@@ -436,32 +434,32 @@ export default class MainScreen extends React.Component {
           style={styles.bottomModal}
         >
           <View style={styles.modalView}>
-            <ScrollView onScroll={this.handleOnScroll} scrollEventThrottle={16}>
-              <Text style={styles.modalHeader}>Filter by:</Text>
+            <SafeAreaView>
+            <Text style={styles.modalHeader}>Filter by:</Text>
+            <ScrollView  style = {{width: '100%', height: '100%'}}onScroll={this.handleOnScroll} scrollEventThrottle={16}>
+              <View style = {{flex: 1, flexDirection: 'column', justifyContent: 'space-evenly'}}>
               <TouchableOpacity onPress={() => this.showTasksByTag("due_date")}>
-                <Text style={styles.button}> Due Date</Text>
+                <View style={styles.button}><Text style = {styles.buttonText}>Due Date</Text></View>
               </TouchableOpacity>
               <View
                 style={{
                   width: screen.width,
-                  borderBottomColor: "black",
-                  borderBottomWidth: StyleSheet.hairlineWidth,
                 }}
               />
               <TouchableOpacity
                 title={"Created"}
                 onPress={() => this.showTasksByTag("creation_date")}
               >
-                <Text style={styles.button}>Created</Text>
+                <View style={styles.button}><Text style = {styles.buttonText}>Created</Text></View>
               </TouchableOpacity>
+              </View>
               <View
                 style={{
                   width: screen.width,
-                  borderBottomColor: "black",
-                  borderBottomWidth: StyleSheet.hairlineWidth,
                 }}
               />
             </ScrollView>
+            </SafeAreaView>
           </View>
         </Modal>
 
@@ -496,13 +494,14 @@ export default class MainScreen extends React.Component {
                   navigation.navigate("Create Tag");
                 }}
               >
-                <Text style={styles.button}>Create new tag</Text>
+                <View style={styles.button}>
+                  <Text style={styles.buttonText}>Create new tag</Text>
+                </View>
               </TouchableOpacity>
               <View
                 style={{
                   width: screen.width,
                   borderBottomColor: "black",
-                  borderBottomWidth: StyleSheet.hairlineWidth,
                 }}
               />
 
@@ -520,7 +519,7 @@ export default class MainScreen extends React.Component {
 const screen = Dimensions.get("screen");
 const styles = StyleSheet.create({
   modalView: {
-    backgroundColor: "#A8DADC",
+    backgroundColor: "rgba(244,245,250,1)",
     flexDirection: "column",
     alignItems: "flex-start",
     justifyContent: "flex-start",
@@ -531,7 +530,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     width: screen.width,
     flexDirection: "row",
-
     flexWrap: "wrap",
     justifyContent: "center",
   },
@@ -565,41 +563,46 @@ const styles = StyleSheet.create({
   },
   taskButton: {
     justifyContent: "center",
-    margin: "1%",
-    maxWidth: "48%",
+    margin: "2%",
+    width: 300,
     height: 300,
-    marginTop: 30,
-    marginBottom: 10,
-    backgroundColor: "rgba(69, 120, 144, .9)",
-    color: "#fff",
-
-    borderRadius: 5,
-    shadowColor: "rgba(244,245,250,.1)", // IOS
-    shadowOffset: { height: 5, width: 5 }, // IOS
-    shadowOpacity: 2, // IOS
-    shadowRadius: 2, //IOS
+    marginTop: 10,
+    borderColor: 'rgba(50, 50, 50, 1)',
+    borderRadius: 10,
+    borderWidth: 1,
+    backgroundColor: "rgba(244,245,250,1)",
+    shadowColor: "black", // IOS
+    shadowOffset: { height: 1, width: 1 }, // IOS
+    shadowOpacity: .5, // IOS
+    shadowRadius: 3, //IOS
     elevation: 2, // Android
-    flexBasis: "50%",
+    //flexBasis: "50%",
   },
   button: {
-    marginTop: 30,
+    flexGrow: 1,
+    height: 45,
+    top: 20,
+    width: "75%",
+    left: '12.5%',
     marginBottom: 10,
-    backgroundColor: 'rgba(69, 120, 144, 1)',
-    color: '#fff',
+    alignContent: "center",
+    backgroundColor: "rgba(244,245,250,1)",
+    borderRadius: 10,
     padding: 10,
-    marginLeft: 5,
-    marginRight: 5,
-    borderRadius: 5,
+    shadowRadius: 3,
+    shadowColor: "black",
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
   },
   buttonText: {
-    color: "rgba(168, 218, 220, 1)",
-    marginBottom: 25,
+    color: "rgba(50, 50, 50, 1)",
     alignSelf: "center",
+    fontWeight: 'bold',
   },
   titleText: {
     textAlign: "center",
     fontSize: 28,
-    color: "rgba(168, 218, 220, 1)",
+    color: "rgba(50, 50, 50, 1)",
     fontWeight: "bold",
     marginBottom: 25,
   },
@@ -609,22 +612,23 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     width: "100%",
     height: "10%",
-    top: 20,
     justifyContent: "space-evenly",
   },
   CircleOverlay: {
-    width: "25%",
-    height: "50%",
-    borderRadius: 500000 / 2,
+    width: 95,
+    height: 95,
+    bottom: 40,
+    borderRadius: 95 / 2,
     backgroundColor: "rgba(244,245,250,1)",
     alignItems: "center",
   },
   innerCircle: {
-    width: "80%",
-    height: "150%",
-    borderRadius: 500000 / 2,
+    width: 75,
+    height: 75,
+    bottom: -10,
+    borderRadius: 75 / 2,
     borderWidth: 1,
-    borderColor: "rgba(69, 120, 144, 1)",
+    borderColor: "rgba(50, 50, 50, 1)",
     backgroundColor: "rgba(244,245,250,1)",
     shadowOffset: { width: 1, height: 1 },
     shadowRadius: 5,
@@ -639,44 +643,53 @@ const styles = StyleSheet.create({
     color: "white",
   },
   navBarContainer: {
-    height: "20%",
     width: "100%",
     position: "relative",
-    top: 50,
     backgroundColor: "transparent",
   },
   CircleOverlayMain: {
-    width: "35%",
-    height: "65%",
-    bottom: 40,
-    borderRadius: 500000 / 2,
+    width: 120,
+    height: 120,
+    bottom: 50,
+    borderRadius: 120 / 2,
     backgroundColor: "rgba(244,245,250,1)",
     alignItems: "center",
   },
   innerCircleMain: {
-    top: "30%",
-    width: "80%",
-
-    borderRadius: 1080 / 2,
+    top: 5,
+    width: 100,
+    height: 100,
+    borderRadius: 100 / 2,
     borderWidth: 1,
-    borderColor: "rgba(69, 120, 144, 1)",
+    borderColor: "rgba(50, 50, 50, 1)",
     backgroundColor: "rgba(244,245,250,1)",
     shadowOffset: { width: 1, height: 1 },
     shadowRadius: 5,
     shadowOpacity: 0.5,
   },
   tabItem: {
+    flexGrow: 1,
+    width: 100,
     borderRadius: 5,
     borderColor: "#858585",
     borderStyle: "solid",
     textAlign: "center",
-    color: "#858585",
-    backgroundColor: "#A8DADC",
+    color: "rgba(50, 50, 50, 1)",
+    backgroundColor: "#rgba(244,245,250,1)",
     borderWidth: 1,
     padding: 3,
     height: "65%",
     top: 19,
     marginLeft: 5,
     marginRight: -10,
+  },
+  taskText: {
+    top: 30,
+    paddingTop: 20,
+    color: 'rgba(50, 50, 50, 1)',
+  },
+  taskDiscription: {
+    paddingStart: 10,
+    color: 'rgba(50, 50, 50, 1)',
   },
 });

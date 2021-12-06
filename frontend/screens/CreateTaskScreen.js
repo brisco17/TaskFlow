@@ -199,7 +199,7 @@ export default class CreateTaskScreen extends React.Component {
         />
         <ScrollView style={styles.mainScrollContainer}>
           <FontAwesome5
-            style={{ postion: "absolute", right: "37%", top: "6%" }}
+            style={{ postion: "absolute", top: 40, left: 30}}
             name="tasks"
             size={24}
             color="black"
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
   loginText: {
     fontSize: 50,
     textAlign: "center",
-    color: "rgba(29, 53, 87, 1)",
+    color: "rgba(50, 50, 50, 1)",
     textShadowColor: "rgba(29, 53, 87, 1)",
     textShadowOffset: { height: 2 },
     textShadowRadius: 10,
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#000",
     borderBottomWidth: 1,
     backgroundColor: "rgba(0,0,20,0)",
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
   },
   largeInput: {
     height: "60%",
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     backgroundColor: "rgba(244,245,250,1)",
-    color: "rgba(69, 120, 144, 1)",
+    color: "rgba(50, 50, 50, 1)",
   },
   mainScrollContainer: {
     alignContent: "center",

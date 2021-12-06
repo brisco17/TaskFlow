@@ -312,8 +312,9 @@ export default class MainScreen extends React.Component {
     const { navigation } = this.props;
     return (
       <View style={styles.MainScreen}>
+        <Text style={{position: 'absolute', top: '5%', left: '40%'}}>Task Flow</Text>
         <ModernHeader
-          style={{ backgroundColor: "rgba(244,245,250,0)", top: 10 }}
+          style={{ backgroundColor: "rgba(244,245,250,0)", top: 10}}
           leftComponentDisable={true}
           rightCustomComponent={
             <Entypo name="dots-three-horizontal" size={24} color="black" />
@@ -324,7 +325,7 @@ export default class MainScreen extends React.Component {
           <TextInput
             style={styles.tabItem}
             underlineColorAndroid="transparent"
-            placeholder="Search"
+            placeholder="Search Tags"
             onChangeText={(text) => this.setState({ searchQuery: text })}
             placeholderTextColor="#858585"
           />
@@ -611,7 +612,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     width: "100%",
     height: "10%",
-    top: 20,
     justifyContent: "space-evenly",
   },
   CircleOverlay: {
@@ -643,10 +643,8 @@ const styles = StyleSheet.create({
     color: "white",
   },
   navBarContainer: {
-    height: "20%",
     width: "100%",
     position: "relative",
-    top: 50,
     backgroundColor: "transparent",
   },
   CircleOverlayMain: {
@@ -670,11 +668,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
   },
   tabItem: {
+    flexGrow: 1,
+    width: 100,
     borderRadius: 5,
     borderColor: "#858585",
     borderStyle: "solid",
     textAlign: "center",
-    color: "rgba(244,245,250,1)",
+    color: "rgba(50, 50, 50, 1)",
     backgroundColor: "#rgba(244,245,250,1)",
     borderWidth: 1,
     padding: 3,

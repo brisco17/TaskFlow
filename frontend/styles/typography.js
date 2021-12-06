@@ -9,7 +9,7 @@ export default StyleSheet.create({
       },
     text: {
         fontSize: 16,
-        color: 'white',
+        color: 'rgba(50, 50, 50, 1)',
         textAlign: 'left',
     },
     

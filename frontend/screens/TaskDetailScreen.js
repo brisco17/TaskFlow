@@ -124,6 +124,8 @@ export default class CreateTaskScreen extends React.Component {
           });
         }
       );
+      const str = JSON.stringify(this.state.reminder)
+      console.log("reminderTest " + JSON.stringify(this.state.reminder))
       await this.checkSettings();
     }
     if (driveData) {
@@ -179,8 +181,11 @@ export default class CreateTaskScreen extends React.Component {
   };
 
   async updatePushNotification(currReminder, reminderTime) {
-    if (currReminder != "" && currReminder != null) {
-      // await Notifications.cancelScheduledNotificationAsync(currReminder)
+    if (currReminder != null) {
+      await Notifications.cancelScheduledNotificationAsync(currReminder.identifier)
+    }
+    if (reminderTime == null) {
+      return currReminder;
     }
     var trigger = new Date(this.state.date);
     console.log(trigger)
@@ -222,7 +227,7 @@ export default class CreateTaskScreen extends React.Component {
       trigger: trigger,
     });
     console.log("NOTIF TEST" + identifier);
-    return identifier;
+    return {'reminderTime':reminderTime, 'identifier': identifier};
   }
 
   onSubmit = async () => {
@@ -453,7 +458,10 @@ export default class CreateTaskScreen extends React.Component {
              (
               <SelectDropdown
                 data={this.state.reminderOptions}
-                defaultButtonText={"Set Reminder"}
+                defaultButtonText={
+                  this.state.reminder
+                  ? this.state.reminder.reminderTime
+                  : "Set Reminder"}
                 onSelect={(selectedItem, index) => {
                   this.setState({ reminderTime: selectedItem });
                   console.log("new reminder time selected");

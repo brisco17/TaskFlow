@@ -106,7 +106,7 @@ export default class CreateTaskScreen extends React.Component {
     var trigger = new Date(this.state.date);
     console.log(trigger)
 
-    if (reminderTime == "" || reminderTime == null) {
+    if (reminderTime == null) {
       return reminderTime;
     }
     if (reminderTime == "30 minutes before") {
@@ -143,7 +143,7 @@ export default class CreateTaskScreen extends React.Component {
     });
     console.log("NOTIF TEST" + identifier);
     console.log(trigger);
-    return identifier;
+    return {reminderTime: reminderTime, 'identifier': identifier};
   }
 
   onSubmit = async () => {
@@ -152,6 +152,7 @@ export default class CreateTaskScreen extends React.Component {
     const reminder = await this.schedulePushNotification(
       this.state.reminderTime
     );
+    console.log("reminderTest " + JSON.stringify(reminder))
 
     const formatted = moment(date).format("YYYY-MM-DD");
     console.log("Due Date: " + formatted);

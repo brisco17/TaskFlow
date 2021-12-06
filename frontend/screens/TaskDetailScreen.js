@@ -290,7 +290,7 @@ export default class CreateTaskScreen extends React.Component {
         const completed = this.state.subTasks[task];
         const color = completed ? "#457890" : "#904b45";
         return (
-          <View style={styles.rowContainer}>
+          <View style={{marginBottom: 10}}>
             <TouchableOpacity
               style={[styles.subStyle, { backgroundColor: color }]}
               onPress={() => this.changeCompletion(task)}
@@ -404,7 +404,7 @@ export default class CreateTaskScreen extends React.Component {
               </TouchableOpacity>
            </View>
 
-
+          <View style ={{width: '100%', alignContent: 'center', height: 150,justifyContent: 'center'}}>
           <SelectDropdown
             data={Object.keys(this.state.drive).sort()}
             defaultButtonText={
@@ -504,6 +504,7 @@ export default class CreateTaskScreen extends React.Component {
             rowStyle={styles.dropdown1RowStyle}
             rowTextStyle={styles.dropdown1RowTxtStyle}
           />
+          </View>
 
           <TouchableOpacity
             style={styles.makeSub}
@@ -523,7 +524,7 @@ export default class CreateTaskScreen extends React.Component {
             <Dialog.Button label="Confirm" onPress={this.createSubTask} />
           </Dialog.Container>
 
-          <View style={{width: "100%", height: 100 }}>
+          <View style={{width: "100%", height: 150, marginTop: 10 }}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
               <SafeAreaView>
                 <View>{this.makeSubTasks()}</View>
@@ -568,8 +569,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     width: "100%",
     backgroundColor: "rgba(244,245,250,1)",
-    justifyContent: "space-evenly",
-    left: "10%",
     flexGrow: 1,
   },
   inputContainer: {
@@ -611,22 +610,19 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
   },
   subStyle: {
-    width: "80%",
+    width: "100%",
     height: 50,
-    alignContent: 'center',
     backgroundColor: "rgba(69, 120, 144, 1)",
-    borderRadius: 8,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: "rgba(50, 50, 50, 1)",
     fontSize: 16,
     color: "white",
-    paddingEnd: 20,
   },
   makeSub: {
     height: 45,
     width: "65%",
     left: 50,
-    marginBottom: 5,
     alignItems: "center",
     backgroundColor: "rgba(256, 256, 256, 1)",
     borderRadius: 10,

@@ -82,7 +82,7 @@ export default class CreateTagScreen extends React.Component {
           onLeftPress={() => this.onBack()}
         />
       <View style={styles.container}>
-        
+      <Text style={styles.titleText}>Tag Create</Text>
         <AntDesign
           style={{ zIndex: 999, position: "relative", right: "37%", top: 48 }}
           name="tags"
@@ -151,6 +151,13 @@ const styles = StyleSheet.create({
     ...components.multiTextInput,
     ...colors.textField,
     ...typography.text,
+  },
+  titleText: {
+    textAlign: "center",
+    fontSize: 28,
+    color: "rgba(50, 50, 50, 1)",
+    fontWeight: "bold",
+    marginBottom: 25,
   },
 });
 

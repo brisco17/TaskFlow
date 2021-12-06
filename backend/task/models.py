@@ -19,7 +19,7 @@ class Task(models.Model):
     title = models.CharField(max_length=30)
     description = models.CharField(max_length=1000, blank=True)
     subtasks = models.JSONField(null=True, blank=True,)
-    reminder = models.JSONField()
+    reminder = models.JSONField(null=True, blank=True,)
     attachedFile = models.CharField(max_length=200, null=True, blank=True)
     creation_date = models.DateField(auto_now_add=True)
     due_date = models.JSONField()

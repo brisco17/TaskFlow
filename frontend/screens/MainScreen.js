@@ -312,7 +312,7 @@ export default class MainScreen extends React.Component {
     const { navigation } = this.props;
     return (
       <View style={styles.MainScreen}>
-        <Text style={{position: 'absolute', top: '5%', left: '40%'}}>Task Flow</Text>
+        <Text style={{position: 'absolute', top: '5%', fontWeight: '600', left: '1%'}}>Task Flow</Text>
         <ModernHeader
           style={{ backgroundColor: "rgba(244,245,250,0)", top: 10}}
           leftComponentDisable={true}
@@ -693,3 +693,4 @@ const styles = StyleSheet.create({
     color: 'rgba(50, 50, 50, 1)',
   },
 });
+

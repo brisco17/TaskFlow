@@ -6,7 +6,6 @@ export default StyleSheet.create({
     main: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
     },
     inputContainer: {
         width: "100%",

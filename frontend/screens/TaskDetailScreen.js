@@ -350,7 +350,7 @@ export default class CreateTaskScreen extends React.Component {
           contentInset={{ top: -40 }}
           scrollEnabled={true}
         >
-          <FontAwesome5 style = {{position: 'absolute',top: '8%', left: 10}} name="tasks" size={24} color="black" />
+          <FontAwesome5 style = {{position: 'absolute',top: 80, left: 10}} name="tasks" size={24} color="black" />
           <Text style={styles.titleText}>Edit Title & Description</Text>
           <TextInput
             style={styles.input}
@@ -379,10 +379,9 @@ export default class CreateTaskScreen extends React.Component {
             multiline={true}
           />
 
-          <Text style = {{position: 'absolute', top: '30%', left: 50}}>Set Date</Text>
-          <Text style = {{position: 'absolute', top: '30%', right: 50}}>Set Time</Text>
-          <View style={styles.rowContainer}>
-            <TouchableOpacity style = {{flexGrow: 1, top: 25}}>
+        <View style={styles.rowContainer}>
+          <Text>Set Date: </Text>
+            <TouchableOpacity style = {{width: 120, top: -5}}>
              <DateTimePicker 
                value={this.state.date}
                mode='date'
@@ -391,8 +390,10 @@ export default class CreateTaskScreen extends React.Component {
                onChange={ (e, d) => {this.setState({ date: d }); 
                                      console.log(this.state.date.toString()) }}/>
               </TouchableOpacity>
-              
-              <TouchableOpacity style = {{flexGrow:1, top: 25}}>
+            </View>
+            <View style={styles.rowContainer}>
+              <Text>Set Time:</Text>
+              <TouchableOpacity style = {{width: 120, top: -5}}>
              <DateTimePicker 
                  value={this.state.date}
                  mode='time'
@@ -543,14 +544,13 @@ export default class CreateTaskScreen extends React.Component {
 
 const styles = StyleSheet.create({
   dropdown1BtnStyle: {
-    width: "80%",
+    width: "65%",
     height: 50,
-    left: 35,
+    left: 50,
     backgroundColor: "rgba(256, 256, 256, 1)",
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#444",
-    top: 10,
     marginBottom: 20,
   },
   dropdown1BtnTxtStyle: { color: "rgba(50, 50, 50, 1)", textAlign: "center" },
@@ -579,12 +579,15 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   rowContainer: {
-    //backgroundColor: 'black',
-    height: 75,
+    height: 30,
+    width: '100%',
+    alignContent: 'center',
     flexDirection: "row",
-    right: 30,
     width: '100%',
     position: 'relative',
+    marginTop: 10,
+    marginBottom: 5,
+    paddingStart: '10%'
   },
   calContainer: {
     maxHeight: "30%",
@@ -594,7 +597,7 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 45,
-    width: "65%",
+    width: '65%',
     left: 50,
     alignItems: "center",
     position: "relative",
@@ -615,16 +618,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "rgba(50, 50, 50, 1)",
-    marginBottom: 10,
     fontSize: 16,
     color: "white",
     paddingEnd: 20,
   },
   makeSub: {
     height: 45,
-    width: "70%",
+    width: "65%",
     left: 50,
-    marginBottom: 20,
+    marginBottom: 5,
     alignItems: "center",
     backgroundColor: "rgba(256, 256, 256, 1)",
     borderRadius: 10,
@@ -695,8 +697,9 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(244,245,250,1)",
   },
   mainScrollContainer: {
-    marginTop: "30%",
+    marginTop: 50,
     height: '130%',
     marginHorizontal: 20,
   },
 });
+

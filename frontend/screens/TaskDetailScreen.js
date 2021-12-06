@@ -46,7 +46,6 @@ export default class CreateTaskScreen extends React.Component {
       countries: ["Egypt", "Canada", "Australia", "Ireland"],
       drive: {},
       driveChoice: "",
-      driveChoice: "",
       date: new Date(),
     };
     this.onDateChange = this.onDateChange.bind(this);
@@ -111,7 +110,7 @@ export default class CreateTaskScreen extends React.Component {
           sessionToken: token,
           task: curTask,
           title: curTask.title,
-          due_date: moment(new Date(curTask.due_date)),
+          date: new Date(curTask.due_date) ,
           description: curTask.description,
           subTasks: subtasks,
           reminder: curTask.reminder,
@@ -215,21 +214,15 @@ export default class CreateTaskScreen extends React.Component {
   }
 
   onSubmit = async () => {
-    const { title, description, due_date, taskTag } = this.state;
+    const { title, description, due_date, taskTag, date } = this.state;
     const { navigation } = this.props;
     const reminder = await this.updatePushNotification(
       this.state.reminder,
       this.state.reminderTime
     );
 
-    // I don't want to talk about it
-    var stringDate = due_date
-      .toString()
-      .slice(
-        due_date.toString().indexOf(" ") + 1,
-        due_date.toString().indexOf("2021 ") + 4
-      );
-    const formatted = moment(new Date(stringDate)).format("YYYY-MM-DD");
+    const formatted = moment(date).format("YYYY-MM-DD");
+    console.log(formatted)
     //Checks if subTasks is emtpy. If it is, send null. Otherwise send value.
     const subtasks = Object.keys(this.state.subTasks).length
       ? this.state.subTasks
@@ -248,7 +241,7 @@ export default class CreateTaskScreen extends React.Component {
           body: JSON.stringify({
             title: title,
             description: description,
-            due_date: formatted,
+            due_date: date,
             subtasks: subtasks,
             tag: this.state.taskTag.pk,
             reminder: reminder,
@@ -259,7 +252,7 @@ export default class CreateTaskScreen extends React.Component {
         .then((response) => response.json())
         .then((json) => {
           // enter login logic here
-          console.log("We here now bois");
+          console.log("Back to feed");
           if (!json.id) {
             if (json.title) Alert.alert("Error: ", json.title.toString());
             else if (json.description)
@@ -357,7 +350,7 @@ export default class CreateTaskScreen extends React.Component {
           contentInset={{ top: -40 }}
           scrollEnabled={true}
         >
-          <FontAwesome5 style = {{position: 'absolute',top: '5.4%', left: 10}} name="tasks" size={24} color="black" />
+          <FontAwesome5 style = {{position: 'absolute',top: '8%', left: 10}} name="tasks" size={24} color="black" />
           <Text style={styles.titleText}>Edit Title & Description</Text>
           <TextInput
             style={styles.input}
@@ -394,10 +387,9 @@ export default class CreateTaskScreen extends React.Component {
                value={this.state.date}
                mode='date'
                display='default'
-               minimumDate={this.state.date}
+               minimumDate={new Date()}
                onChange={ (e, d) => {this.setState({ date: d }); 
-                                     console.log(this.state.date.toLocaleDateString()
-                                     + " " + this.state.date.toLocaleTimeString()) }}/>
+                                     console.log(this.state.date.toString()) }}/>
               </TouchableOpacity>
               
               <TouchableOpacity style = {{flexGrow:1, top: 25}}>
@@ -405,12 +397,12 @@ export default class CreateTaskScreen extends React.Component {
                  value={this.state.date}
                  mode='time'
                  display='default'
-                 minimumDate={this.state.date}
+                 minimumDate={new Date()}
                  onChange={ (e, d) => {this.setState({ date: d });
-                                       console.log(this.state.date.toLocaleDateString()
-                                       + " " + this.state.date.toLocaleTimeString()) }} />
+                                      console.log(this.state.date.toString()); }} />
               </TouchableOpacity>
            </View>
+
 
           <SelectDropdown
             data={Object.keys(this.state.drive).sort()}

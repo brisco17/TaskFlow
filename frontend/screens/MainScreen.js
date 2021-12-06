@@ -124,6 +124,7 @@ export default class MainScreen extends React.Component {
     if (this.state.displayTasks.length > 0) {
       console.log("HERE" + this.state.displayTasks.length);
       return this.state.displayTasks.map((task) => {
+        const due_date = new Date(task.due_date)
         return (
           <>
             <TouchableOpacity
@@ -131,13 +132,14 @@ export default class MainScreen extends React.Component {
               onPress={() => this.goToDetails(task)}
             >
               <Text style={styles.titleText}> {task.title} </Text>
-              <Text style={styles.taskDiscription}>Discription:  {task.description} </Text>
-              <Text style={styles.taskText}>
-                {" "}
-                {"Due: " + task.due_date}{" "}
+              <Text style={styles.buttonText}> {task.description} </Text>
+              <Text style={styles.buttonText}>
+                {"\n"}
+                {"Due Date: " + due_date.toLocaleDateString() + "\n"}
+                {"Time: " + due_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                {"\n"}
               </Text>
-              <Text style={styles.taskText}>
-                {" "}
+              <Text style={styles.buttonText}>
                 {"Created: " + task.creation_date}{" "}
               </Text>
             </TouchableOpacity>

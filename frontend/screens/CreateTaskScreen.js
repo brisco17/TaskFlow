@@ -9,6 +9,7 @@ import {
   Alert,
   Dimensions,
   ScrollView,
+  SafeAreaView,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import CalendarPicker from "react-native-calendar-picker";
@@ -18,6 +19,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { FontAwesome5 } from "@expo/vector-icons";
 import ModernHeader from "react-native-modern-header";
 import * as Notifications from "expo-notifications";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default class CreateTaskScreen extends React.Component {
   constructor(props) {
@@ -33,6 +35,7 @@ export default class CreateTaskScreen extends React.Component {
       notificationsEnabled: false,
       reminderTime: null,
       reminderOptions: ["1 Day", "2 Days", "3 Days"],
+      date: new Date(),
     };
     this.onDateChange = this.onDateChange.bind(this);
   }
@@ -133,23 +136,14 @@ export default class CreateTaskScreen extends React.Component {
   }
 
   onSubmit = async () => {
-    const { title, description, due_date, taskTag } = this.state;
+    const { title, description, due_date, taskTag, date } = this.state;
     const { navigation } = this.props;
     const reminder = await this.schedulePushNotification(
       this.state.reminderTime
     );
 
-    // I don't want to talk about it
-    console.log("Original: " + due_date.toString);
-    var stringDate = due_date
-      .toString()
-      .slice(
-        due_date.toString().indexOf(" ") + 1,
-        due_date.toString().indexOf("2021 ") + 4
-      );
-    console.log("String Date: " + stringDate);
-    const formatted = moment(new Date(stringDate)).format("YYYY-MM-DD");
-    console.log("Formatted: " + formatted);
+    const formatted = moment(date).format("YYYY-MM-DD");
+    console.log("Due Date: " + formatted);
 
     SecureStore.getItemAsync("session").then((sessionToken) => {
       fetch("https://young-chow-productivity-app.herokuapp.com/tasks/", {
@@ -161,7 +155,7 @@ export default class CreateTaskScreen extends React.Component {
         body: JSON.stringify({
           title: title,
           description: description,
-          due_date: formatted,
+          due_date: date,
           tag: parseInt(taskTag.pk),
           reminder: reminder,
         }),
@@ -197,13 +191,13 @@ export default class CreateTaskScreen extends React.Component {
     // const open = false
 
     return (
-      <View style={styles.MainScreen}>
+      <SafeAreaView style={styles.MainSafe}>
         <ModernHeader
-          style={{ backgroundColor: "rgba(244,245,250,0)", top: 10 }}
+          style={{ backgroundColor: "rgba(244,245,250,0)"}}
           rightComponentDisable={true}
           onLeftPress={() => this.onBack()}
         />
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView style={styles.mainScrollContainer}>
           <FontAwesome5
             style={{ postion: "absolute", right: "37%", top: "6%" }}
             name="tasks"
@@ -221,13 +215,6 @@ export default class CreateTaskScreen extends React.Component {
             />
           </View>
 
-          <View style={styles.calContainer}>
-            <CalendarPicker
-              scaleFactor={Dimensions.get("window").width}
-              onDateChange={this.onDateChange}
-            />
-          </View>
-
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.largeInput}
@@ -240,6 +227,29 @@ export default class CreateTaskScreen extends React.Component {
               multiline={true}
             />
           </View>
+          <Text style = {{position: 'absolute', top: '80%', left: 50}}>Set Date</Text>
+          <Text style = {{position: 'absolute', top: '80%', left: 227}}>Set Time</Text>
+          <View style={styles.rowContainer}>
+            <TouchableOpacity style = {{flexGrow: 1, top: 40}}>
+             <DateTimePicker 
+               value={this.state.date}
+               mode='date'
+               display='default'
+               minimumDate={new Date()}
+               onChange={ (e, d) => {this.setState({ date: d }); 
+                                     console.log(this.state.date.toString()) }}/>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style = {{flexGrow:1, top: 40}}>
+             <DateTimePicker 
+                 value={this.state.date}
+                 mode='time'
+                 display='default'
+                 minimumDate={new Date()}
+                 onChange={ (e, d) => {this.setState({ date: d });
+                                      console.log(this.state.date.toString()); }} />
+              </TouchableOpacity>
+           </View>
           {this.state.notificationsEnabled == true && (
             <SelectDropdown
               data={this.state.reminderOptions}
@@ -311,7 +321,7 @@ export default class CreateTaskScreen extends React.Component {
             <Text style={styles.buttonText}> Submit </Text>
           </TouchableOpacity>
         </ScrollView>
-      </View>
+        </SafeAreaView>
     );
   }
 }
@@ -320,12 +330,12 @@ const styles = StyleSheet.create({
   dropdown1BtnStyle: {
     width: "60%",
     height: 50,
-    bottom: "25%",
+    marginBottom: 20,
+    alignSelf: 'center',
     backgroundColor: "rgba(256, 256, 256, 1)",
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#444",
-    bottom: 100,
   },
   dropdown1BtnTxtStyle: { color: "rgba(50, 50, 50, 1)", textAlign: "center" },
   dropdown1DropdownStyle: { backgroundColor: "#EFEFEF" },
@@ -336,6 +346,7 @@ const styles = StyleSheet.create({
   dropdown1RowTxtStyle: { color: "#444", textAlign: "left" },
   container: {
     flex: 1,
+    height: "150%",
     backgroundColor: "rgba(244,245,250,1)",
     alignItems: "center",
     justifyContent: "center",
@@ -345,8 +356,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   rowContainer: {
+    //backgroundColor: 'black',
+    flex: 1,
     flexDirection: "row",
-    justifyContent: "space-between",
+    right: 30,
+    width: '100%',
+    height: 40,
+    position: 'relative',
+    zIndex: 999,
+    bottom: 80,
+    marginTop: 10,
+    marginBottom: 20,
   },
   calContainer: {
     flexDirection: "row",
@@ -359,9 +379,9 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 45,
-    bottom: "10%",
     width: "65%",
     alignItems: "center",
+    alignSelf: 'center',
     backgroundColor: "rgba(256, 256, 256, 1)",
     borderRadius: 10,
     padding: 10,
@@ -377,7 +397,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   loginText: {
-    bottom: "10%",
     fontSize: 50,
     textAlign: "center",
     color: "rgba(29, 53, 87, 1)",
@@ -400,7 +419,7 @@ const styles = StyleSheet.create({
     color: "rgba(69, 120, 144, 1)",
   },
   largeInput: {
-    height: "40%",
+    height: "60%",
     width: "90%",
     left: "5%",
     fontSize: 16,
@@ -414,9 +433,14 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(244,245,250,1)",
     color: "rgba(69, 120, 144, 1)",
   },
-  MainScreen: {
-    flex: 1,
-    backgroundColor: "rgba(244,245,250,1)",
-    height: "100%",
+  mainScrollContainer: {
+    alignContent: "center",
+    height: '130%',
+    marginHorizontal: 20,
   },
+  MainSafe: {
+    alignContent: "center",
+    backgroundColor: "rgba(244,245,250,1)",
+  },
+
 });

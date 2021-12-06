@@ -22,7 +22,7 @@ class Task(models.Model):
     reminder = models.CharField(max_length=36, null=True, blank=True)
     attachedFile = models.CharField(max_length=40, null=True, blank=True)
     creation_date = models.DateField(auto_now_add=True)
-    due_date = models.DateField()
+    due_date = models.JSONField()
     completion_date = models.DateField(blank=True,null=True)
     completed = models.BooleanField(default=False)
 

@@ -23,6 +23,7 @@ import {
 import ModernHeader from "react-native-modern-header";
 import * as Font from "expo-font";
 import ScrollingButtonMenu from "react-native-scroll-menu";
+import moment from "moment";
 
 export default class MainScreen extends React.Component {
   constructor(props) {
@@ -140,7 +141,7 @@ export default class MainScreen extends React.Component {
                 {"\n"}
               </Text>
               <Text style={styles.buttonText}>
-                {"Created: " + task.creation_date}{" "}
+                {"Created on: " + moment(task.creation_date).format("MM/DD/YYYY")}{" "}
               </Text>
             </TouchableOpacity>
           </>

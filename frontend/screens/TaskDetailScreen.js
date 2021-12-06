@@ -222,7 +222,7 @@ export default class CreateTaskScreen extends React.Component {
     const identifier = await Notifications.scheduleNotificationAsync({
       content: {
         title: this.state.title,
-        body: "This task is due in " + reminderTime,
+        body: this.state.date.toLocaleDateString() + ", " + this.state.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
       },
       trigger: trigger,
     });

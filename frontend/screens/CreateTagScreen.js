@@ -75,14 +75,16 @@ export default class CreateTagScreen extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <View style={styles.container}>
-        <ModernHeader
-          style={{ backgroundColor: "rgba(244,245,250,0)", top: 10 }}
+      <View style={{flex:1}}>
+      <ModernHeader
+          style={{ backgroundColor: "rgba(244,245,250,1)", top: 10 }}
           rightComponentDisable={true}
           onLeftPress={() => this.onBack()}
         />
+      <View style={styles.container}>
+      <Text style={styles.titleText}>Tag Create</Text>
         <AntDesign
-          style={{ zIndex: 999, position: "relative", right: "37%", top: 48 }}
+          style={{ zIndex: 999, position: "relative",alignSelf: 'basline',left: '6%', top: 48 }}
           name="tags"
           size={30}
           color="black"
@@ -118,6 +120,7 @@ export default class CreateTagScreen extends React.Component {
           <Text style={styles.buttonText}> Submit </Text>
         </TouchableOpacity>
       </View>
+      </View>
     );
   }
 }
@@ -149,4 +152,12 @@ const styles = StyleSheet.create({
     ...colors.textField,
     ...typography.text,
   },
+  titleText: {
+    textAlign: "center",
+    fontSize: 28,
+    color: "rgba(50, 50, 50, 1)",
+    fontWeight: "bold",
+    marginBottom: 25,
+  },
 });
+

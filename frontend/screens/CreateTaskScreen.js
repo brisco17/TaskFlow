@@ -210,6 +210,7 @@ export default class CreateTaskScreen extends React.Component {
           onLeftPress={() => this.onBack()}
         />
         <ScrollView style={styles.mainScrollContainer}>
+        <Text style={styles.titleText}>Task Create</Text>
           <FontAwesome5
             style={{ postion: "absolute", top: 40, left: 30}}
             name="tasks"
@@ -239,10 +240,9 @@ export default class CreateTaskScreen extends React.Component {
               multiline={true}
             />
           </View>
-          <Text style = {{position: 'absolute', top: '80%', left: 50}}>Set Date</Text>
-          <Text style = {{position: 'absolute', top: '80%', left: 227}}>Set Time</Text>
           <View style={styles.rowContainer}>
-            <TouchableOpacity style = {{flexGrow: 1, top: 40}}>
+          <Text>Set Date: </Text>
+            <TouchableOpacity style = {{height: 40, width: 120, top: -5}}>
              <DateTimePicker 
                value={this.state.date}
                mode='date'
@@ -251,8 +251,10 @@ export default class CreateTaskScreen extends React.Component {
                onChange={ (e, d) => {this.setState({ date: d }); 
                                      console.log(this.state.date.toString()) }}/>
               </TouchableOpacity>
-              
-              <TouchableOpacity style = {{flexGrow:1, top: 40}}>
+            </View>
+            <View style={styles.rowContainer}>
+              <Text>Set Time:</Text>
+              <TouchableOpacity style = {{height: 40, width: 120, top: -5}}>
              <DateTimePicker 
                  value={this.state.date}
                  mode='time'
@@ -368,17 +370,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   rowContainer: {
-    //backgroundColor: 'black',
     flex: 1,
+    alignContent: 'center',
     flexDirection: "row",
-    right: 30,
     width: '100%',
-    height: 40,
     position: 'relative',
-    zIndex: 999,
-    bottom: 80,
-    marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 5,
+    paddingStart: '10%'
   },
   calContainer: {
     flexDirection: "row",
@@ -422,7 +420,6 @@ const styles = StyleSheet.create({
     left: "5%",
     fontSize: 16,
     paddingStart: 50,
-    marginBottom: 20,
     textAlign: "left",
     borderRadius: 20,
     borderBottomColor: "#000",
@@ -437,7 +434,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingStart: 20,
     borderWidth: 1,
-    marginBottom: 20,
     textAlign: "left",
     paddingTop: "5%",
     borderRadius: 20,
@@ -454,5 +450,13 @@ const styles = StyleSheet.create({
     alignContent: "center",
     backgroundColor: "rgba(244,245,250,1)",
   },
+  titleText: {
+    textAlign: "center",
+    fontSize: 28,
+    color: "rgba(50, 50, 50, 1)",
+    fontWeight: "bold",
+    marginBottom: 25,
+  },
 
 });
+

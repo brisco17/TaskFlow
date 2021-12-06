@@ -442,6 +442,7 @@ export default class SettingScreen extends React.Component {
     const notifEnabled = this.state.notificationsEnabled;
     return (
       <View style={styles.MainScreen}>
+        <Text style={{position: 'absolute',alignSelf: 'center', top: 50}}>Setting</Text>
         <ModernHeader
           style={{ backgroundColor: "rgba(244,245,250,0)", top: 15 }}
           rightComponentDisable={true}
@@ -576,3 +577,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+

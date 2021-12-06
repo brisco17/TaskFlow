@@ -110,7 +110,7 @@ export default class CreateTaskScreen extends React.Component {
           sessionToken: token,
           task: curTask,
           title: curTask.title,
-          due_date: moment(new Date(curTask.due_date)),
+          date: new Date(curTask.due_date) ,
           description: curTask.description,
           subTasks: subtasks,
           reminder: curTask.reminder,
@@ -241,7 +241,7 @@ export default class CreateTaskScreen extends React.Component {
           body: JSON.stringify({
             title: title,
             description: description,
-            due_date: formatted,
+            due_date: date,
             subtasks: subtasks,
             tag: this.state.taskTag.pk,
             reminder: reminder,

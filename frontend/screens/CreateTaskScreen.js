@@ -142,7 +142,7 @@ export default class CreateTaskScreen extends React.Component {
     );
 
     const formatted = moment(date).format("YYYY-MM-DD");
-    console.log("Formatted: " + formatted);
+    console.log("Due Date: " + formatted);
 
     SecureStore.getItemAsync("session").then((sessionToken) => {
       fetch("https://young-chow-productivity-app.herokuapp.com/tasks/", {
@@ -154,7 +154,7 @@ export default class CreateTaskScreen extends React.Component {
         body: JSON.stringify({
           title: title,
           description: description,
-          due_date: formatted,
+          due_date: date,
           tag: parseInt(taskTag.pk),
           reminder: reminder,
         }),

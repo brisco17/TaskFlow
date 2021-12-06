@@ -237,8 +237,6 @@ export default class MainScreen extends React.Component {
     })
       .then(() => {
         console.log("Deleted Tag");
-        //console.log(json)
-        Alert.alert("Tag Succesfully Deleted");
         this.getTags();
       })
       .then(this.changeTagState());

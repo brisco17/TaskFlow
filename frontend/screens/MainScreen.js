@@ -394,7 +394,7 @@ export default class MainScreen extends React.Component {
               onPress={() => navigation.navigate("Create Task")}
             >
               <Foundation
-                style={{ padding: 18, left: 15 }}
+                style={{ padding: 18, left: 15, top: 5 }}
                 name="plus"
                 size={50}
                 color="rgba(50, 50, 50, 1)"

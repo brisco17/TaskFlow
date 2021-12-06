@@ -40,7 +40,7 @@ export default class CreateTaskScreen extends React.Component {
       notificationsEnabled: false,
       reminder: null,
       reminderTime: null,
-      reminderOptions: ["1 Day", "2 Days", "3 Days"],
+      reminderOptions: ["At task deadline", "30 minutes before", "1 hour before", "1 Day before", "2 Days before", "3 Days before"],
       subCreate: false,
       subTitleTemp: "",
       countries: ["Egypt", "Canada", "Australia", "Ireland"],
@@ -66,6 +66,7 @@ export default class CreateTaskScreen extends React.Component {
             for (var tag in json) {
               if (json[tag].pk == this.state.tagPk)
                 this.setState({ taskTag: json[tag] });
+                console.log(this.state.taskTag)
             }
           }
           return {};
@@ -87,6 +88,7 @@ export default class CreateTaskScreen extends React.Component {
           if (obj.name == "Notifications") {
             if (obj.value == "true") {
               this.setState({ notificationsEnabled: true });
+              console.log('notifs: ' + this.state.notificationsEnabled);
             }
           }
         });
@@ -177,23 +179,33 @@ export default class CreateTaskScreen extends React.Component {
   };
 
   async updatePushNotification(currReminder, reminderTime) {
-    if (currReminder == "" || currReminder == null) {
-      //await Notifications.cancelScheduledNotificationAsync(currReminder)
+    if (currReminder != "" && currReminder != null) {
+      // await Notifications.cancelScheduledNotificationAsync(currReminder)
     }
-    console.log("before: " + this.state.due_date);
-    var trigger = new Date(this.state.due_date);
+    var trigger = new Date(this.state.date);
+    console.log(trigger)
 
     if (reminderTime == "" || reminderTime == null) {
       return reminderTime;
     }
-    if (reminderTime == "1 day") {
+    if (reminderTime == "30 minutes before") {
+      trigger.setMinutes(trigger.getMinutes() - 30)
+    }
+    if (reminderTime == "1 hour before") {
+      trigger.setHours(trigger.getHours() - 1);
+    }
+    if (reminderTime == "1 day before") {
       trigger.setDate(trigger.getDate() - 1);
     }
-    if (reminderTime == "2 days") {
+    if (reminderTime == "2 days before") {
       trigger.setDate(trigger.getDate() - 2);
     }
-    if (reminderTime == "3 days") {
+    if (reminderTime == "3 days before") {
       trigger.setDate(trigger.getDate() - 3);
+    }
+    if (trigger < new Date()) {
+      trigger = new Date()
+      trigger.setSeconds(trigger.getSeconds() + 1)
     }
 
     // trigger = new Date();
@@ -221,8 +233,6 @@ export default class CreateTaskScreen extends React.Component {
       this.state.reminderTime
     );
 
-    const formatted = moment(date).format("YYYY-MM-DD");
-    console.log(formatted)
     //Checks if subTasks is emtpy. If it is, send null. Otherwise send value.
     const subtasks = Object.keys(this.state.subTasks).length
       ? this.state.subTasks
@@ -446,7 +456,7 @@ export default class CreateTaskScreen extends React.Component {
           />
 
           {this.state.notificationsEnabled == true &&
-            new Date() < new Date(this.state.due_date) && (
+             (
               <SelectDropdown
                 data={this.state.reminderOptions}
                 defaultButtonText={"Set Reminder"}
@@ -481,7 +491,11 @@ export default class CreateTaskScreen extends React.Component {
 
           <SelectDropdown
             data={this.state.tags}
-            defaultButtonText={"Select Tag"}
+            defaultButtonText={
+              this.state.taskTag.title
+              ? this.state.taskTag.title
+              : "Select Tag"
+            }
             onSelect={(selectedItem, index) => {
               this.setState({ taskTag: selectedItem });
               console.log("new tag selected");

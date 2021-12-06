@@ -33,7 +33,7 @@ export default class CreateTaskScreen extends React.Component {
       taskTag: {},
       notificationsEnabled: false,
       reminderTime: null,
-      reminderOptions: ["1 Day", "2 Days", "3 Days"],
+      reminderOptions: ["At task deadline", "30 minutes before", "1 hour before", "1 Day before", "2 Days before", "3 Days before"],
       date: new Date(),
     };
     this.onDateChange = this.onDateChange.bind(this);
@@ -102,25 +102,36 @@ export default class CreateTaskScreen extends React.Component {
   };
 
   async schedulePushNotification(reminderTime) {
-    var trigger = new Date(this.state.due_date);
+    var trigger = new Date(this.state.date);
+    console.log(trigger)
 
     if (reminderTime == "" || reminderTime == null) {
       return reminderTime;
     }
-    if (reminderTime == "1 day") {
+    if (reminderTime == "30 minutes before") {
+      trigger.setMinutes(trigger.getMinutes() - 30)
+    }
+    if (reminderTime == "1 hour before") {
+      trigger.setHours(trigger.getHours() - 1);
+    }
+    if (reminderTime == "1 day before") {
       trigger.setDate(trigger.getDate() - 1);
     }
-    if (reminderTime == "2 days") {
+    if (reminderTime == "2 days before") {
       trigger.setDate(trigger.getDate() - 2);
     }
-    if (reminderTime == "3 days") {
+    if (reminderTime == "3 days before") {
       trigger.setDate(trigger.getDate() - 3);
+    }
+    if (trigger < new Date()) {
+      trigger = new Date()
+      trigger.setSeconds(trigger.getSeconds() + 1)
     }
 
     // trigger = new Date();
     // console.log(trigger)
     // trigger.setSeconds(trigger.getSeconds() + 10);
-    // console.log(trigger)
+    console.log(trigger)
 
     const identifier = await Notifications.scheduleNotificationAsync({
       content: {

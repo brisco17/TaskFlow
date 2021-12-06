@@ -17,10 +17,10 @@ class Task(models.Model):
         null = True
     )
     title = models.CharField(max_length=30)
-    description = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000, blank=True)
     subtasks = models.JSONField(null=True, blank=True,)
-    reminder = models.CharField(max_length=36, null=True, blank=True)
-    attachedFile = models.CharField(max_length=40, null=True, blank=True)
+    reminder = models.JSONField()
+    attachedFile = models.CharField(max_length=200, null=True, blank=True)
     creation_date = models.DateField(auto_now_add=True)
     due_date = models.JSONField()
     completion_date = models.DateField(blank=True,null=True)
